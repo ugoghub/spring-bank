@@ -3,7 +3,6 @@ package com.banco.bank_system.domain.entities;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,28 +16,39 @@ public abstract class Account {
     private Money balance;
 
     protected Account(
+            UUID id,
             UUID clientId,
             AccountIdentity accountIdentity,
-            Clock clock
+            Money balance,
+            LocalDateTime creationTime
     ) {
 
-        if(clientId == null){
-            throw new IllegalArgumentException("ID do cliente não pode ser null");
-        }
-        if(accountIdentity == null){
-            throw new IllegalArgumentException(
-                    "Conta inválida"
-            );
-        }
-        if (clock == null) {
-            throw new IllegalArgumentException("Horário inválido");
+        if(id == null){
+            throw new IllegalArgumentException("ID inválido");
         }
 
-        this.id = UUID.randomUUID();
+        if(clientId == null){
+            throw new IllegalArgumentException("Cliente inválido");
+        }
+
+        if(accountIdentity == null){
+            throw new IllegalArgumentException("Conta inválida");
+        }
+
+        if(balance == null){
+            throw new IllegalArgumentException("Saldo inválido");
+        }
+
+        if(creationTime == null){
+            throw new IllegalArgumentException("Data inválida");
+        }
+
+
+        this.id = id;
         this.clientId = clientId;
         this.accountIdentity = accountIdentity;
-        this.creationTime = LocalDateTime.now(clock);
-        this.balance = Money.ZERO;
+        this.balance = balance;
+        this.creationTime = creationTime;
     }
 
     // =========================

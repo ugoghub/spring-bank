@@ -18,18 +18,38 @@ public class SavingsAccount extends Account {
     private LocalDateTime lastInterestAppliedAt;
 
     public SavingsAccount(
+            UUID id,
             UUID clientId,
             AccountIdentity accountIdentity,
-            Clock clock
+            Money balance,
+            LocalDateTime creationTime
     ) {
 
         super(
+                id,
                 clientId,
                 accountIdentity,
-                clock
+                balance,
+                creationTime
         );
 
-        this.lastInterestAppliedAt = getCreationTime();
+        this.lastInterestAppliedAt = creationTime;
+    }
+
+    public SavingsAccount(
+            UUID clientId,
+            AccountIdentity accountIdentity,
+            Clock clock
+    ){
+
+        super(
+                UUID.randomUUID(),
+                clientId,
+                accountIdentity,
+                Money.ZERO,
+                LocalDateTime.now(clock)
+        );
+
     }
 
     @Override

@@ -1,11 +1,12 @@
-package com.banco.bank_system.application.transfer.usecases;
+package com.banco.bank_system.application.transaction.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
-import com.banco.bank_system.application.transfer.port.TransactionRepositoryPort;
+import com.banco.bank_system.application.transaction.port.TransactionRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import jakarta.transaction.Transactional;
 
 import java.time.Clock;
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class TransferUseCase {
         this.accountRepository =accountRepository;
     }
 
+    @Transactional
     public void execute(
             AccountIdentity fromAccountIdentity,
             AccountIdentity toAccountIdentity,
@@ -40,6 +42,9 @@ public class TransferUseCase {
         from.withdraw(value);
 
         to.deposit(value);
+
+        accountRepository.save(from);
+        accountRepository.save(to);
 
         UUID operationId = UUID.randomUUID();
 

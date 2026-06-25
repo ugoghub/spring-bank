@@ -13,26 +13,26 @@ public class ChangeClientEmailUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public Email execute(CPF cpf, Email newEmail){
-        Client client = clientRepository.getClientByCpf(cpf);
+    public Email execute(
+            CPF cpf,
+            Email newEmail
+    ){
 
-        if (client.hasSameEmail(newEmail)) throw new IllegalArgumentException("Novo email é igual ao email atual");
+        Client client =
+                clientRepository.getClientByCpf(cpf);
 
-        if (clientRepository.existsByEmail(newEmail)) {
+        if(clientRepository.existsByEmail(newEmail)){
+
             throw new IllegalArgumentException(
                     "Email já cadastrado"
             );
         }
 
-        Email oldEmail = client.getEmail();
-
         client.changeEmail(newEmail);
 
-        clientRepository.put(
-                oldEmail,
-                client
-        );
+        clientRepository.save(client);
 
         return client.getEmail();
+
     }
 }
