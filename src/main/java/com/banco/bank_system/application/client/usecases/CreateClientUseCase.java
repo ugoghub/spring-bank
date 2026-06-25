@@ -6,6 +6,8 @@ import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
 
+import java.util.UUID;
+
 public class CreateClientUseCase {
 
     private final ClientRepositoryPort clientRepository;
@@ -22,7 +24,7 @@ public class CreateClientUseCase {
         validateCpfUniqueness(cpf);
         validateEmailUniqueness(email);
 
-        Client client = new Client(name, cpf, email);
+        Client client = new Client(UUID.randomUUID(), name, cpf, email);
 
         clientRepository.save(client);
     }

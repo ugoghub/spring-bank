@@ -7,11 +7,11 @@ import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import java.util.List;
 import java.util.UUID;
 
-public class GetClientAccountsIdentity {
+public class GetClientAccountsUseCase {
 
     private final AccountRepositoryPort accountRepository;
 
-    public GetClientAccountsIdentity(AccountRepositoryPort accountRepository) {
+    public GetClientAccountsUseCase(AccountRepositoryPort accountRepository) {
         this.accountRepository = accountRepository;
     }
 

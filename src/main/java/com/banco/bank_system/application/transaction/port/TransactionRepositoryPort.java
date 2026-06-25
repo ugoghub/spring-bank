@@ -1,4 +1,4 @@
-package com.banco.bank_system.application.transfer.port;
+package com.banco.bank_system.application.transaction.port;
 
 import com.banco.bank_system.domain.entities.Transaction;
 

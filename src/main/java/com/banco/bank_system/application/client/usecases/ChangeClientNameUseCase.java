@@ -13,12 +13,16 @@ public class ChangeClientNameUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public PersonName execute(CPF cpf, PersonName newName){
-        Client client = clientRepository.getClientByCpf(cpf);
-
-        if (client.hasSameName(newName)) throw new IllegalArgumentException("Novo nome é igual ao nome atual");
+    public PersonName execute(
+            CPF cpf,
+            PersonName newName
+    ){
+        Client client =
+                clientRepository.getClientByCpf(cpf);
 
         client.changeName(newName);
+
+        clientRepository.save(client);
 
         return client.getName();
     }
