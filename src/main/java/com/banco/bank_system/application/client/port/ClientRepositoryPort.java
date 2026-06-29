@@ -4,6 +4,7 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ClientRepositoryPort {
@@ -11,7 +12,9 @@ public interface ClientRepositoryPort {
 
     void delete(UUID uuid);
 
-    Client getClientByCpf(CPF cpf);
+    Optional<Client> getClientByCpf(CPF cpf);
+
+    Optional<Client> findById(UUID clientId);
 
     boolean existsByEmail(Email newEmail);
 

@@ -1,5 +1,6 @@
 package com.banco.bank_system.application.client.usecases;
 
+import com.banco.bank_system.application.client.dto.output.ChangeClientEmailOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
@@ -13,26 +14,19 @@ public class ChangeClientEmailUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public Email execute(
+    public ChangeClientEmailOutput execute(
             CPF cpf,
             Email newEmail
     ){
-
         Client client =
-                clientRepository.getClientByCpf(cpf);
-
-        if(clientRepository.existsByEmail(newEmail)){
-
-            throw new IllegalArgumentException(
-                    "Email já cadastrado"
-            );
-        }
+                clientRepository.getClientByCpf(cpf)
+                        .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
         client.changeEmail(newEmail);
 
         clientRepository.save(client);
 
-        return client.getEmail();
-
+        return new ChangeClientEmailOutput(
+                client.getName().value());
     }
 }

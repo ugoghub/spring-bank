@@ -1,5 +1,6 @@
 package com.banco.bank_system.application.client.usecases;
 
+import com.banco.bank_system.application.client.dto.output.CreateClientOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
@@ -16,7 +17,7 @@ public class CreateClientUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public void execute(
+    public CreateClientOutput execute(
             PersonName name,
             CPF cpf,
             Email email
@@ -27,6 +28,14 @@ public class CreateClientUseCase {
         Client client = new Client(UUID.randomUUID(), name, cpf, email);
 
         clientRepository.save(client);
+
+        return new CreateClientOutput(
+                client.getId(),
+                client.getName().value(),
+                client.getCpf().value(),
+                client.getEmail().value()
+        );
+
     }
 
     private void validateCpfUniqueness(CPF cpf) {

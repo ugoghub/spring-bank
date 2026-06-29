@@ -9,6 +9,7 @@ import com.banco.bank_system.infrastructure.database.sql.SpringDataClientReposit
 
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -35,17 +36,11 @@ public class ClientRepositoryAdapter
 
 
     @Override
-    public Client getClientByCpf(CPF cpf) {
-
+    public Optional<Client> getClientByCpf(CPF cpf) {
 
         return repository
                 .findByCpf(cpf.value())
-                .map(ClientEntity::toDomain)
-                .orElseThrow(
-                        () -> new IllegalArgumentException(
-                                "Cliente não encontrado"
-                        )
-                );
+                .map(ClientEntity::toDomain);
 
     }
 
@@ -88,6 +83,12 @@ public class ClientRepositoryAdapter
 
 
     @Override
+    public Optional<Client> findById(UUID clientId) {
+        return repository.findById(clientId)
+                .map(ClientEntity::toDomain);
+    }
+
+    @Override
     public void save(Client client) {
 
 
@@ -95,7 +96,7 @@ public class ClientRepositoryAdapter
                 ClientEntity.fromDomain(client);
 
 
-        repository.save(entity);
+         repository.save(entity);
 
     }
 

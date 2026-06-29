@@ -1,5 +1,6 @@
 package com.banco.bank_system.application.client.usecases;
 
+import com.banco.bank_system.application.client.dto.output.ChangeClientNameOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
@@ -13,17 +14,19 @@ public class ChangeClientNameUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public PersonName execute(
+    public ChangeClientNameOutput execute(
             CPF cpf,
             PersonName newName
     ){
         Client client =
-                clientRepository.getClientByCpf(cpf);
+                clientRepository.getClientByCpf(cpf)
+                        .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
         client.changeName(newName);
 
         clientRepository.save(client);
 
-        return client.getName();
+        return new ChangeClientNameOutput(
+                client.getName().value());
     }
 }
