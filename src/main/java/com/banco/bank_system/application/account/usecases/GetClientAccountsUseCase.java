@@ -8,9 +8,11 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.application.exception.ClientNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class GetClientAccountsUseCase {
 
     private final AccountRepositoryPort accountRepository;

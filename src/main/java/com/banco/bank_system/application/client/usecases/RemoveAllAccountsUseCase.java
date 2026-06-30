@@ -3,11 +3,13 @@ package com.banco.bank_system.application.client.usecases;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.application.exception.CannotRemoveAccountException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-class RemoveAllAccountsUseCase {
+@Service
+public class RemoveAllAccountsUseCase {
 
     private final AccountRepositoryPort accountRepository;
 

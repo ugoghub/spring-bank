@@ -1,9 +1,9 @@
 package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.enums.TransactionType;
+import com.banco.bank_system.domain.exception.InvalidTransactionException;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
-import com.banco.bank_system.domain.exception.InvalidTransactionException;
 import lombok.Getter;
 
 import java.time.Clock;
@@ -20,6 +20,24 @@ public class Transaction {
     private final AccountIdentity sourceIdentity;
     private final AccountIdentity destinationIdentity;
     private final LocalDateTime dateTime;
+
+    private Transaction(
+            UUID id,
+            UUID operationId,
+            TransactionType type,
+            Money amount,
+            AccountIdentity sourceIdentity,
+            AccountIdentity destinationIdentity,
+            LocalDateTime dateTime
+    ) {
+        this.id = id;
+        this.operationId = operationId;
+        this.sourceIdentity = sourceIdentity;
+        this.destinationIdentity = destinationIdentity;
+        this.type = type;
+        this.amount = amount;
+        this.dateTime = dateTime;
+    }
 
     private Transaction(UUID operationId,
                         TransactionType type,
@@ -43,6 +61,26 @@ public class Transaction {
         this.type = type;
         this.amount = amount;
         this.dateTime = LocalDateTime.now(clock);
+    }
+
+    public static Transaction restore(
+            UUID id,
+            UUID operationId,
+            TransactionType type,
+            Money amount,
+            AccountIdentity source,
+            AccountIdentity destination,
+            LocalDateTime dateTime
+    ) {
+        return new Transaction(
+                id,
+                operationId,
+                type,
+                amount,
+                source,
+                destination,
+                dateTime
+        );
     }
 
 
@@ -80,6 +118,34 @@ public class Transaction {
 
     public static Transaction interest(AccountIdentity accountIdentity, Money amount, Clock clock) {
         return new Transaction(null, TransactionType.INTEREST, amount, null, accountIdentity, clock);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getOperationId() {
+        return operationId;
+    }
+
+    public TransactionType getType() {
+        return type;
+    }
+
+    public Money getAmount() {
+        return amount;
+    }
+
+    public AccountIdentity getSourceIdentity() {
+        return sourceIdentity;
+    }
+
+    public AccountIdentity getDestinationIdentity() {
+        return destinationIdentity;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     // =========================

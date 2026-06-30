@@ -36,7 +36,11 @@ public class ClientEntity {
     private String name;
 
 
-    @Column(nullable = false, unique = true)
+    @Column(
+            name = "CPF",
+            nullable = false,
+            updatable = false
+    )
     private String cpf;
 
 

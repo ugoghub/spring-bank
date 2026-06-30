@@ -40,21 +40,24 @@ public class AccountEntity {
 
     @Column(
             name = "client_id",
-            nullable = false
+            nullable = false,
+            updatable = false
     )
     private UUID clientId;
 
 
     @Column(
             name = "account_number",
-            nullable = false
+            nullable = false,
+            updatable = false
     )
     private String accountNumber;
 
 
     @Column(
             name = "agency_number",
-            nullable = false
+            nullable = false,
+            updatable = false
     )
     private String branch;
 
@@ -73,7 +76,8 @@ public class AccountEntity {
 
     @Column(
             name = "created_at",
-            nullable = false
+            nullable = false,
+            updatable = false
     )
     private LocalDateTime createdAt;
 

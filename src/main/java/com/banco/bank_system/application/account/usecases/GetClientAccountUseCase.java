@@ -5,7 +5,9 @@ import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.application.exception.AccountNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GetClientAccountUseCase {
 
     private final AccountRepositoryPort accountRepository;

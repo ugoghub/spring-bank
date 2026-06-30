@@ -10,10 +10,12 @@ import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.application.exception.InvalidTransferException;
 import com.banco.bank_system.application.exception.ClientNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.util.UUID;
 
+@Service
 public class TransferUseCase {
 
     private final TransactionRepositoryPort transactionRepository;

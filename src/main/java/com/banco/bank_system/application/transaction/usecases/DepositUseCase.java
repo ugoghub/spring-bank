@@ -9,9 +9,11 @@ import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.application.exception.ClientNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 
+@Service
 public class DepositUseCase {
 
     private final TransactionRepositoryPort transactionRepository;
