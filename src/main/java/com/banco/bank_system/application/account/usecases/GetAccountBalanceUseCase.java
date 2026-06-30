@@ -1,5 +1,6 @@
 package com.banco.bank_system.application.account.usecases;
 
+import com.banco.bank_system.application.account.dto.GetBalanceOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
@@ -13,9 +14,11 @@ public class GetAccountBalanceUseCase {
         this.accountRepository = accountRepository;
     }
 
-    public Money execute(AccountIdentity accountIdentity) {
-        return accountRepository.getAccountByAccountIdentity(accountIdentity)
+    public GetBalanceOutput execute(AccountIdentity accountIdentity) {
+        Money money = accountRepository.getAccountByAccountIdentity(accountIdentity)
                 .map(Account::getBalance)
                 .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada para a identidade informada."));
+
+        return new GetBalanceOutput(money);
     }
 }

@@ -1,4 +1,6 @@
 package com.banco.bank_system.application.client.dto.output;
 
-public record ChangeClientNameOutput(String name) {
+import com.banco.bank_system.domain.valueobject.PersonName;
+
+public record ChangeClientNameOutput(PersonName name) {
 }

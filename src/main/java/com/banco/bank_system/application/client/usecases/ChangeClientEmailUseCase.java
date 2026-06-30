@@ -5,7 +5,9 @@ import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ChangeClientEmailUseCase {
 
     private final ClientRepositoryPort clientRepository;
@@ -26,7 +28,6 @@ public class ChangeClientEmailUseCase {
 
         clientRepository.save(client);
 
-        return new ChangeClientEmailOutput(
-                client.getName().value());
+        return new ChangeClientEmailOutput(client.getName());
     }
 }

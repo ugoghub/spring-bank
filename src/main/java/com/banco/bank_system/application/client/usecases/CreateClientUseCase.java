@@ -6,9 +6,11 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class CreateClientUseCase {
 
     private final ClientRepositoryPort clientRepository;
@@ -31,9 +33,9 @@ public class CreateClientUseCase {
 
         return new CreateClientOutput(
                 client.getId(),
-                client.getName().value(),
-                client.getCpf().value(),
-                client.getEmail().value()
+                client.getName(),
+                client.getCpf(),
+                client.getEmail()
         );
 
     }

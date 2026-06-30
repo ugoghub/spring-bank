@@ -1,6 +1,7 @@
 package com.banco.bank_system.application.transaction.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
+import com.banco.bank_system.application.transaction.dto.TransferOutput;
 import com.banco.bank_system.application.transaction.port.TransactionRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
@@ -22,7 +23,7 @@ public class TransferUseCase {
     }
 
     @Transactional
-    public void execute(
+    public TransferOutput execute(
             AccountIdentity fromAccountIdentity,
             AccountIdentity toAccountIdentity,
             Money value,
@@ -31,6 +32,7 @@ public class TransferUseCase {
         Account from = accountRepository
                 .getAccountByAccountIdentity(fromAccountIdentity)
                 .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
+
         Account to = accountRepository
                 .getAccountByAccountIdentity(toAccountIdentity)
                 .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
@@ -48,26 +50,38 @@ public class TransferUseCase {
 
         UUID operationId = UUID.randomUUID();
 
+        Transaction fromTransaction = Transaction.transferSent(
+                operationId,
+                from.getAccountIdentity(),
+                to.getAccountIdentity(),
+                value,
+                clock
+        );
+
+        Transaction toTransaction = Transaction.transferReceived(
+                operationId,
+                from.getAccountIdentity(),
+                to.getAccountIdentity(),
+                value,
+                clock
+        );
+
         transactionRepository.save(
                 from.getId(),
-                Transaction.transferSent(
-                        operationId,
-                        from.getAccountIdentity(),
-                        to.getAccountIdentity(),
-                        value,
-                        clock
-                )
+                fromTransaction
         );
 
         transactionRepository.save(
                 to.getId(),
-                Transaction.transferReceived(
-                        operationId,
-                        from.getAccountIdentity(),
-                        to.getAccountIdentity(),
-                        value,
-                        clock
-                )
+                toTransaction
+        );
+
+        return new TransferOutput(
+                operationId,
+                from.getAccountIdentity(),
+                to.getAccountIdentity(),
+                fromTransaction.getAmount(),
+                fromTransaction.getDateTime()
         );
     }
 }

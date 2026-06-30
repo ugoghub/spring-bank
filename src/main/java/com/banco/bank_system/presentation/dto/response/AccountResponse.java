@@ -1,11 +1,16 @@
 package com.banco.bank_system.presentation.dto.response;
 
+import com.banco.bank_system.domain.valueobject.AccountIdentity;
+
 public record AccountResponse(
         String branch,
-        String accountNumber,
-        String id,
-        String clientId,
-        String balance,
-        String creationTime
-){
+        String accountNumber
+) {
+
+    public static AccountResponse from(AccountIdentity accountIdentity) {
+        return new AccountResponse(
+                accountIdentity.branch(),
+                accountIdentity.accountNumber()
+        );
+    }
 }

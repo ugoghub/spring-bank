@@ -4,7 +4,9 @@ import com.banco.bank_system.application.client.dto.output.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GetClientDataUseCase {
 
     private final ClientRepositoryPort repository;
@@ -18,9 +20,9 @@ public class GetClientDataUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
         return new GetClientDataOutput(
-                client.getName().value(),
-                client.getCpf().value(),
-                client.getEmail().value()
+                client.getName(),
+                client.getCpf(),
+                client.getEmail()
         );
     }
 }

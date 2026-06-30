@@ -1,0 +1,30 @@
+package com.banco.bank_system.presentation.dto.response;
+
+import com.banco.bank_system.application.transaction.dto.WithdrawOutput;
+
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+public record WithdrawResponse(
+        String branch,
+        String accountNumber,
+        String depositedAmount,
+        String newBalance,
+        UUID transactionId,
+        String transactionDate
+) {
+
+    private static final DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    public static WithdrawResponse from(WithdrawOutput output){
+        return new WithdrawResponse(
+                output.account().branch(),
+                output.account().accountNumber(),
+                output.depositedAmount().value().toString(),
+                output.newBalance().value().toString(),
+                output.transactionId(),
+                output.transactionDate().format(formatter)
+        );
+    }
+}

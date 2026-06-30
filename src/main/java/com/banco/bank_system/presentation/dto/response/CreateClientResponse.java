@@ -14,9 +14,9 @@ public record CreateClientResponse(
     public static CreateClientResponse from(CreateClientOutput output) {
         return new CreateClientResponse(
                 output.id(),
-                output.name(),
-                output.cpf(),
-                output.email()
+                output.name().value(),
+                output.cpf().value(),
+                output.email().value()
         );
     }
 }

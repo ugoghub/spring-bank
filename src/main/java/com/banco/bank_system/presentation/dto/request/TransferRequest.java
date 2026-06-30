@@ -1,4 +1,8 @@
 package com.banco.bank_system.presentation.dto.request;
 
-public record TransferRequest(String branch, String accountNumber, String toBranch, String toAccountNumber, String value){
+public record TransferRequest(String fromBranch,
+                              String fromAccountNumber,
+                              String toBranch,
+                              String toAccountNumber,
+                              String amount){
 }

@@ -1,4 +1,4 @@
-package com.banco.bank_system.application.account.usecases;
+package com.banco.bank_system.application.client.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
@@ -18,7 +18,7 @@ class RemoveAllAccountsUseCase {
         List<Account> accounts = accountRepository.getAccountsByClient(clientId);
 
         for (Account account : accounts) {
-            if (!account.canBeRemoved()) { // Seu método rico do domínio!
+            if (!account.canBeRemoved()) {
                 throw new IllegalStateException(
                         "Não é possível remover as contas. A conta " +
                                 account.getAccountIdentity() + " possui saldo ativo."

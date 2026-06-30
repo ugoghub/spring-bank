@@ -6,7 +6,7 @@ public record ChangeNameResponse(String name){
 
     public static ChangeNameResponse from(ChangeClientNameOutput output) {
         return new ChangeNameResponse(
-                output.name()
+                output.name().value()
         );
     }
 }

@@ -1,29 +1,39 @@
 package com.banco.bank_system.application.account.usecases;
 
+import com.banco.bank_system.application.account.dto.CreateAccountOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
+import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
+import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.AccountIdentityFactory;
+import com.banco.bank_system.domain.valueobject.CPF;
 
 import java.time.Clock;
-
-import java.util.UUID;
 
 public class CreateAccountUseCase {
 
     private final AccountRepositoryPort accountRepository;
+    private final ClientRepositoryPort clientRepository;
     private final Clock clock;
 
 
-    public CreateAccountUseCase(AccountRepositoryPort accountRepository, Clock clock) {
+    public CreateAccountUseCase(AccountRepositoryPort accountRepository,
+                                ClientRepositoryPort clientRepository,
+                                Clock clock) {
         this.accountRepository = accountRepository;
+        this.clientRepository = clientRepository;
         this.clock = clock;
     }
 
-    public AccountIdentity execute(UUID clientId, AccountType type){
+    public CreateAccountOutput execute(CPF cpf, AccountType type){
+
+        Client client = clientRepository.getClientByCpf(cpf)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+
         AccountIdentity accountIdentity;
 
         do {
@@ -36,14 +46,14 @@ public class CreateAccountUseCase {
                 switch (type) {
                     case CHECKING ->
                             new CheckingAccount(
-                                    clientId,
+                                    client.getId(),
                                     accountIdentity,
                                     clock
                             );
 
                     case SAVINGS ->
                             new SavingsAccount(
-                                    clientId,
+                                    client.getId(),
                                     accountIdentity,
                                     clock
                             );
@@ -51,6 +61,12 @@ public class CreateAccountUseCase {
 
         accountRepository.save(account);
 
-        return account.getAccountIdentity();
+        return new CreateAccountOutput(
+                account.getId(),
+                account.getClientId(),
+                account.getAccountIdentity(),
+                account.getCreationTime(),
+                account.getBalance()
+        );
     }
 }

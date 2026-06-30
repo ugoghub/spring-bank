@@ -1,6 +1,7 @@
 package com.banco.bank_system.application.transaction.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
+import com.banco.bank_system.application.transaction.dto.DepositOutput;
 import com.banco.bank_system.application.transaction.port.TransactionRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
@@ -21,7 +22,7 @@ public class DepositUseCase {
     }
 
     @Transactional
-    public void execute(AccountIdentity accountIdentity, Money value, Clock clock){
+    public DepositOutput execute(AccountIdentity accountIdentity, Money value, Clock clock){
         Account account = accountRepository
                 .getAccountByAccountIdentity(accountIdentity)
                 .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
@@ -30,12 +31,22 @@ public class DepositUseCase {
 
         accountRepository.save(account);
 
+        Transaction deposit = Transaction.deposit(
+                account.getAccountIdentity(),
+                value,
+                clock
+        );
+
         transactionRepository.save(
                 account.getId(),
-                Transaction.deposit(
-                        account.getAccountIdentity(),
-                        value,
-                        clock
-                ));
+                deposit);
+
+        return new DepositOutput(
+                account.getAccountIdentity(),
+                deposit.getAmount(),
+                account.getBalance(),
+                deposit.getId(),
+                deposit.getDateTime()
+        );
     }
 }
