@@ -1,11 +1,11 @@
-package com.banco.bank_system.presentation.dto.response;
+package com.banco.bank_system.presentation.dto.response.account;
 
-import com.banco.bank_system.application.account.dto.CreateAccountOutput;
+import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
 
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-public record CreateAccountResponse(
+public record GetClientAccountResponse(
         UUID id,
         UUID clientId,
         String branch,
@@ -13,12 +13,11 @@ public record CreateAccountResponse(
         String createdAt,
         String balance
 ) {
-
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    public static CreateAccountResponse from(CreateAccountOutput output) {
-        return new CreateAccountResponse(
+    public static GetClientAccountResponse from(GetClientAccountOutput output) {
+        return new GetClientAccountResponse(
                 output.id(),
                 output.clientId(),
                 output.accountIdentity().branch(),

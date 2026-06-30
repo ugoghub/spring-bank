@@ -7,6 +7,7 @@ import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.application.exception.ClientNotFoundException;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class GetClientAccountsUseCase {
     public GetClientAccountsOutput execute(CPF cpf){
 
         Client client = clientRepository.getClientByCpf(cpf)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+                .orElseThrow(ClientNotFoundException::new);
 
         List<AccountIdentity> list = accountRepository
                 .getAccountsByClient(client.getId())

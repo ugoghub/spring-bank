@@ -11,6 +11,7 @@ import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.AccountIdentityFactory;
 import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.application.exception.ClientNotFoundException;
 
 import java.time.Clock;
 
@@ -32,7 +33,7 @@ public class CreateAccountUseCase {
     public CreateAccountOutput execute(CPF cpf, AccountType type){
 
         Client client = clientRepository.getClientByCpf(cpf)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+                .orElseThrow(ClientNotFoundException::new);
 
         AccountIdentity accountIdentity;
 

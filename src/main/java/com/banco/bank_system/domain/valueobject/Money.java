@@ -1,5 +1,7 @@
 package com.banco.bank_system.domain.valueobject;
 
+import com.banco.bank_system.domain.exception.InvalidMoneyException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -17,7 +19,7 @@ public final class Money implements Comparable<Money>{
     public static Money of(String amount) {
 
         if(amount == null){
-            throw new IllegalArgumentException(
+            throw new InvalidMoneyException(
                     "Valor não pode ser null"
             );
         }
@@ -28,7 +30,7 @@ public final class Money implements Comparable<Money>{
             );
 
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
+            throw new InvalidMoneyException(
                     "Valor inválido"
             );
         }
@@ -37,7 +39,7 @@ public final class Money implements Comparable<Money>{
     public static Money of(BigDecimal amount) {
 
         if(amount == null){
-            throw new IllegalArgumentException(
+            throw new InvalidMoneyException(
                     "Valor não pode ser null"
             );
         }
@@ -112,7 +114,7 @@ public final class Money implements Comparable<Money>{
 
     private static void validateNonNull(Object obj){
         if(obj == null){
-            throw new IllegalArgumentException("Valor não pode ser null");
+            throw new InvalidMoneyException("Valor não pode ser null");
         }
     }
 }

@@ -5,6 +5,7 @@ import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
+import com.banco.bank_system.application.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,9 +21,8 @@ public class ChangeClientEmailUseCase {
             CPF cpf,
             Email newEmail
     ){
-        Client client =
-                clientRepository.getClientByCpf(cpf)
-                        .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+        Client client = clientRepository.getClientByCpf(cpf)
+                        .orElseThrow(ClientNotFoundException::new);
 
         client.changeEmail(newEmail);
 

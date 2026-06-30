@@ -7,6 +7,7 @@ import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.application.exception.ClientNotFoundException;
 import jakarta.transaction.Transactional;
 
 import java.time.Clock;
@@ -25,7 +26,7 @@ public class WithdrawUseCase {
     public WithdrawOutput execute(AccountIdentity accountIdentity, Money value, Clock clock){
         Account account = accountRepository
                 .getAccountByAccountIdentity(accountIdentity)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
+                .orElseThrow(ClientNotFoundException::new);
 
         account.withdraw(value);
 

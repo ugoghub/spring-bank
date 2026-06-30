@@ -1,4 +1,4 @@
-package com.banco.bank_system.presentation.dto.request;
+package com.banco.bank_system.presentation.dto.request.transactions;
 
 public record TransferRequest(String fromBranch,
                               String fromAccountNumber,

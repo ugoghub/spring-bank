@@ -5,6 +5,7 @@ import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.PersonName;
+import com.banco.bank_system.application.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +23,7 @@ public class ChangeClientNameUseCase {
     ){
         Client client =
                 clientRepository.getClientByCpf(cpf)
-                        .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+                        .orElseThrow(ClientNotFoundException::new);
 
         client.changeName(newName);
 

@@ -3,6 +3,7 @@ package com.banco.bank_system.domain.entities;
 import com.banco.bank_system.domain.enums.TransactionType;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.exception.InvalidTransactionException;
 import lombok.Getter;
 
 import java.time.Clock;
@@ -92,7 +93,7 @@ public class Transaction {
         //validação defensiva
 
         if(type == null){
-            throw new IllegalArgumentException(
+            throw new InvalidTransactionException(
                     "Tipo de transação inválido"
             );
         }
@@ -112,14 +113,14 @@ public class Transaction {
     private static void validateDeposit(AccountIdentity sourceIdentity,
                                         AccountIdentity destinationIdentity) {
         if (sourceIdentity != null || destinationIdentity == null) {
-            throw new IllegalArgumentException("DEPÓSITO não deve possuir conta de origem");
+            throw new InvalidTransactionException("DEPÓSITO não deve possuir conta de origem");
         }
     }
 
     private static void validateWithdraw(AccountIdentity sourceIdentity,
                                          AccountIdentity destinationIdentity) {
         if (sourceIdentity == null || destinationIdentity != null) {
-            throw new IllegalArgumentException("SAQUE não deve possuir conta de destino");
+            throw new InvalidTransactionException("SAQUE não deve possuir conta de destino");
         }
     }
 
@@ -127,10 +128,10 @@ public class Transaction {
                                          AccountIdentity sourceIdentity,
                                          AccountIdentity destinationIdentity) {
         if (operationId == null){
-            throw new IllegalArgumentException("Toda transferência deve possuir um ID de operação");
+            throw new InvalidTransactionException("Toda transferência deve possuir um ID de operação");
         }
         if (sourceIdentity == null || destinationIdentity == null) {
-            throw new IllegalArgumentException("Transferência não deve possuir origem e/ou destino nulls");
+            throw new InvalidTransactionException("Transferência não deve possuir origem e/ou destino nulls");
         }
     }
 
@@ -138,7 +139,7 @@ public class Transaction {
                                          AccountIdentity destinationIdentity) {
 
         if (sourceIdentity != null || destinationIdentity == null) {
-            throw new IllegalArgumentException(
+            throw new InvalidTransactionException(
                     "RENDIMENTO deve possuir apenas conta destino"
             );
         }
@@ -147,11 +148,11 @@ public class Transaction {
     private static void validateAmount(Money amount) {
 
         if(amount == null){
-            throw new IllegalArgumentException("Valor não pode ser null");
+            throw new InvalidTransactionException("Valor não pode ser null");
         }
 
         if (amount.isNegativeOrZero()) {
-            throw new IllegalArgumentException(
+            throw new InvalidTransactionException(
                     "Valor deve ser maior que zero"
             );
         }

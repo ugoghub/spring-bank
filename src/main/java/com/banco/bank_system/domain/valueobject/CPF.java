@@ -1,5 +1,7 @@
 package com.banco.bank_system.domain.valueobject;
 
+import com.banco.bank_system.domain.exception.InvalidCpfException;
+
 public record CPF(String value) {
 
     public CPF {
@@ -10,13 +12,13 @@ public record CPF(String value) {
 
         if (!value.matches("\\d{11}") &&
                 !value.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
-            throw new IllegalArgumentException("CPF inválido");
+            throw new InvalidCpfException("CPF inválido");
         }
 
         value = value.replaceAll("[.-]", "");
 
         if (!isValidCpf(value)) {
-            throw new IllegalArgumentException("CPF inválido");
+            throw new InvalidCpfException("CPF inválido");
         }
 
     }

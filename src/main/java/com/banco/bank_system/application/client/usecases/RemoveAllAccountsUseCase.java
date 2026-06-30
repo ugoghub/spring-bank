@@ -2,6 +2,8 @@ package com.banco.bank_system.application.client.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
+import com.banco.bank_system.application.exception.CannotRemoveAccountException;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +21,7 @@ class RemoveAllAccountsUseCase {
 
         for (Account account : accounts) {
             if (!account.canBeRemoved()) {
-                throw new IllegalStateException(
+                throw new CannotRemoveAccountException(
                         "Não é possível remover as contas. A conta " +
                                 account.getAccountIdentity() + " possui saldo ativo."
                 );

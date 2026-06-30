@@ -4,6 +4,7 @@ import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.application.exception.AccountNotFoundException;
 
 public class GetClientAccountUseCase {
 
@@ -17,10 +18,14 @@ public class GetClientAccountUseCase {
     public GetClientAccountOutput execute(AccountIdentity accountIdentity){
 
         Account account = accountRepository.getAccountByAccountIdentity(accountIdentity)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
+                .orElseThrow(AccountNotFoundException::new);
 
         return new GetClientAccountOutput(
-                account.getAccountIdentity()
+              account.getId(),
+                account.getClientId(),
+                account.getAccountIdentity(),
+                account.getCreationTime(),
+                account.getBalance()
         );
     }
 }

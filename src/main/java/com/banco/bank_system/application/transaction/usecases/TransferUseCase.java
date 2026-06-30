@@ -7,6 +7,8 @@ import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.application.exception.InvalidTransferException;
+import com.banco.bank_system.application.exception.ClientNotFoundException;
 import jakarta.transaction.Transactional;
 
 import java.time.Clock;
@@ -31,14 +33,14 @@ public class TransferUseCase {
     ){
         Account from = accountRepository
                 .getAccountByAccountIdentity(fromAccountIdentity)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
+                .orElseThrow(ClientNotFoundException::new);
 
         Account to = accountRepository
                 .getAccountByAccountIdentity(toAccountIdentity)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
+                .orElseThrow(ClientNotFoundException::new);
 
         if (from.equals(to)) {
-            throw new IllegalArgumentException("Não é possível transferir para a mesma conta");
+            throw new InvalidTransferException("Não é possível transferir para a mesma conta");
         }
 
         from.withdraw(value);

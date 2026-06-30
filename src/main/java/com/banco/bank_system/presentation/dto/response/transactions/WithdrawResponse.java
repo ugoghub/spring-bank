@@ -1,4 +1,4 @@
-package com.banco.bank_system.presentation.dto.response;
+package com.banco.bank_system.presentation.dto.response.transactions;
 
 import com.banco.bank_system.application.transaction.dto.WithdrawOutput;
 

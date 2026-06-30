@@ -1,22 +1,24 @@
 package com.banco.bank_system.domain.valueobject;
 
+import com.banco.bank_system.domain.exception.InvalidAccountIdentityException;
+
 public record AccountIdentity(String branch, String accountNumber) {
 
     public AccountIdentity {
 
         if (branch == null) {
-            throw new IllegalArgumentException("Agência inválida");
+            throw new InvalidAccountIdentityException("Agência inválida");
         }
 
         if (accountNumber == null) {
-            throw new IllegalArgumentException("Número da conta inválido");
+            throw new InvalidAccountIdentityException("Número da conta inválido");
         }
 
         branch = branch.trim();
         accountNumber = accountNumber.trim();
 
         if (branch.isBlank() || !branch.matches("\\d{2}")) {
-            throw new IllegalArgumentException("Agência inválida");
+            throw new InvalidAccountIdentityException("Agência inválida");
         }
 
         String digits = accountNumber.replace("-", "");
@@ -24,7 +26,7 @@ public record AccountIdentity(String branch, String accountNumber) {
         if (!accountNumber.matches("\\d{6}-\\d")
                 || !isValidDigit(digits)) {
 
-            throw new IllegalArgumentException("Número da conta inválido");
+            throw new InvalidAccountIdentityException("Número da conta inválido");
         }
     }
 

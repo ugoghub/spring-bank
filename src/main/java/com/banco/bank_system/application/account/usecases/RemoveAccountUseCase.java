@@ -3,6 +3,8 @@ package com.banco.bank_system.application.account.usecases;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.application.exception.CannotRemoveAccountException;
+import com.banco.bank_system.application.exception.AccountNotFoundException;
 
 public class RemoveAccountUseCase {
 
@@ -16,10 +18,12 @@ public class RemoveAccountUseCase {
 
         Account account = accountRepository.
                 getAccountByAccountIdentity(accountIdentity)
-                .orElseThrow(() -> new IllegalArgumentException("accountidentity invalida"));
+                .orElseThrow(AccountNotFoundException::new);
 
         if (!account.canBeRemoved()) {
-            throw new IllegalArgumentException("Conta não pode ser excluída com saldo diferente de zero");
+            throw new CannotRemoveAccountException(
+                    "Conta não pode ser excluída com saldo diferente de zero"
+            );
         }
 
         accountRepository.removeAccount(account.getId());

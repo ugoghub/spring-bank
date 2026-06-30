@@ -5,6 +5,7 @@ import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.application.exception.AccountNotFoundException;
 
 public class GetAccountBalanceUseCase {
 
@@ -17,7 +18,7 @@ public class GetAccountBalanceUseCase {
     public GetBalanceOutput execute(AccountIdentity accountIdentity) {
         Money money = accountRepository.getAccountByAccountIdentity(accountIdentity)
                 .map(Account::getBalance)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada para a identidade informada."));
+                .orElseThrow(AccountNotFoundException::new);
 
         return new GetBalanceOutput(money);
     }

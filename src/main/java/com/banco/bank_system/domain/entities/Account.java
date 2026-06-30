@@ -2,6 +2,9 @@ package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.exception.InsufficientBalanceException;
+import com.banco.bank_system.domain.exception.InvalidAccountIdentityException;
+import com.banco.bank_system.domain.exception.InvalidMoneyException;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -32,11 +35,11 @@ public abstract class Account {
         }
 
         if(accountIdentity == null){
-            throw new IllegalArgumentException("Conta inválida");
+            throw new InvalidAccountIdentityException("identidade da conta inválida");
         }
 
         if(balance == null){
-            throw new IllegalArgumentException("Saldo inválido");
+            throw new InvalidMoneyException("Saldo inválido");
         }
 
         if(creationTime == null){
@@ -78,7 +81,7 @@ public abstract class Account {
         Money newBalance = balance.subtract(amount);
 
         if (newBalance.compareTo(minimumAllowedBalance()) < 0) {
-            throw new IllegalArgumentException(
+            throw new InsufficientBalanceException(
                     "Saldo insuficiente"
             );
         }
@@ -89,13 +92,13 @@ public abstract class Account {
     private void validatePositiveAmount(Money amount) {
 
         if(amount == null){
-            throw new IllegalArgumentException(
+            throw new InvalidMoneyException(
                     "Valor não pode ser null"
             );
         }
 
         if (amount.isNegativeOrZero()) {
-            throw new IllegalArgumentException(
+            throw new InvalidMoneyException(
                     "Valor deve ser maior que zero"
             );
         }

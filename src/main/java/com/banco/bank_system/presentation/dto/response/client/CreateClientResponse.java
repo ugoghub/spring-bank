@@ -1,4 +1,4 @@
-package com.banco.bank_system.presentation.dto.response;
+package com.banco.bank_system.presentation.dto.response.client;
 
 import com.banco.bank_system.application.client.dto.output.CreateClientOutput;
 

@@ -6,6 +6,8 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
+import com.banco.bank_system.application.exception.CpfAlreadyExistsException;
+import com.banco.bank_system.application.exception.EmailAlreadyExistsException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -43,7 +45,7 @@ public class CreateClientUseCase {
     private void validateCpfUniqueness(CPF cpf) {
 
         if (clientRepository.existsByCpf(cpf)) {
-            throw new IllegalArgumentException(
+            throw new CpfAlreadyExistsException(
                     "CPF já cadastrado"
             );
         }
@@ -52,7 +54,7 @@ public class CreateClientUseCase {
     private void validateEmailUniqueness(Email email) {
 
         if (clientRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException(
+            throw new EmailAlreadyExistsException(
                     "Email já cadastrado"
             );
         }

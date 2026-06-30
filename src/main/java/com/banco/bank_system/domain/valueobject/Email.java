@@ -1,5 +1,7 @@
 package com.banco.bank_system.domain.valueobject;
 
+import com.banco.bank_system.domain.exception.InvalidEmailException;
+
 import java.util.regex.Pattern;
 
 public record Email(String value) {
@@ -12,7 +14,7 @@ public record Email(String value) {
     public Email {
 
         if (value == null) {
-            throw new IllegalArgumentException("Email não pode ser null");
+            throw new InvalidEmailException("Email não pode ser null");
         }
 
         value = value
@@ -20,7 +22,7 @@ public record Email(String value) {
                 .toLowerCase();
 
         if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("Email inválido");
+            throw new InvalidEmailException("Email inválido");
         }
     }
 }

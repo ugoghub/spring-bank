@@ -3,7 +3,10 @@ package com.banco.bank_system.domain.entities;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
-import lombok.Getter;
+import com.banco.bank_system.domain.exception.InvalidClientChangeException;
+import com.banco.bank_system.domain.exception.InvalidCpfException;
+import com.banco.bank_system.domain.exception.InvalidEmailException;
+import com.banco.bank_system.domain.exception.InvalidPersonNameException;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -26,15 +29,15 @@ public class Client {
         }
 
         if(name == null){
-            throw new IllegalArgumentException("Nome inválido");
+            throw new InvalidPersonNameException("Nome inválido");
         }
 
         if(cpf == null){
-            throw new IllegalArgumentException("CPF inválido");
+            throw new InvalidCpfException("CPF inválido");
         }
 
         if(email == null){
-            throw new IllegalArgumentException("Email inválido");
+            throw new InvalidEmailException("Email inválido");
         }
 
         this.id = id;
@@ -50,13 +53,13 @@ public class Client {
     public void changeName(PersonName newName) {
 
         if(newName == null){
-            throw new IllegalArgumentException(
+            throw new InvalidClientChangeException(
                     "Nome não pode ser null"
             );
         }
 
         if(this.name.equals(newName)){
-            throw new IllegalArgumentException(
+            throw new InvalidClientChangeException(
                     "Novo nome igual ao atual"
             );
         }
@@ -68,14 +71,14 @@ public class Client {
     public void changeEmail(Email newEmail) {
 
         if(newEmail == null){
-            throw new IllegalArgumentException(
+            throw new InvalidClientChangeException(
                     "Email não pode ser null"
             );
         }
 
 
         if(this.email.equals(newEmail)){
-            throw new IllegalArgumentException(
+            throw new InvalidClientChangeException(
                     "Novo email igual ao atual"
             );
         }
