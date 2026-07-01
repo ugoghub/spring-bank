@@ -6,7 +6,7 @@ import com.banco.bank_system.domain.valueobject.Money;
 import java.time.LocalDateTime;
 import java.util.UUID;
 public record WithdrawOutput(
-        AccountIdentity account,
+        UUID account,
         Money depositedAmount,
         Money newBalance,
         UUID transactionId,

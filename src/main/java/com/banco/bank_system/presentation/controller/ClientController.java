@@ -42,21 +42,6 @@ public class ClientController {
         this.removeClientUseCase = removeClientUseCase;
     }
 
-    @GetMapping(path = "/{cpf}")
-    public ResponseEntity<ClientDataResponse> clientData(
-            @PathVariable String cpf
-    ) {
-
-        GetClientDataOutput output = getClientDataUseCase.execute(
-                new CPF(cpf)
-        );
-
-
-        return ResponseEntity.ok(
-                ClientDataResponse.from(output)
-        );
-    }
-
     @PostMapping
     public ResponseEntity<CreateClientResponse> createClient(
             @RequestBody CreateClientRequest client
@@ -70,6 +55,21 @@ public class ClientController {
 
         return ResponseEntity.ok(
                 CreateClientResponse.from(output)
+        );
+    }
+
+    @GetMapping(path = "/{cpf}")
+    public ResponseEntity<ClientDataResponse> clientData(
+            @PathVariable String cpf
+    ) {
+
+        GetClientDataOutput output = getClientDataUseCase.execute(
+                new CPF(cpf)
+        );
+
+
+        return ResponseEntity.ok(
+                ClientDataResponse.from(output)
         );
     }
 

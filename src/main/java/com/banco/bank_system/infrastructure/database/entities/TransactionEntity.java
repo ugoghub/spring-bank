@@ -2,7 +2,6 @@ package com.banco.bank_system.infrastructure.database.entities;
 
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.enums.TransactionType;
-import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,6 +24,9 @@ public class TransactionEntity {
     @Column(name = "operation_id")
     private UUID operationId;
 
+    @Column(name = "accountId")
+    private UUID accountId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)
     private TransactionType type;
@@ -32,17 +34,11 @@ public class TransactionEntity {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "source_account_number")
-    private String sourceAccountNumber;
+    @Column(name = "source")
+    private UUID source;
 
-    @Column(name = "source_branch")
-    private String sourceBranch;
-
-    @Column(name = "destination_account_number")
-    private String destinationAccountNumber;
-
-    @Column(name = "destination_branch")
-    private String destinationBranch;
+    @Column(name = "destination")
+    private UUID destination;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -50,22 +46,20 @@ public class TransactionEntity {
     public TransactionEntity(
             UUID id,
             UUID operationId,
+            UUID accountId,
             TransactionType type,
             BigDecimal amount,
-            String sourceAccountNumber,
-            String sourceBranch,
-            String destinationAccountNumber,
-            String destinationBranch,
+            UUID source,
+            UUID destination,
             LocalDateTime createdAt
     ) {
         this.id = id;
         this.operationId = operationId;
+        this.accountId = accountId;
         this.type = type;
         this.amount = amount;
-        this.sourceAccountNumber = sourceAccountNumber;
-        this.sourceBranch = sourceBranch;
-        this.destinationAccountNumber = destinationAccountNumber;
-        this.destinationBranch = destinationBranch;
+        this.source = source;
+        this.destination = destination;
         this.createdAt = createdAt;
     }
 
@@ -74,23 +68,16 @@ public class TransactionEntity {
         return new TransactionEntity(
                 transaction.getId(),
                 transaction.getOperationId(),
+                transaction.getAccountId(),
                 transaction.getType(),
                 transaction.getAmount().value(),
 
-                transaction.getSourceIdentity() != null
-                        ? transaction.getSourceIdentity().accountNumber()
+                transaction.getSource() != null
+                        ? transaction.getSource()
                         : null,
 
-                transaction.getSourceIdentity() != null
-                        ? transaction.getSourceIdentity().branch()
-                        : null,
-
-                transaction.getDestinationIdentity() != null
-                        ? transaction.getDestinationIdentity().accountNumber()
-                        : null,
-
-                transaction.getDestinationIdentity() != null
-                        ? transaction.getDestinationIdentity().branch()
+                transaction.getDestination() != null
+                        ? transaction.getDestination()
                         : null,
 
                 transaction.getDateTime()
@@ -99,19 +86,10 @@ public class TransactionEntity {
 
     public Transaction toDomain() {
 
-        AccountIdentity source =
-                sourceAccountNumber == null
-                        ? null
-                        : new AccountIdentity(sourceBranch, sourceAccountNumber);
-
-        AccountIdentity destination =
-                destinationAccountNumber == null
-                        ? null
-                        : new AccountIdentity(destinationBranch, destinationAccountNumber);
-
         return Transaction.restore(
                 id,
                 operationId,
+                accountId,
                 type,
                 Money.of(amount),
                 source,

@@ -2,7 +2,9 @@ package com.banco.bank_system.presentation.dto.response.account;
 
 import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
 
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 
 public record GetClientAccountResponse(
@@ -16,6 +18,11 @@ public record GetClientAccountResponse(
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+    private static final NumberFormat FORMAT =
+            NumberFormat.getCurrencyInstance(
+                    Locale.of("pt", "BR")
+            );
+
     public static GetClientAccountResponse from(GetClientAccountOutput output) {
         return new GetClientAccountResponse(
                 output.id(),
@@ -23,7 +30,7 @@ public record GetClientAccountResponse(
                 output.accountIdentity().branch(),
                 output.accountIdentity().accountNumber(),
                 output.creationTime().format(formatter),
-                output.balance().toString()
+                FORMAT.format(output.balance().value())
         );
     }
 }

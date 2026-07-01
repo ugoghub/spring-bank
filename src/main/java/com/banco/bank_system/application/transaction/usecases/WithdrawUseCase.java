@@ -35,18 +35,15 @@ public class WithdrawUseCase {
         accountRepository.save(account);
 
         Transaction withdraw = Transaction.withdraw(
-                account.getAccountIdentity(),
+                account.getId(),
                 value,
                 clock
         );
 
-        transactionRepository.save(
-                account.getId(),
-                withdraw
-        );
+        transactionRepository.save(withdraw);
 
         return new WithdrawOutput(
-                account.getAccountIdentity(),
+                account.getId(),
                 withdraw.getAmount(),
                 account.getBalance(),
                 withdraw.getId(),

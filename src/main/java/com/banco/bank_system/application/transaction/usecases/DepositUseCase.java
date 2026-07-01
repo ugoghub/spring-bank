@@ -35,17 +35,15 @@ public class DepositUseCase {
         accountRepository.save(account);
 
         Transaction deposit = Transaction.deposit(
-                account.getAccountIdentity(),
+                account.getId(),
                 value,
                 clock
         );
 
-        transactionRepository.save(
-                account.getId(),
-                deposit);
+        transactionRepository.save(deposit);
 
         return new DepositOutput(
-                account.getAccountIdentity(),
+                account.getId(),
                 deposit.getAmount(),
                 account.getBalance(),
                 deposit.getId(),

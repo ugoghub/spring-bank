@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public final class Money implements Comparable<Money>{
-    public static final Money ZERO = Money.of("0");
+    public static final Money ZERO = Money.of(BigDecimal.ZERO);
 
     private final BigDecimal value;
 

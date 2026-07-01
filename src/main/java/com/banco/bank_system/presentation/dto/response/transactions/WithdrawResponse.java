@@ -6,8 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public record WithdrawResponse(
-        String branch,
-        String accountNumber,
+        UUID id,
         String depositedAmount,
         String newBalance,
         UUID transactionId,
@@ -19,8 +18,7 @@ public record WithdrawResponse(
 
     public static WithdrawResponse from(WithdrawOutput output){
         return new WithdrawResponse(
-                output.account().branch(),
-                output.account().accountNumber(),
+                output.account(),
                 output.depositedAmount().value().toString(),
                 output.newBalance().value().toString(),
                 output.transactionId(),

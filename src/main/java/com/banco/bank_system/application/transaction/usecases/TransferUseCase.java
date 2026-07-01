@@ -1,6 +1,7 @@
 package com.banco.bank_system.application.transaction.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
+import com.banco.bank_system.application.exception.AccountNotFoundException;
 import com.banco.bank_system.application.transaction.dto.TransferOutput;
 import com.banco.bank_system.application.transaction.port.TransactionRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
@@ -35,11 +36,11 @@ public class TransferUseCase {
     ){
         Account from = accountRepository
                 .getAccountByAccountIdentity(fromAccountIdentity)
-                .orElseThrow(ClientNotFoundException::new);
+                .orElseThrow(AccountNotFoundException::new);
 
         Account to = accountRepository
                 .getAccountByAccountIdentity(toAccountIdentity)
-                .orElseThrow(ClientNotFoundException::new);
+                .orElseThrow(AccountNotFoundException::new);
 
         if (from.equals(to)) {
             throw new InvalidTransferException("Não é possível transferir para a mesma conta");
@@ -56,34 +57,32 @@ public class TransferUseCase {
 
         Transaction fromTransaction = Transaction.transferSent(
                 operationId,
-                from.getAccountIdentity(),
-                to.getAccountIdentity(),
+                from.getId(),
+                to.getId(),
                 value,
                 clock
         );
 
         Transaction toTransaction = Transaction.transferReceived(
                 operationId,
-                from.getAccountIdentity(),
-                to.getAccountIdentity(),
+                from.getId(),
+                to.getId(),
                 value,
                 clock
         );
 
         transactionRepository.save(
-                from.getId(),
                 fromTransaction
         );
 
         transactionRepository.save(
-                to.getId(),
                 toTransaction
         );
 
         return new TransferOutput(
                 operationId,
-                from.getAccountIdentity(),
-                to.getAccountIdentity(),
+                from.getId(),
+                to.getId(),
                 fromTransaction.getAmount(),
                 fromTransaction.getDateTime()
         );

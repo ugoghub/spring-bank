@@ -6,10 +6,8 @@ import java.time.format.DateTimeFormatter;
 
 public record TransferResponse(
         String operationId,
-        String sourceBranch,
-        String sourceAccountNumber,
-        String destinationBranch,
-        String destinationAccountNumber,
+        String source,
+        String destination,
         String amount,
         String transactionDate
 ) {
@@ -20,10 +18,8 @@ public record TransferResponse(
     public static TransferResponse from(TransferOutput output){
         return new TransferResponse(
                 output.operationId().toString(),
-                output.source().branch(),
-                output.source().accountNumber(),
-                output.destination().branch(),
-                output.destination().accountNumber(),
+                output.source().toString(),
+                output.destination().toString(),
                 output.amount().value().toString(),
                 output.transactionDate().format(formatter)
         );

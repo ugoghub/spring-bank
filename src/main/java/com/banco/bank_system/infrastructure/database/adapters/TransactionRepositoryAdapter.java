@@ -6,6 +6,7 @@ import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
 import com.banco.bank_system.infrastructure.database.sql.SpringDataTransactionRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -18,9 +19,18 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
     }
 
     @Override
-    public void save(UUID uuid, Transaction transaction) {
+    public void save(Transaction transaction) {
+
         TransactionEntity transactionEntity = TransactionEntity.fromDomain(transaction);
 
         repository.save(transactionEntity);
+    }
+
+    @Override
+    public List<Transaction> findByAccountId(UUID clientId) {
+        return repository.findByAccountId(clientId)
+                .stream()
+                .map(TransactionEntity::toDomain)
+                .toList();
     }
 }

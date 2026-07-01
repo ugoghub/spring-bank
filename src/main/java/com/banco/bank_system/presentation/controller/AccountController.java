@@ -83,7 +83,7 @@ public class AccountController {
     }
 
     @GetMapping("/{branch}/{accountNumber}")
-    public ResponseEntity<GetClientAccountResponse> getAccounts(
+    public ResponseEntity<GetClientAccountResponse> getAccount(
             @PathVariable String branch,
             @PathVariable String accountNumber
     ){
