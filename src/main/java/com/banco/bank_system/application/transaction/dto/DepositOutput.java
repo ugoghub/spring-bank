@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record DepositOutput(
-        UUID account,
+        UUID accountId,
         Money depositedAmount,
         Money newBalance,
         UUID transactionId,

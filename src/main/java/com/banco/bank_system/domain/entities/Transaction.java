@@ -3,14 +3,12 @@ package com.banco.bank_system.domain.entities;
 import com.banco.bank_system.domain.enums.TransactionType;
 import com.banco.bank_system.domain.exception.InvalidTransactionException;
 import com.banco.bank_system.domain.valueobject.Money;
-import lombok.Getter;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-@Getter
 public class Transaction {
     private final UUID id;
     private final UUID operationId;
@@ -73,18 +71,22 @@ public class Transaction {
             UUID accountId,
             TransactionType type,
             Money amount,
-            UUID source,
-            UUID destination,
+            UUID sourceId,
+            UUID destinationId,
             LocalDateTime dateTime
     ) {
+        validateTransactionState(operationId, type, sourceId, destinationId);
+
+        validateAmount(amount);
+
         return new Transaction(
                 id,
                 operationId,
                 accountId,
                 type,
                 amount,
-                source,
-                destination,
+                sourceId,
+                destinationId,
                 dateTime
         );
     }
@@ -130,6 +132,10 @@ public class Transaction {
 
     public UUID getId() {
         return id;
+    }
+
+    public UUID getAccountId() {
+        return accountId;
     }
 
     public UUID getOperationId() {

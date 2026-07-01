@@ -1,9 +1,10 @@
 package com.banco.bank_system.application.client.usecases;
 
-import com.banco.bank_system.application.client.dto.output.CreateClientOutput;
+import com.banco.bank_system.application.client.dto.CreateClientOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
 import com.banco.bank_system.application.exception.CpfAlreadyExistsException;
@@ -29,7 +30,7 @@ public class CreateClientUseCase {
         validateCpfUniqueness(cpf);
         validateEmailUniqueness(email);
 
-        Client client = new Client(UUID.randomUUID(), name, cpf, email);
+        Client client = Client.create(name, cpf, email);
 
         clientRepository.save(client);
 

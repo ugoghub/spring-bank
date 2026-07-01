@@ -2,6 +2,7 @@ package com.banco.bank_system.application.account.usecases;
 
 import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
+import com.banco.bank_system.application.account.util.AccountFinder;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.application.exception.AccountNotFoundException;
@@ -10,20 +11,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class GetClientAccountUseCase {
 
-    private final AccountRepositoryPort accountRepository;
+    private final AccountFinder accountFinder;
 
-
-    public GetClientAccountUseCase(AccountRepositoryPort accountRepository) {
-        this.accountRepository = accountRepository;
+    public GetClientAccountUseCase(AccountFinder accountFinder) {
+        this.accountFinder = accountFinder;
     }
 
-    public GetClientAccountOutput execute(AccountIdentity accountIdentity){
+    public GetClientAccountOutput execute(AccountIdentity accountIdentity) {
 
-        Account account = accountRepository.getAccountByAccountIdentity(accountIdentity)
-                .orElseThrow(AccountNotFoundException::new);
+        Account account = accountFinder.byIdentity(accountIdentity);
 
         return new GetClientAccountOutput(
-              account.getId(),
+                account.getId(),
                 account.getClientId(),
                 account.getAccountIdentity(),
                 account.getCreationTime(),

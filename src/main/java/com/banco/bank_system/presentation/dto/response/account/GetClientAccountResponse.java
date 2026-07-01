@@ -26,7 +26,7 @@ public record GetClientAccountResponse(
     public static GetClientAccountResponse from(GetClientAccountOutput output) {
         return new GetClientAccountResponse(
                 output.id(),
-                output.clientId(),
+                output.clientId().id(),
                 output.accountIdentity().branch(),
                 output.accountIdentity().accountNumber(),
                 output.creationTime().format(formatter),

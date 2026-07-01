@@ -1,8 +1,8 @@
 package com.banco.bank_system.infrastructure.database.entities;
 
-
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
 import jakarta.persistence.*;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 
 import java.util.UUID;
-
 
 @Entity
 @Table(name = "tb_clients")
@@ -59,41 +58,23 @@ public class ClientEntity {
 
     }
 
-
-
     public Client toDomain(){
 
-        return new Client(
-
-                id,
-
+        return Client.restore(
+                new ClientId(id),
                 new PersonName(name),
-
                 new CPF(cpf),
-
                 new Email(email)
-
         );
-
     }
-
-
 
     public static ClientEntity fromDomain(Client client){
 
-
         return new ClientEntity(
-
-                client.getId(),
-
+                client.getId().id(),
                 client.getName().value(),
-
                 client.getCpf().value(),
-
                 client.getEmail().value()
-
         );
-
     }
-
 }

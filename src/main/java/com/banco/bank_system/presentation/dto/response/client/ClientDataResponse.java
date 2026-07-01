@@ -1,6 +1,6 @@
 package com.banco.bank_system.presentation.dto.response.client;
 
-import com.banco.bank_system.application.client.dto.output.GetClientDataOutput;
+import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 
 public record ClientDataResponse(
         String name,

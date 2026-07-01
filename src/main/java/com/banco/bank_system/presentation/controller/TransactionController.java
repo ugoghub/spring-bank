@@ -2,7 +2,7 @@ package com.banco.bank_system.presentation.controller;
 
 
 import com.banco.bank_system.application.transaction.dto.DepositOutput;
-import com.banco.bank_system.application.transaction.dto.GetTransactionsOutput;
+import com.banco.bank_system.application.transaction.dto.TransactionDTO;
 import com.banco.bank_system.application.transaction.dto.TransferOutput;
 import com.banco.bank_system.application.transaction.dto.WithdrawOutput;
 import com.banco.bank_system.application.transaction.usecases.DepositUseCase;
@@ -14,11 +14,13 @@ import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.presentation.dto.request.transactions.DepositRequest;
 import com.banco.bank_system.presentation.dto.request.transactions.TransferRequest;
 import com.banco.bank_system.presentation.dto.request.transactions.WithdrawRequest;
-import com.banco.bank_system.presentation.dto.response.transactions.*;
+import com.banco.bank_system.presentation.dto.response.transactions.DepositResponse;
+import com.banco.bank_system.presentation.dto.response.transactions.TransactionResponse;
+import com.banco.bank_system.presentation.dto.response.transactions.TransferResponse;
+import com.banco.bank_system.presentation.dto.response.transactions.WithdrawResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Clock;
 import java.util.List;
 
 @RestController
@@ -30,21 +32,16 @@ public class TransactionController {
     private final TransferUseCase transferUseCase;
     private final GetTransactionsUseCase getAccountTransactionsUseCase;
 
-    private final Clock clock;
-
     public TransactionController(
             DepositUseCase depositUseCase,
             WithdrawUseCase withdrawUseCase,
             TransferUseCase transferUseCase,
-            GetTransactionsUseCase getAccountTransactionsUseCase,
-            Clock clock
+            GetTransactionsUseCase getAccountTransactionsUseCase
     ) {
         this.depositUseCase = depositUseCase;
         this.withdrawUseCase = withdrawUseCase;
         this.getAccountTransactionsUseCase = getAccountTransactionsUseCase;
         this.transferUseCase = transferUseCase;
-
-        this.clock = Clock.systemUTC();
     }
 
     @PostMapping("/deposit")
@@ -57,8 +54,7 @@ public class TransactionController {
                         request.branch(),
                         request.accountNumber()
                 ),
-                Money.of(request.amount()),
-                clock
+                Money.of(request.amount())
         );
 
         return ResponseEntity.ok(
@@ -76,8 +72,7 @@ public class TransactionController {
                         request.branch(),
                         request.accountNumber()
                 ),
-                Money.of(request.amount()),
-                clock
+                Money.of(request.amount())
         );
 
         return ResponseEntity.ok(
@@ -99,8 +94,7 @@ public class TransactionController {
                         request.toBranch(),
                         request.toAccountNumber()
                 ),
-                Money.of(request.amount()),
-                clock
+                Money.of(request.amount())
         );
 
         return ResponseEntity.ok(
@@ -115,10 +109,10 @@ public class TransactionController {
     ){
         AccountIdentity accountIdentity = new AccountIdentity(branch, accountNumber);
 
-        GetTransactionsOutput output = getAccountTransactionsUseCase.execute(accountIdentity);
+        List<TransactionDTO> output = getAccountTransactionsUseCase.execute(accountIdentity);
 
         return ResponseEntity.ok(
-                GetTransactionsResponse.from(output)
+                TransactionResponse.from(output)
         );
     }
 }

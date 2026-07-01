@@ -1,6 +1,7 @@
 package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
 
 import java.math.BigDecimal;
@@ -17,9 +18,9 @@ public class SavingsAccount extends Account {
 
     private LocalDateTime lastInterestAppliedAt;
 
-    public SavingsAccount(
+    private SavingsAccount(
             UUID id,
-            UUID clientId,
+            ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
             LocalDateTime creationTime
@@ -36,8 +37,8 @@ public class SavingsAccount extends Account {
         this.lastInterestAppliedAt = creationTime;
     }
 
-    public SavingsAccount(
-            UUID clientId,
+    private SavingsAccount(
+            ClientId clientId,
             AccountIdentity accountIdentity,
             Clock clock
     ){
@@ -50,6 +51,24 @@ public class SavingsAccount extends Account {
                 LocalDateTime.now(clock)
         );
 
+    }
+
+    public static SavingsAccount create(
+            ClientId clientId,
+            AccountIdentity accountIdentity,
+            Clock clock
+    ){
+        return new SavingsAccount(clientId, accountIdentity, clock);
+    }
+
+    public static SavingsAccount restore(
+            UUID id,
+            ClientId clientId,
+            AccountIdentity accountIdentity,
+            Money balance,
+            LocalDateTime creationTime
+    ){
+        return new SavingsAccount(id, clientId, accountIdentity, balance, creationTime);
     }
 
     @Override

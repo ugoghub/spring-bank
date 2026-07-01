@@ -1,6 +1,7 @@
 package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
 
 import java.time.Clock;
@@ -12,9 +13,9 @@ public class CheckingAccount extends Account {
     private static final Money OVERDRAFT_LIMIT =
             Money.of("1000");
 
-    public CheckingAccount(
+    private CheckingAccount(
             UUID id,
-            UUID clientId,
+            ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
             LocalDateTime creationTime
@@ -29,8 +30,8 @@ public class CheckingAccount extends Account {
         );
     }
 
-    public CheckingAccount(
-            UUID clientId,
+    private CheckingAccount(
+            ClientId clientId,
             AccountIdentity accountIdentity,
             Clock clock
     ){
@@ -43,6 +44,24 @@ public class CheckingAccount extends Account {
                 LocalDateTime.now(clock)
         );
 
+    }
+
+    public static CheckingAccount create(
+            ClientId clientId,
+            AccountIdentity accountIdentity,
+            Clock clock
+    ){
+        return new CheckingAccount(clientId, accountIdentity, clock);
+    }
+
+    public static CheckingAccount restore(
+            UUID id,
+            ClientId clientId,
+            AccountIdentity accountIdentity,
+            Money balance,
+            LocalDateTime creationTime
+    ){
+        return new CheckingAccount(id, clientId, accountIdentity, balance, creationTime);
     }
 
     @Override

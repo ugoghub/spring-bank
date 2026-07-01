@@ -1,6 +1,7 @@
 package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.domain.exception.InsufficientBalanceException;
 import com.banco.bank_system.domain.exception.InvalidAccountIdentityException;
@@ -13,14 +14,14 @@ import java.util.UUID;
 public abstract class Account {
 
     private final UUID id;
-    private final UUID clientId;
+    private final ClientId clientId;
     private final AccountIdentity accountIdentity;
     private final LocalDateTime creationTime;
     private Money balance;
 
     protected Account(
             UUID id,
-            UUID clientId,
+            ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
             LocalDateTime creationTime
@@ -106,7 +107,7 @@ public abstract class Account {
 
     protected abstract Money minimumAllowedBalance();
 
-    public boolean canBeRemoved() {
+    public boolean isRemovable() {
         return balance.isZero();
     }
 
@@ -118,7 +119,7 @@ public abstract class Account {
         return id;
     }
 
-    public UUID getClientId() {
+    public ClientId getClientId() {
         return clientId;
     }
 

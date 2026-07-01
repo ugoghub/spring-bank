@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface SpringDataAccountRepository
+public interface JpaAccountRepository
         extends JpaRepository<AccountEntity, UUID> {
 
 

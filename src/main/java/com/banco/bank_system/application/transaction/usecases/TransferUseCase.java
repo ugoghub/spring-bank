@@ -1,15 +1,14 @@
 package com.banco.bank_system.application.transaction.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
-import com.banco.bank_system.application.exception.AccountNotFoundException;
+import com.banco.bank_system.application.account.util.AccountFinder;
+import com.banco.bank_system.application.exception.InvalidTransferException;
 import com.banco.bank_system.application.transaction.dto.TransferOutput;
 import com.banco.bank_system.application.transaction.port.TransactionRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
-import com.banco.bank_system.application.exception.InvalidTransferException;
-import com.banco.bank_system.application.exception.ClientNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -22,25 +21,29 @@ public class TransferUseCase {
     private final TransactionRepositoryPort transactionRepository;
     private final AccountRepositoryPort accountRepository;
 
-    public TransferUseCase(TransactionRepositoryPort transactionRepository, AccountRepositoryPort accountRepository) {
+    private final AccountFinder accountFinder;
+
+    private final Clock clock;
+
+    public TransferUseCase(TransactionRepositoryPort transactionRepository,
+                          AccountRepositoryPort accountRepository,
+                          AccountFinder accountFinder,
+                          Clock clock) {
         this.transactionRepository = transactionRepository;
         this.accountRepository =accountRepository;
+        this.accountFinder = accountFinder;
+        this.clock = clock;
     }
 
     @Transactional
     public TransferOutput execute(
             AccountIdentity fromAccountIdentity,
             AccountIdentity toAccountIdentity,
-            Money value,
-            Clock clock
+            Money value
     ){
-        Account from = accountRepository
-                .getAccountByAccountIdentity(fromAccountIdentity)
-                .orElseThrow(AccountNotFoundException::new);
+        Account from = accountFinder.byIdentity(fromAccountIdentity);
 
-        Account to = accountRepository
-                .getAccountByAccountIdentity(toAccountIdentity)
-                .orElseThrow(AccountNotFoundException::new);
+        Account to = accountFinder.byIdentity(toAccountIdentity);
 
         if (from.equals(to)) {
             throw new InvalidTransferException("Não é possível transferir para a mesma conta");

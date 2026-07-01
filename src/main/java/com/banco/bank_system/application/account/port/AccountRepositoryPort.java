@@ -2,6 +2,7 @@ package com.banco.bank_system.application.account.port;
 
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.domain.valueobject.ClientId;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +14,11 @@ public interface AccountRepositoryPort {
 
     void save(Account account);
 
-    List<Account> getAccountsByClient(UUID clientId);
+    List<Account> getAccountsByClient(ClientId clientId);
 
     Optional<Account> getAccountByAccountIdentity(AccountIdentity accountIdentity);
 
-    void removeAccount(UUID accountId);
+    void delete(UUID accountId);
 
-    void removeClientAccounts(UUID clientId);
+    void removeClientAccounts(ClientId clientId);
 }

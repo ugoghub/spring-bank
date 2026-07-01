@@ -1,24 +1,25 @@
 package com.banco.bank_system.domain.entities;
 
-import com.banco.bank_system.domain.valueobject.CPF;
-import com.banco.bank_system.domain.valueobject.Email;
-import com.banco.bank_system.domain.valueobject.PersonName;
 import com.banco.bank_system.domain.exception.InvalidClientChangeException;
 import com.banco.bank_system.domain.exception.InvalidCpfException;
 import com.banco.bank_system.domain.exception.InvalidEmailException;
 import com.banco.bank_system.domain.exception.InvalidPersonNameException;
+import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.domain.valueobject.ClientId;
+import com.banco.bank_system.domain.valueobject.Email;
+import com.banco.bank_system.domain.valueobject.PersonName;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class Client {
-    private final UUID id;
+    private final ClientId id;
     private final CPF cpf;
     private PersonName name;
     private Email email;
 
-    public Client(
-            UUID id,
+    private Client(
+            ClientId id,
             PersonName name,
             CPF cpf,
             Email email
@@ -44,6 +45,23 @@ public class Client {
         this.name = name;
         this.cpf = cpf;
         this.email = email;
+    }
+
+    public static Client create(
+            PersonName name,
+            CPF cpf,
+            Email email
+    ){
+        return new Client(new ClientId(UUID.randomUUID()), name, cpf, email);
+    }
+
+    public static Client restore(
+            ClientId id,
+            PersonName name,
+            CPF cpf,
+            Email email
+    ){
+        return new Client(id, name, cpf, email);
     }
 
     // =========================
@@ -95,7 +113,7 @@ public class Client {
         return this.email.equals(newEmail);
     }
 
-    public UUID getId() {
+    public ClientId getId() {
         return id;
     }
 

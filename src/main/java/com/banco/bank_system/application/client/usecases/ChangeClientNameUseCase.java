@@ -1,6 +1,6 @@
 package com.banco.bank_system.application.client.usecases;
 
-import com.banco.bank_system.application.client.dto.output.ChangeClientNameOutput;
+import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
@@ -17,7 +17,7 @@ public class ChangeClientNameUseCase {
         this.clientRepository = clientRepository;
     }
 
-    public ChangeClientNameOutput execute(
+    public GetClientDataOutput execute(
             CPF cpf,
             PersonName newName
     ){
@@ -29,6 +29,10 @@ public class ChangeClientNameUseCase {
 
         clientRepository.save(client);
 
-        return new ChangeClientNameOutput(client.getName());
+        return new GetClientDataOutput(
+                client.getName(),
+                client.getCpf(),
+                client.getEmail()
+        );
     }
 }

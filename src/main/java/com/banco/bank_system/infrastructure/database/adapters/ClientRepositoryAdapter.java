@@ -3,35 +3,32 @@ package com.banco.bank_system.infrastructure.database.adapters;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
-import com.banco.bank_system.infrastructure.database.sql.SpringDataClientRepository;
-
-import org.springframework.stereotype.Component;
+import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
-@Component
+@Repository
 public class ClientRepositoryAdapter
         implements ClientRepositoryPort {
 
-    private final SpringDataClientRepository repository;
+    private final JpaClientRepository repository;
 
     public ClientRepositoryAdapter(
-            SpringDataClientRepository repository
+            JpaClientRepository repository
     ) {
 
         this.repository = repository;
-
     }
 
 
     @Override
-    public void delete(UUID id) {
+    public void delete(ClientId clientId) {
 
-        repository.deleteById(id);
-
+        repository.deleteById(clientId.id());
     }
 
 
@@ -41,7 +38,6 @@ public class ClientRepositoryAdapter
         return repository
                 .findByCpf(cpf.value())
                 .map(ClientEntity::toDomain);
-
     }
 
 
@@ -50,11 +46,9 @@ public class ClientRepositoryAdapter
             Email email
     ) {
 
-
         return repository.existsByEmail(
                 email.value()
         );
-
     }
 
 
@@ -63,41 +57,31 @@ public class ClientRepositoryAdapter
             CPF cpf
     ) {
 
-
         return repository.existsByCpf(
                 cpf.value()
         );
-
     }
 
 
     @Override
     public boolean existsById(
-            UUID clientId
+            ClientId clientId
     ) {
 
-
-        return repository.existsById(clientId);
-
+        return repository.existsById(clientId.id());
     }
 
 
     @Override
-    public Optional<Client> findById(UUID clientId) {
-        return repository.findById(clientId)
+    public Optional<Client> findById(ClientId clientId) {
+        return repository.findById(clientId.id())
                 .map(ClientEntity::toDomain);
     }
 
     @Override
     public void save(Client client) {
 
-
-        ClientEntity entity =
-                ClientEntity.fromDomain(client);
-
-
-         repository.save(entity);
-
+        repository.save(ClientEntity.fromDomain(client));
     }
 
 }

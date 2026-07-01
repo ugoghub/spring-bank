@@ -1,6 +1,6 @@
 package com.banco.bank_system.application.client.usecases;
 
-import com.banco.bank_system.application.client.dto.output.GetClientDataOutput;
+import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class GetClientDataUseCase {
 
-    private final ClientRepositoryPort repository;
+    private final ClientRepositoryPort clientRepository;
 
     public GetClientDataUseCase(ClientRepositoryPort clientRepository) {
-        this.repository = clientRepository;
+        this.clientRepository = clientRepository;
     }
 
     public GetClientDataOutput execute(CPF cpf){
-        Client client = repository.getClientByCpf(cpf)
+        Client client = clientRepository.getClientByCpf(cpf)
                 .orElseThrow(ClientNotFoundException::new);
 
         return new GetClientDataOutput(

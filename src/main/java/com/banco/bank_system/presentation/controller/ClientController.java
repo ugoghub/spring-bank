@@ -1,10 +1,8 @@
 package com.banco.bank_system.presentation.controller;
 
 
-import com.banco.bank_system.application.client.dto.output.ChangeClientEmailOutput;
-import com.banco.bank_system.application.client.dto.output.ChangeClientNameOutput;
-import com.banco.bank_system.application.client.dto.output.CreateClientOutput;
-import com.banco.bank_system.application.client.dto.output.GetClientDataOutput;
+import com.banco.bank_system.application.client.dto.CreateClientOutput;
+import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.usecases.*;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
@@ -12,8 +10,6 @@ import com.banco.bank_system.domain.valueobject.PersonName;
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientEmailRequest;
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientNameRequest;
 import com.banco.bank_system.presentation.dto.request.client.CreateClientRequest;
-import com.banco.bank_system.presentation.dto.response.client.ChangeEmailResponse;
-import com.banco.bank_system.presentation.dto.response.client.ChangeNameResponse;
 import com.banco.bank_system.presentation.dto.response.client.ClientDataResponse;
 import com.banco.bank_system.presentation.dto.response.client.CreateClientResponse;
 import org.springframework.http.HttpStatus;
@@ -74,34 +70,34 @@ public class ClientController {
     }
 
     @PutMapping("/changeName/{cpf}")
-    public ResponseEntity<ChangeNameResponse> changeClientName(
+    public ResponseEntity<ClientDataResponse> changeClientName(
             @PathVariable String cpf,
             @RequestBody ChangeClientNameRequest client
     ) {
 
-        ChangeClientNameOutput output = changeClientNameUseCase.execute(
+        GetClientDataOutput output = changeClientNameUseCase.execute(
                 new CPF(cpf),
                 new PersonName(client.name())
         );
 
         return ResponseEntity.ok(
-                ChangeNameResponse.from(output)
+                ClientDataResponse.from(output)
         );
     }
 
     @PutMapping("/changeEmail/{cpf}")
-    public ResponseEntity<ChangeEmailResponse> changeClientEmail(
+    public ResponseEntity<ClientDataResponse> changeClientEmail(
             @PathVariable String cpf,
             @RequestBody ChangeClientEmailRequest client
     ) {
 
-        ChangeClientEmailOutput output = changeClientEmailUseCase.execute(
+        GetClientDataOutput output = changeClientEmailUseCase.execute(
                 new CPF(cpf),
                 new Email(client.email())
         );
 
         return ResponseEntity.ok(
-                ChangeEmailResponse.from(output)
+                ClientDataResponse.from(output)
         );
     }
 

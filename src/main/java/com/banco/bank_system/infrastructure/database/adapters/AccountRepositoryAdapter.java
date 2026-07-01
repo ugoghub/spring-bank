@@ -1,65 +1,52 @@
 package com.banco.bank_system.infrastructure.database.adapters;
 
-
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
-import com.banco.bank_system.infrastructure.database.sql.SpringDataAccountRepository;
+import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
-
-@Component
+@Repository
 public class AccountRepositoryAdapter
         implements AccountRepositoryPort {
 
 
-    private final SpringDataAccountRepository repository;
-
-
+    private final JpaAccountRepository repository;
 
     public AccountRepositoryAdapter(
-            SpringDataAccountRepository repository
+            JpaAccountRepository repository
     ) {
 
         this.repository = repository;
     }
 
-
-
     @Override
     public void save(Account account) {
 
-
-        AccountEntity entity =
-                AccountEntity.fromDomain(account);
-
-
-        repository.save(entity);
-
+        repository.save(
+                AccountEntity.fromDomain(account)
+        );
     }
-
 
 
     @Override
-    public List<Account> getAccountsByClient(UUID clientId) {
-
+    public List<Account> getAccountsByClient(ClientId clientId) {
 
         return repository
-                .findByClientId(clientId)
+                .findByClientId(clientId.id())
                 .stream()
                 .map(AccountEntity::toDomain)
                 .toList();
-
     }
-
 
 
     @Override
@@ -67,34 +54,27 @@ public class AccountRepositoryAdapter
             AccountIdentity accountIdentity
     ) {
 
-
         return repository
                 .findByAccountNumberAndBranch(
                         accountIdentity.accountNumber(),
                         accountIdentity.branch()
                 )
                 .map(AccountEntity::toDomain);
-
     }
 
 
-
     @Override
-    public void removeAccount(UUID accountId) {
+    public void delete(UUID accountId) {
 
         repository.deleteById(accountId);
-
     }
-
 
 
     @Override
-    public void removeClientAccounts(UUID clientId) {
+    public void removeClientAccounts(ClientId clientId) {
 
-        repository.deleteByClientId(clientId);
-
+        repository.deleteByClientId(clientId.id());
     }
-
 
 
     @Override
@@ -102,12 +82,10 @@ public class AccountRepositoryAdapter
             AccountIdentity accountIdentity
     ) {
 
-
         return repository.existsByAccountNumberAndBranch(
                 accountIdentity.accountNumber(),
                 accountIdentity.branch()
         );
-
     }
 
 }

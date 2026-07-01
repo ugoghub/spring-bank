@@ -1,11 +1,11 @@
 package com.banco.bank_system.infrastructure.database.entities;
 
-
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @Entity
 @Table(
@@ -31,7 +30,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 public class AccountEntity {
-
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -81,8 +79,6 @@ public class AccountEntity {
     )
     private LocalDateTime createdAt;
 
-
-
     public AccountEntity(
             UUID id,
             UUID clientId,
@@ -102,8 +98,6 @@ public class AccountEntity {
         this.createdAt = createdAt;
     }
 
-
-
     public Account toDomain(){
 
         AccountIdentity identity =
@@ -112,69 +106,46 @@ public class AccountEntity {
                         accountNumber
                 );
 
-
         Money money =
                 Money.of(balance);
-
-
 
         return switch (accountType){
 
             case CHECKING ->
-                    new CheckingAccount(
+                    CheckingAccount.restore(
                             id,
-                            clientId,
+                            new ClientId(clientId),
                             identity,
                             money,
                             createdAt
                     );
 
-
             case SAVINGS ->
-                    new SavingsAccount(
+                    SavingsAccount.restore(
                             id,
-                            clientId,
+                            new ClientId(clientId),
                             identity,
                             money,
                             createdAt
                     );
         };
-
     }
 
-
-
     public static AccountEntity fromDomain(Account account){
-
 
         AccountType type =
                 account instanceof CheckingAccount
                         ? AccountType.CHECKING
                         : AccountType.SAVINGS;
 
-
-
         return new AccountEntity(
-
                 account.getId(),
-
-                account.getClientId(),
-
-                account.getAccountIdentity()
-                        .accountNumber(),
-
-                account.getAccountIdentity()
-                        .branch(),
-
-                account.getBalance()
-                        .value(),
-
+                account.getClientId().id(),
+                account.getAccountIdentity().accountNumber(),
+                account.getAccountIdentity().branch(),
+                account.getBalance().value(),
                 type,
-
                 account.getCreationTime()
-
         );
-
     }
-
 }

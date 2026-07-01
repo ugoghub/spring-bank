@@ -2,6 +2,7 @@ package com.banco.bank_system.application.account.usecases;
 
 import com.banco.bank_system.application.account.dto.CreateAccountOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
+import com.banco.bank_system.application.account.util.AccountFinder;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
@@ -48,14 +49,14 @@ public class CreateAccountUseCase {
         final Account account =
                 switch (type) {
                     case CHECKING ->
-                            new CheckingAccount(
+                            CheckingAccount.create(
                                     client.getId(),
                                     accountIdentity,
                                     clock
                             );
 
                     case SAVINGS ->
-                            new SavingsAccount(
+                            SavingsAccount.create(
                                     client.getId(),
                                     accountIdentity,
                                     clock
