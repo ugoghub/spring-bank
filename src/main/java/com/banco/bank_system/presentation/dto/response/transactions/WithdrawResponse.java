@@ -18,10 +18,10 @@ public record WithdrawResponse(
 
     public static WithdrawResponse from(WithdrawOutput output){
         return new WithdrawResponse(
-                output.accountId(),
+                output.accountId().id(),
                 output.withdrawnAmount().value().toString(),
                 output.newBalance().value().toString(),
-                output.transactionId(),
+                output.transactionId().id(),
                 output.transactionDate().format(formatter)
         );
     }

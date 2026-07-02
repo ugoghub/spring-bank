@@ -3,7 +3,7 @@ package com.banco.bank_system.entities;
 import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.exception.InsufficientBalanceException;
 import com.banco.bank_system.domain.valueobject.Money;
-import com.banco.bank_system.helper.AccountFactory;
+import com.banco.bank_system.entities.helper.AccountFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

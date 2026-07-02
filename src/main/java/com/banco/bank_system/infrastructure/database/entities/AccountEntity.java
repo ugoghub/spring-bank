@@ -4,6 +4,7 @@ import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.enums.AccountType;
+import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
@@ -87,7 +88,7 @@ public class AccountEntity {
             BigDecimal balance,
             AccountType accountType,
             LocalDateTime createdAt
-    ){
+    ) {
 
         this.id = id;
         this.clientId = clientId;
@@ -98,7 +99,7 @@ public class AccountEntity {
         this.createdAt = createdAt;
     }
 
-    public Account toDomain(){
+    public Account toDomain() {
 
         AccountIdentity identity =
                 new AccountIdentity(
@@ -106,40 +107,36 @@ public class AccountEntity {
                         accountNumber
                 );
 
-        Money money =
-                Money.of(balance);
+        Money money = Money.of(balance);
 
-        return switch (accountType){
+        return switch (accountType) {
 
-            case CHECKING ->
-                    CheckingAccount.restore(
-                            id,
-                            new ClientId(clientId),
-                            identity,
-                            money,
-                            createdAt
-                    );
+            case CHECKING -> CheckingAccount.restore(
+                    new AccountId(id),
+                    new ClientId(clientId),
+                    identity,
+                    money,
+                    createdAt
+            );
 
-            case SAVINGS ->
-                    SavingsAccount.restore(
-                            id,
-                            new ClientId(clientId),
-                            identity,
-                            money,
-                            createdAt
-                    );
+            case SAVINGS -> SavingsAccount.restore(
+                    new AccountId(id),
+                    new ClientId(clientId),
+                    identity,
+                    money,
+                    createdAt
+            );
         };
     }
 
-    public static AccountEntity fromDomain(Account account){
+    public static AccountEntity fromDomain(Account account) {
 
-        AccountType type =
-                account instanceof CheckingAccount
-                        ? AccountType.CHECKING
-                        : AccountType.SAVINGS;
+        AccountType type = account instanceof CheckingAccount
+                ? AccountType.CHECKING
+                : AccountType.SAVINGS;
 
         return new AccountEntity(
-                account.getId(),
+                account.getId().id(),
                 account.getClientId().id(),
                 account.getAccountIdentity().accountNumber(),
                 account.getAccountIdentity().branch(),

@@ -2,23 +2,19 @@ package com.banco.bank_system.infrastructure.database.adapters;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.domain.entities.Account;
+import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
-
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class AccountRepositoryAdapter
         implements AccountRepositoryPort {
-
 
     private final JpaAccountRepository repository;
 
@@ -64,9 +60,9 @@ public class AccountRepositoryAdapter
 
 
     @Override
-    public void delete(UUID accountId) {
+    public void delete(AccountId accountId) {
 
-        repository.deleteById(accountId);
+        repository.deleteById(accountId.id());
     }
 
 

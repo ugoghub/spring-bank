@@ -8,7 +8,7 @@ import com.banco.bank_system.domain.exception.InvalidMoneyException;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
-import com.banco.bank_system.helper.AccountFactory;
+import com.banco.bank_system.entities.helper.AccountFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -84,7 +84,7 @@ public class AccountUnitTest {
         assertThrows(
                 InvalidAccountIdentityException.class,
                 () -> CheckingAccount.create(
-                        ClientId.generete(),
+                        ClientId.generate(),
                         null,
                         Clock.systemUTC()
                 )

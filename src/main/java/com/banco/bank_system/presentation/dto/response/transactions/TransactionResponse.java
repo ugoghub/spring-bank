@@ -12,8 +12,10 @@ public record TransactionResponse(
         UUID operationId,
         String type,
         String amount,
-        UUID source,
-        UUID destination,
+        String source_branch,
+        String source_accountNumber,
+        String destination_branch,
+        String destination_accountNumber,
         String dateTime
 ) {
 
@@ -23,12 +25,14 @@ public record TransactionResponse(
     public static List<TransactionResponse> from(List<TransactionDTO> output) {
         return output.stream()
                 .map(t -> new TransactionResponse(
-                                t.id(),
-                                t.operationId(),
+                                t.id().id(),
+                                t.operationId().id(),
                                 t.type().toString(),
                                 t.amount().value().toString(),
-                                t.sourceId(),
-                                t.destinationId(),
+                                t.source_branch(),
+                                t.source_accountNumber(),
+                                t.destination_branch(),
+                                t.destination_accountNumber(),
                                 formatter.format(t.dateTime())
                         )
                 )

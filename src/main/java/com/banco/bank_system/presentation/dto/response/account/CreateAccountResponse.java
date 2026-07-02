@@ -26,7 +26,7 @@ public record CreateAccountResponse(
 
     public static CreateAccountResponse from(CreateAccountOutput output) {
         return new CreateAccountResponse(
-                output.id(),
+                output.id().id(),
                 output.clientId().id(),
                 output.accountIdentity().branch(),
                 output.accountIdentity().accountNumber(),

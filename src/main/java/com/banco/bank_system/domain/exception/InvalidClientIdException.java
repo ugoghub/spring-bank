@@ -4,4 +4,9 @@ public class InvalidClientIdException extends DomainException{
     public InvalidClientIdException(String message) {
         super(message);
     }
+
+    @Override
+    public String getCode() {
+        return "INVALID_CLIENT_ID";
+    }
 }

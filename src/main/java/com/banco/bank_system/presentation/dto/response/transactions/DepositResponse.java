@@ -18,10 +18,10 @@ public record DepositResponse(
 
     public static DepositResponse from(DepositOutput output){
         return new DepositResponse(
-                output.accountId(),
+                output.accountId().id(),
                 output.depositedAmount().value().toString(),
                 output.newBalance().value().toString(),
-                output.transactionId(),
+                output.transactionId().id(),
                 output.transactionDate().format(formatter)
         );
     }

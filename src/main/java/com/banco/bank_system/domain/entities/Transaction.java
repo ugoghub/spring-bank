@@ -2,18 +2,16 @@ package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.enums.TransactionType;
 import com.banco.bank_system.domain.exception.InvalidTransactionException;
-import com.banco.bank_system.domain.valueobject.AccountIdentity;
-import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.valueobject.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 public class Transaction {
-    private final UUID id;
-    private final UUID operationId;
-    private final UUID accountId;
+    private final TransactionId id;
+    private final OperationId operationId;
+    private final AccountId accountId;
     private final TransactionType type;
     private final Money amount;
     private final AccountIdentity sourceIdentity;
@@ -21,15 +19,20 @@ public class Transaction {
     private final LocalDateTime dateTime;
 
     private Transaction(
-            UUID id,
-            UUID operationId,
-            UUID accountId,
+            TransactionId id,
+            OperationId operationId,
+            AccountId accountId,
             TransactionType type,
             Money amount,
             AccountIdentity sourceIdentity,
             AccountIdentity destinationIdentity,
             LocalDateTime dateTime
     ) {
+
+        validateTransactionState(type, operationId, sourceIdentity, destinationIdentity);
+
+        validateAmount(amount);
+
         this.id = id;
         this.operationId = operationId;
         this.accountId = accountId;
@@ -40,23 +43,23 @@ public class Transaction {
         this.dateTime = dateTime;
     }
 
-    private Transaction(UUID operationId,
-                        UUID accountId,
+    private Transaction(OperationId operationId,
+                        AccountId accountId,
                         TransactionType type,
                         Money amount,
                         AccountIdentity sourceIdentity,
                         AccountIdentity destinationIdentity,
                         Clock clock) {
 
-        validateTransactionState(operationId, type, sourceIdentity, destinationIdentity);
+        validateTransactionState(type, operationId, sourceIdentity, destinationIdentity);
 
         validateAmount(amount);
 
         if (clock == null) {
-            throw new IllegalArgumentException("Horário inválido");
+            throw new InvalidTransactionException("Horário inválido");
         }
 
-        this.id = UUID.randomUUID();
+        this.id = TransactionId.generate();
         this.operationId = operationId;
         this.accountId = accountId;
         this.sourceIdentity = sourceIdentity;
@@ -67,20 +70,15 @@ public class Transaction {
     }
 
     public static Transaction restore(
-            UUID id,
-            UUID operationId,
-            UUID accountId,
+            TransactionId id,
+            OperationId operationId,
+            AccountId accountId,
             TransactionType type,
             Money amount,
             AccountIdentity sourceIdentity,
             AccountIdentity destinationIdentity,
             LocalDateTime dateTime
     ) {
-        validateTransactionState(operationId, type, sourceIdentity, destinationIdentity);
-
-        validateAmount(amount);
-
-
         return new Transaction(
                 id,
                 operationId,
@@ -98,7 +96,7 @@ public class Transaction {
     // Factory Methods
     // =========================
 
-    public static Transaction deposit(UUID accountId,
+    public static Transaction deposit(AccountId accountId,
                                       AccountIdentity accountIdentity,
                                       Money amount,
                                       Clock clock) {
@@ -113,7 +111,7 @@ public class Transaction {
         );
     }
 
-    public static Transaction withdraw(UUID accountId,
+    public static Transaction withdraw(AccountId accountId,
                                        AccountIdentity accountIdentity,
                                        Money amount,
                                        Clock clock) {
@@ -127,8 +125,8 @@ public class Transaction {
         );
     }
 
-    public static Transaction transferSent(UUID operationId,
-                                           UUID accountId,
+    public static Transaction transferSent(AccountId accountId,
+                                           OperationId operationId,
                                            AccountIdentity from,
                                            AccountIdentity to,
                                            Money amount,
@@ -143,8 +141,8 @@ public class Transaction {
         );
     }
 
-    public static Transaction transferReceived(UUID operationId,
-                                               UUID accountId,
+    public static Transaction transferReceived(AccountId accountId,
+                                               OperationId operationId,
                                                AccountIdentity from,
                                                AccountIdentity to,
                                                Money amount,
@@ -159,7 +157,7 @@ public class Transaction {
         );
     }
 
-    public static Transaction interest(UUID accountId,
+    public static Transaction interest(AccountId accountId,
                                        AccountIdentity accountIdentity,
                                        Money amount,
                                        Clock clock) {
@@ -173,15 +171,15 @@ public class Transaction {
         );
     }
 
-    public UUID getId() {
+    public TransactionId getId() {
         return id;
     }
 
-    public UUID getAccountId() {
+    public AccountId getAccountId() {
         return accountId;
     }
 
-    public UUID getOperationId() {
+    public OperationId getOperationId() {
         return operationId;
     }
 
@@ -209,10 +207,12 @@ public class Transaction {
     // Validation
     // =========================
 
-    private static void validateTransactionState(UUID operationId,
-                                                 TransactionType type,
-                                                 AccountIdentity sourceIdentity,
-                                                 AccountIdentity destinationIdentity) {
+    private static void validateTransactionState(
+            TransactionType type,
+            OperationId operationId,
+            AccountIdentity sourceIdentity,
+            AccountIdentity destinationIdentity
+    ) {
         //validação defensiva
 
         if (type == null) {
@@ -247,7 +247,7 @@ public class Transaction {
         }
     }
 
-    private static void validateTransfer(UUID operationId,
+    private static void validateTransfer(OperationId operationId,
                                          AccountIdentity sourceIdentity,
                                          AccountIdentity destinationIdentity) {
         if (operationId == null) {

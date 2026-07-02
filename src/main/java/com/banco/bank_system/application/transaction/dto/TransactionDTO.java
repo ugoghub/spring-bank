@@ -3,18 +3,21 @@ package com.banco.bank_system.application.transaction.dto;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.enums.TransactionType;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.valueobject.OperationId;
+import com.banco.bank_system.domain.valueobject.TransactionId;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public record TransactionDTO(
-        UUID id,
-        UUID operationId,
+        TransactionId id,
+        OperationId operationId,
         TransactionType type,
         Money amount,
-        UUID sourceId,
-        UUID destinationId,
+        String source_branch,
+        String source_accountNumber,
+        String destination_branch,
+        String destination_accountNumber,
         LocalDateTime dateTime
 ) {
 
@@ -25,8 +28,10 @@ public record TransactionDTO(
                                 t.getOperationId(),
                                 t.getType(),
                                 t.getAmount(),
-                                t.getSource(),
-                                t.getDestination(),
+                                t.getSource().branch(),
+                                t.getSource().accountNumber(),
+                                t.getDestination().branch(),
+                                t.getDestination().accountNumber(),
                                 t.getDateTime()
                         )
                 )

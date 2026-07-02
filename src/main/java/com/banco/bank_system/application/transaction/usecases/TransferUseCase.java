@@ -9,11 +9,11 @@ import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.valueobject.OperationId;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.util.UUID;
 
 @Service
 public class TransferUseCase {
@@ -56,11 +56,11 @@ public class TransferUseCase {
         accountRepository.save(from);
         accountRepository.save(to);
 
-        UUID operationId = UUID.randomUUID();
+        OperationId operationId = OperationId.generate();
 
         Transaction fromTransaction = Transaction.transferSent(
-                operationId,
                 from.getId(),
+                operationId,
                 from.getAccountIdentity(),
                 to.getAccountIdentity(),
                 value,
@@ -68,8 +68,8 @@ public class TransferUseCase {
         );
 
         Transaction toTransaction = Transaction.transferReceived(
+                to.getId(),
                 operationId,
-                from.getId(),
                 from.getAccountIdentity(),
                 to.getAccountIdentity(),
                 value,
@@ -86,8 +86,8 @@ public class TransferUseCase {
 
         return new TransferOutput(
                 operationId,
-                from.getId(),
-                to.getId(),
+                from.getAccountIdentity(),
+                to.getAccountIdentity(),
                 fromTransaction.getAmount(),
                 fromTransaction.getDateTime()
         );

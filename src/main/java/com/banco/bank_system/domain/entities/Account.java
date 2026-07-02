@@ -1,26 +1,27 @@
 package com.banco.bank_system.domain.entities;
 
+import com.banco.bank_system.domain.exception.InsufficientBalanceException;
+import com.banco.bank_system.domain.exception.InvalidAccountIdentityException;
+import com.banco.bank_system.domain.exception.InvalidClientIdException;
+import com.banco.bank_system.domain.exception.InvalidMoneyException;
+import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
-import com.banco.bank_system.domain.exception.InsufficientBalanceException;
-import com.banco.bank_system.domain.exception.InvalidAccountIdentityException;
-import com.banco.bank_system.domain.exception.InvalidMoneyException;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 public abstract class Account {
 
-    private final UUID id;
+    private final AccountId id;
     private final ClientId clientId;
     private final AccountIdentity accountIdentity;
     private final LocalDateTime creationTime;
     private Money balance;
 
     protected Account(
-            UUID id,
+            AccountId id,
             ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
@@ -32,7 +33,7 @@ public abstract class Account {
         }
 
         if(clientId == null){
-            throw new IllegalArgumentException("Cliente inválido");
+            throw new InvalidClientIdException("Cliente inválido");
         }
 
         if(accountIdentity == null){
@@ -115,7 +116,7 @@ public abstract class Account {
     // Getters
     // =========================
 
-    public UUID getId() {
+    public AccountId getId() {
         return id;
     }
 

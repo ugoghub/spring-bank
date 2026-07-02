@@ -2,8 +2,7 @@ package com.banco.bank_system.infrastructure.database.entities;
 
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.enums.TransactionType;
-import com.banco.bank_system.domain.valueobject.AccountIdentity;
-import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.valueobject.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,18 +76,26 @@ public class TransactionEntity {
     public static TransactionEntity fromDomain(Transaction transaction) {
 
         return new TransactionEntity(
-                transaction.getId(),
-                transaction.getOperationId(),
-                transaction.getAccountId(),
+                transaction.getId().id(),
+                transaction.getOperationId().id(),
+                transaction.getAccountId().id(),
                 transaction.getType(),
                 transaction.getAmount().value(),
 
-                transaction.getSource() != null
-                        ? transaction.getSource()
+                transaction.getSource().branch() != null
+                        ? transaction.getSource().branch()
                         : null,
 
-                transaction.getDestination() != null
-                        ? transaction.getDestination()
+                transaction.getSource().accountNumber() != null
+                        ? transaction.getSource().accountNumber()
+                        : null,
+
+                transaction.getDestination().branch() != null
+                        ? transaction.getDestination().branch()
+                        : null,
+
+                transaction.getDestination().accountNumber() != null
+                        ? transaction.getDestination().accountNumber()
                         : null,
 
                 transaction.getDateTime()
@@ -98,9 +105,9 @@ public class TransactionEntity {
     public Transaction toDomain() {
 
         return Transaction.restore(
-                id,
-                operationId,
-                accountId,
+                new TransactionId(id),
+                new OperationId(operationId),
+                new AccountId(accountId),
                 type,
                 Money.of(amount),
                 new AccountIdentity(source_branch, source_accountNumber),

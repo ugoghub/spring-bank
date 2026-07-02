@@ -2,6 +2,7 @@ package com.banco.bank_system.infrastructure.database.adapters;
 
 import com.banco.bank_system.application.transaction.port.TransactionRepositoryPort;
 import com.banco.bank_system.domain.entities.Transaction;
+import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
     }
 
     @Override
-    public List<Transaction> findByAccountId(UUID accountId) {
+    public List<Transaction> findByAccountId(AccountId accountId) {
         return repository.findByAccountId(accountId)
                 .stream()
                 .map(TransactionEntity::toDomain)

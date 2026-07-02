@@ -1,5 +1,6 @@
 package com.banco.bank_system.domain.entities;
 
+import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Money;
@@ -14,7 +15,7 @@ public class CheckingAccount extends Account {
             Money.of("1000");
 
     private CheckingAccount(
-            UUID id,
+            AccountId id,
             ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
@@ -37,7 +38,7 @@ public class CheckingAccount extends Account {
     ){
 
         super(
-                UUID.randomUUID(),
+                AccountId.generate(),
                 clientId,
                 accountIdentity,
                 Money.ZERO,
@@ -55,7 +56,7 @@ public class CheckingAccount extends Account {
     }
 
     public static CheckingAccount restore(
-            UUID id,
+            AccountId id,
             ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
