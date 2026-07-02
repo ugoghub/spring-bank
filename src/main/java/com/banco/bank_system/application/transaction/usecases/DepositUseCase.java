@@ -43,6 +43,7 @@ public class DepositUseCase {
 
         Transaction deposit = Transaction.deposit(
                 account.getId(),
+                account.getAccountIdentity(),
                 value,
                 clock
         );

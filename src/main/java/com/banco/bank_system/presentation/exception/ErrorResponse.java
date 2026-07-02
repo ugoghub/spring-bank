@@ -1,7 +1,9 @@
 package com.banco.bank_system.presentation.exception;
 
+import java.time.LocalDateTime;
+
 public record ErrorResponse(
-        String timestamp,
+        LocalDateTime timestamp,
         int status,
         String error,
         String code,

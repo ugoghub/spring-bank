@@ -2,6 +2,7 @@ package com.banco.bank_system.domain.entities;
 
 import com.banco.bank_system.domain.enums.TransactionType;
 import com.banco.bank_system.domain.exception.InvalidTransactionException;
+import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
 
 import java.time.Clock;
@@ -15,8 +16,8 @@ public class Transaction {
     private final UUID accountId;
     private final TransactionType type;
     private final Money amount;
-    private final UUID sourceId;
-    private final UUID destinationId;
+    private final AccountIdentity sourceIdentity;
+    private final AccountIdentity destinationIdentity;
     private final LocalDateTime dateTime;
 
     private Transaction(
@@ -25,15 +26,15 @@ public class Transaction {
             UUID accountId,
             TransactionType type,
             Money amount,
-            UUID sourceId,
-            UUID destinationId,
+            AccountIdentity sourceIdentity,
+            AccountIdentity destinationIdentity,
             LocalDateTime dateTime
     ) {
         this.id = id;
         this.operationId = operationId;
         this.accountId = accountId;
-        this.sourceId = sourceId;
-        this.destinationId = destinationId;
+        this.sourceIdentity = sourceIdentity;
+        this.destinationIdentity = destinationIdentity;
         this.type = type;
         this.amount = amount;
         this.dateTime = dateTime;
@@ -43,23 +44,23 @@ public class Transaction {
                         UUID accountId,
                         TransactionType type,
                         Money amount,
-                        UUID sourceId,
-                        UUID destinationId,
+                        AccountIdentity sourceIdentity,
+                        AccountIdentity destinationIdentity,
                         Clock clock) {
 
-        validateTransactionState(operationId, type, sourceId, destinationId);
+        validateTransactionState(operationId, type, sourceIdentity, destinationIdentity);
 
         validateAmount(amount);
 
-        if(clock == null) {
+        if (clock == null) {
             throw new IllegalArgumentException("Horário inválido");
         }
 
         this.id = UUID.randomUUID();
         this.operationId = operationId;
         this.accountId = accountId;
-        this.sourceId = sourceId;
-        this.destinationId = destinationId;
+        this.sourceIdentity = sourceIdentity;
+        this.destinationIdentity = destinationIdentity;
         this.type = type;
         this.amount = amount;
         this.dateTime = LocalDateTime.now(clock);
@@ -71,13 +72,14 @@ public class Transaction {
             UUID accountId,
             TransactionType type,
             Money amount,
-            UUID sourceId,
-            UUID destinationId,
+            AccountIdentity sourceIdentity,
+            AccountIdentity destinationIdentity,
             LocalDateTime dateTime
     ) {
-        validateTransactionState(operationId, type, sourceId, destinationId);
+        validateTransactionState(operationId, type, sourceIdentity, destinationIdentity);
 
         validateAmount(amount);
+
 
         return new Transaction(
                 id,
@@ -85,8 +87,8 @@ public class Transaction {
                 accountId,
                 type,
                 amount,
-                sourceId,
-                destinationId,
+                sourceIdentity,
+                destinationIdentity,
                 dateTime
         );
     }
@@ -97,37 +99,78 @@ public class Transaction {
     // =========================
 
     public static Transaction deposit(UUID accountId,
+                                      AccountIdentity accountIdentity,
                                       Money amount,
                                       Clock clock) {
-        return new Transaction(null, accountId, TransactionType.DEPOSIT, amount, null, accountId, clock);
+        return new Transaction(
+                null,
+                accountId,
+                TransactionType.DEPOSIT,
+                amount,
+                null,
+                accountIdentity,
+                clock
+        );
     }
 
     public static Transaction withdraw(UUID accountId,
+                                       AccountIdentity accountIdentity,
                                        Money amount,
                                        Clock clock) {
-        return new Transaction(null, accountId, TransactionType.WITHDRAW, amount, accountId, null, clock);
+        return new Transaction(null,
+                accountId,
+                TransactionType.WITHDRAW,
+                amount,
+                accountIdentity,
+                null,
+                clock
+        );
     }
 
     public static Transaction transferSent(UUID operationId,
-                                           UUID from,
-                                           UUID to,
+                                           UUID accountId,
+                                           AccountIdentity from,
+                                           AccountIdentity to,
                                            Money amount,
                                            Clock clock) {
-        return new Transaction(operationId, from, TransactionType.TRANSFER_SENT, amount, from, to, clock);
+        return new Transaction(operationId,
+                accountId,
+                TransactionType.TRANSFER_SENT,
+                amount,
+                from,
+                to,
+                clock
+        );
     }
 
     public static Transaction transferReceived(UUID operationId,
-                                               UUID from,
-                                               UUID to,
+                                               UUID accountId,
+                                               AccountIdentity from,
+                                               AccountIdentity to,
                                                Money amount,
                                                Clock clock) {
-        return new Transaction(operationId, to, TransactionType.TRANSFER_RECEIVED, amount, from, to, clock);
+        return new Transaction(operationId,
+                accountId,
+                TransactionType.TRANSFER_RECEIVED,
+                amount,
+                from,
+                to,
+                clock
+        );
     }
 
     public static Transaction interest(UUID accountId,
+                                       AccountIdentity accountIdentity,
                                        Money amount,
                                        Clock clock) {
-        return new Transaction(null, accountId, TransactionType.INTEREST, amount, null, accountId, clock);
+        return new Transaction(null,
+                accountId,
+                TransactionType.INTEREST,
+                amount,
+                null,
+                accountIdentity,
+                clock
+        );
     }
 
     public UUID getId() {
@@ -150,12 +193,12 @@ public class Transaction {
         return amount;
     }
 
-    public UUID getSource() {
-        return sourceId;
+    public AccountIdentity getSource() {
+        return sourceIdentity;
     }
 
-    public UUID getDestination() {
-        return destinationId;
+    public AccountIdentity getDestination() {
+        return destinationIdentity;
     }
 
     public LocalDateTime getDateTime() {
@@ -168,11 +211,11 @@ public class Transaction {
 
     private static void validateTransactionState(UUID operationId,
                                                  TransactionType type,
-                                                 UUID sourceId,
-                                                 UUID destinationId) {
+                                                 AccountIdentity sourceIdentity,
+                                                 AccountIdentity destinationIdentity) {
         //validação defensiva
 
-        if(type == null){
+        if (type == null) {
             throw new InvalidTransactionException(
                     "Tipo de transação inválido"
             );
@@ -180,45 +223,45 @@ public class Transaction {
 
         switch (type) {
 
-            case DEPOSIT -> validateDeposit(sourceId, destinationId);
+            case DEPOSIT -> validateDeposit(sourceIdentity, destinationIdentity);
 
-            case WITHDRAW -> validateWithdraw(sourceId, destinationId);
+            case WITHDRAW -> validateWithdraw(sourceIdentity, destinationIdentity);
 
-            case TRANSFER_SENT, TRANSFER_RECEIVED -> validateTransfer(operationId, sourceId, destinationId);
+            case TRANSFER_SENT, TRANSFER_RECEIVED -> validateTransfer(operationId, sourceIdentity, destinationIdentity);
 
-            case INTEREST -> validateInterest(sourceId, destinationId);
+            case INTEREST -> validateInterest(sourceIdentity, destinationIdentity);
         }
     }
 
-    private static void validateDeposit(UUID sourceId,
-                                        UUID destinationId) {
-        if (sourceId != null || destinationId == null) {
-            throw new InvalidTransactionException("DEPÓSITO não deve possuir conta de origem");
+    private static void validateDeposit(AccountIdentity sourceIdentity,
+                                        AccountIdentity destinationIdentity) {
+        if (sourceIdentity != null || destinationIdentity == null) {
+            throw new InvalidTransactionException("Depósitos possuem apenas conta de destino.");
         }
     }
 
-    private static void validateWithdraw(UUID sourceId,
-                                         UUID destinationId) {
-        if (sourceId == null || destinationId != null) {
-            throw new InvalidTransactionException("SAQUE não deve possuir conta de destino");
+    private static void validateWithdraw(AccountIdentity sourceIdentity,
+                                         AccountIdentity destinationIdentity) {
+        if (sourceIdentity == null || destinationIdentity != null) {
+            throw new InvalidTransactionException("Saques possuem apenas conta de origem.");
         }
     }
 
     private static void validateTransfer(UUID operationId,
-                                         UUID sourceId,
-                                         UUID destinationId) {
-        if (operationId == null){
+                                         AccountIdentity sourceIdentity,
+                                         AccountIdentity destinationIdentity) {
+        if (operationId == null) {
             throw new InvalidTransactionException("Toda transferência deve possuir um ID de operação");
         }
-        if (sourceId == null || destinationId == null) {
+        if (sourceIdentity == null || destinationIdentity == null) {
             throw new InvalidTransactionException("Transferência não deve possuir origem e/ou destino nulls");
         }
     }
 
-    private static void validateInterest(UUID sourceId,
-                                         UUID destinationId) {
+    private static void validateInterest(AccountIdentity sourceIdentity,
+                                         AccountIdentity destinationIdentity) {
 
-        if (sourceId != null || destinationId == null) {
+        if (sourceIdentity != null || destinationIdentity == null) {
             throw new InvalidTransactionException(
                     "RENDIMENTO deve possuir apenas conta destino"
             );
@@ -227,7 +270,7 @@ public class Transaction {
 
     private static void validateAmount(Money amount) {
 
-        if(amount == null){
+        if (amount == null) {
             throw new InvalidTransactionException("Valor não pode ser null");
         }
 

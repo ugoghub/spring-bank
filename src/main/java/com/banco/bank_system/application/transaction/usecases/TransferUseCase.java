@@ -61,7 +61,8 @@ public class TransferUseCase {
         Transaction fromTransaction = Transaction.transferSent(
                 operationId,
                 from.getId(),
-                to.getId(),
+                from.getAccountIdentity(),
+                to.getAccountIdentity(),
                 value,
                 clock
         );
@@ -69,7 +70,8 @@ public class TransferUseCase {
         Transaction toTransaction = Transaction.transferReceived(
                 operationId,
                 from.getId(),
-                to.getId(),
+                from.getAccountIdentity(),
+                to.getAccountIdentity(),
                 value,
                 clock
         );

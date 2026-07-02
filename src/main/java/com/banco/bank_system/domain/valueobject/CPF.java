@@ -7,7 +7,7 @@ public record CPF(String value) {
     public CPF {
 
         if (value == null) {
-            throw new IllegalArgumentException("CPF não pode ser null");
+            throw new InvalidCpfException("CPF não pode ser null");
         }
 
         if (!value.matches("\\d{11}") &&

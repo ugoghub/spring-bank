@@ -10,14 +10,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private final Clock clock;
+
+    public GlobalExceptionHandler(Clock clock) {
+        this.clock = clock;
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(
@@ -25,18 +28,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
 
-        HttpStatus status = HttpStatus.NOT_FOUND;
-
-        ErrorResponse response = new ErrorResponse(
-                LocalDateTime.now().format(formatter),
-                status.value(),
-                status.getReasonPhrase(),
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
                 ex.getCode(),
                 ex.getMessage(),
-                request.getRequestURI()
+                request
         );
-
-        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
@@ -45,18 +42,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
 
-        HttpStatus status = HttpStatus.CONFLICT;
-
-        ErrorResponse response = new ErrorResponse(
-                LocalDateTime.now().format(formatter),
-                status.value(),
-                status.getReasonPhrase(),
+        return buildResponse(
+                HttpStatus.CONFLICT,
                 ex.getCode(),
                 ex.getMessage(),
-                request.getRequestURI()
+                request
         );
-
-        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(ApplicationException.class)
@@ -65,18 +56,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
 
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        ErrorResponse response = new ErrorResponse(
-                LocalDateTime.now().format(formatter),
-                status.value(),
-                status.getReasonPhrase(),
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
                 ex.getCode(),
                 ex.getMessage(),
-                request.getRequestURI()
+                request
         );
-
-        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(DomainException.class)
@@ -85,17 +70,46 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
 
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        ErrorResponse response = new ErrorResponse(
-                LocalDateTime.now().format(formatter),
-                status.value(),
-                status.getReasonPhrase(),
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
                 ex.getCode(),
                 ex.getMessage(),
-                request.getRequestURI()
+                request
         );
+    }
 
-        return ResponseEntity.status(status).body(response);
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handle(
+            Exception ex,
+            HttpServletRequest request
+    ){
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_ERROR",
+                "Erro interno do servidor",
+                request
+        );
+    }
+
+    private ResponseEntity<ErrorResponse> buildResponse(
+            HttpStatus status,
+            String code,
+            String message,
+            HttpServletRequest request
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        LocalDateTime.now(clock),
+                        status.value(),
+                        status.getReasonPhrase(),
+                        code,
+                        message,
+                        request.getRequestURI()
+                );
+
+        return ResponseEntity
+                .status(status)
+                .body(response);
     }
 }

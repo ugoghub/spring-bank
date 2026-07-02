@@ -18,7 +18,7 @@ public record DepositResponse(
 
     public static DepositResponse from(DepositOutput output){
         return new DepositResponse(
-                output.account(),
+                output.accountId(),
                 output.depositedAmount().value().toString(),
                 output.newBalance().value().toString(),
                 output.transactionId(),

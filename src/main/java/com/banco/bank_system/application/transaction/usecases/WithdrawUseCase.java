@@ -43,6 +43,7 @@ public class WithdrawUseCase {
 
         Transaction withdraw = Transaction.withdraw(
                 account.getId(),
+                account.getAccountIdentity(),
                 value,
                 clock
         );

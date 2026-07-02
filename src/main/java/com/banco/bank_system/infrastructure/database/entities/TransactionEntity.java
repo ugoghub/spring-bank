@@ -2,6 +2,7 @@ package com.banco.bank_system.infrastructure.database.entities;
 
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.enums.TransactionType;
+import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.Money;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,11 +35,17 @@ public class TransactionEntity {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "source")
-    private UUID source;
+    @Column(name = "source_branch")
+    private String source_branch;
 
-    @Column(name = "destination")
-    private UUID destination;
+    @Column(name = "asource_accountNumber")
+    private String source_accountNumber;
+
+    @Column(name = "destination_branch")
+    private String destination_branch;
+
+    @Column(name = "destination_accountNumber")
+    private String destination_accountNumber;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -49,8 +56,10 @@ public class TransactionEntity {
             UUID accountId,
             TransactionType type,
             BigDecimal amount,
-            UUID source,
-            UUID destination,
+            String source_branch,
+            String source_accountNumber,
+            String destination_branch,
+            String destination_accountNumber,
             LocalDateTime createdAt
     ) {
         this.id = id;
@@ -58,8 +67,10 @@ public class TransactionEntity {
         this.accountId = accountId;
         this.type = type;
         this.amount = amount;
-        this.source = source;
-        this.destination = destination;
+        this.source_branch = source_branch;
+        this.source_accountNumber = source_accountNumber;
+        this.destination_branch = destination_branch;
+        this.destination_accountNumber = destination_accountNumber;
         this.createdAt = createdAt;
     }
 
@@ -92,8 +103,8 @@ public class TransactionEntity {
                 accountId,
                 type,
                 Money.of(amount),
-                source,
-                destination,
+                new AccountIdentity(source_branch, source_accountNumber),
+                new AccountIdentity(destination_branch, destination_accountNumber),
                 createdAt
         );
     }
