@@ -6,7 +6,6 @@ import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ClientRepositoryPort {
     void save(Client client);

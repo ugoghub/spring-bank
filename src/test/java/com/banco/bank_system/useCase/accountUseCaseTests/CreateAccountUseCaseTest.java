@@ -13,10 +13,12 @@ import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +35,6 @@ class CreateAccountUseCaseTest {
     @Mock
     private AccountRepositoryPort accountRepository;
 
-    @InjectMocks
     private CreateAccountUseCase useCase;
 
     private Client client;
@@ -41,6 +42,17 @@ class CreateAccountUseCaseTest {
     @BeforeEach
     void setup() {
         client = ClientFactory.create();
+
+        Clock clock = Clock.fixed(
+                Instant.parse("2026-01-01T10:00:00Z"),
+                ZoneOffset.UTC
+        );
+
+
+        useCase = new CreateAccountUseCase(
+                accountRepository,
+                clientRepository,
+                clock);
     }
 
     @Test

@@ -9,8 +9,10 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class GetClientAccountsUseCaseTest {
 
     @Mock
@@ -46,8 +49,7 @@ public class GetClientAccountsUseCaseTest {
         when(accountRepository.getAccountsByClient(client.getId()))
                 .thenReturn(accounts);
 
-        GetClientAccountsOutput output =
-                useCase.execute(client.getCpf());
+        GetClientAccountsOutput output = useCase.execute(client.getCpf());
 
         assertEquals(2, output.accountIdentities().size());
     }
