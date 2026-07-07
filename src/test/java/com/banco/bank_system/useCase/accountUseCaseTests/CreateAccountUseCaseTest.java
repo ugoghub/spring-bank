@@ -69,7 +69,10 @@ class CreateAccountUseCaseTest {
 
         assertEquals(client.getId(), output.clientId());
 
+        verify(clientRepository).getClientByCpf(client.getCpf());
+        verify(accountRepository).existsByAccountIdentity(any());
         verify(accountRepository).save(any(Account.class));
+        verifyNoMoreInteractions(accountRepository);
     }
 
     @Test
@@ -86,6 +89,8 @@ class CreateAccountUseCaseTest {
                 )
         );
 
+        verify(clientRepository).getClientByCpf(any());
         verify(accountRepository, never()).save(any());
+        verify(accountRepository, never()).existsByAccountIdentity(any());
     }
 }

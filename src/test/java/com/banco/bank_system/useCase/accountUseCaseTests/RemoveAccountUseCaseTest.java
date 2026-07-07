@@ -2,6 +2,7 @@ package com.banco.bank_system.useCase.accountUseCaseTests;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.usecases.RemoveAccountUseCase;
+import com.banco.bank_system.application.account.util.AccountFinder;
 import com.banco.bank_system.application.exception.CannotRemoveAccountException;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.Money;
@@ -13,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +24,9 @@ public class RemoveAccountUseCaseTest {
     @Mock
     private AccountRepositoryPort repository;
 
+    @Mock
+    private AccountFinder accountFinder;
+
     @InjectMocks
     private RemoveAccountUseCase useCase;
 
@@ -32,14 +35,18 @@ public class RemoveAccountUseCaseTest {
 
         Account account = AccountFactory.checking(Clock.systemUTC());
 
-        when(repository.getAccountByAccountIdentity(
-                account.getAccountIdentity()))
-                .thenReturn(Optional.of(account));
+        when(accountFinder.byIdentity(account.getAccountIdentity()))
+                .thenReturn(account);
 
         useCase.execute(account.getAccountIdentity());
 
+        verify(accountFinder)
+                .byIdentity(account.getAccountIdentity());
+
         verify(repository)
                 .delete(account.getId());
+
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -50,16 +57,20 @@ public class RemoveAccountUseCaseTest {
 
         account.deposit(Money.of("100"));
 
-        when(repository.getAccountByAccountIdentity(
-                account.getAccountIdentity()))
-                .thenReturn(Optional.of(account));
+        when(accountFinder.byIdentity(account.getAccountIdentity()))
+                .thenReturn(account);
 
         assertThrows(
                 CannotRemoveAccountException.class,
                 () -> useCase.execute(account.getAccountIdentity())
         );
 
+        verify(accountFinder)
+                .byIdentity(account.getAccountIdentity());
+
         verify(repository, never())
                 .delete(any());
+
+        verifyNoMoreInteractions(repository, accountFinder);
     }
 }

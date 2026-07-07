@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clients")
-public class ClientController {
+public class
+ClientController {
 
     private final GetClientDataUseCase getClientDataUseCase;
     private final CreateClientUseCase createClientUseCase;

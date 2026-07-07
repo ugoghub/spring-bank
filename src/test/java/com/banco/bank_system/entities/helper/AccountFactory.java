@@ -24,7 +24,7 @@ public final class AccountFactory {
     public static SavingsAccount savings(Clock clock) {
         return SavingsAccount.create(
                 ClientId.generate(),
-                new AccountIdentity("01", "123456-1"),
+                new AccountIdentity("02", "123456-1"),
                 clock
         );
     }
