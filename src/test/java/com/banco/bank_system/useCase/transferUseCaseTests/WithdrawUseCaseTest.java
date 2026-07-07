@@ -24,8 +24,7 @@ import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class WithdrawUseCaseTest {
@@ -112,5 +111,13 @@ public class WithdrawUseCaseTest {
 
         assertEquals(Money.of("500"), output.withdrawnAmount());
         assertEquals(Money.of("-500"), account.getBalance());
+        assertEquals(
+                Money.of("500"),
+                output.withdrawnAmount()
+        );
+
+        verifyNoMoreInteractions(accountFinder);
+        verifyNoMoreInteractions(accountRepository);
+        verifyNoMoreInteractions(transactionRepository);
     }
 }

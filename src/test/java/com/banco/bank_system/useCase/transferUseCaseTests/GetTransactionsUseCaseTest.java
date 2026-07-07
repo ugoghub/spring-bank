@@ -158,7 +158,13 @@ class GetTransactionsUseCaseTest {
                 () -> useCase.execute(identity)
         );
 
+        verify(accountFinder)
+                .byIdentity(identity);
+
         verify(transactionRepository, never())
                 .findByAccountId(any());
+
+        verifyNoMoreInteractions(accountFinder);
+        verifyNoMoreInteractions(transactionRepository);
     }
 }

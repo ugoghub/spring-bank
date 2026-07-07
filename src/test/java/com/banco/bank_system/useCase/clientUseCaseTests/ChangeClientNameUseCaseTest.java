@@ -19,8 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ChangeClientNameUseCaseTest {
@@ -86,5 +85,10 @@ public class ChangeClientNameUseCaseTest {
                         newName
                 )
         );
+
+        verify(clientRepository)
+                .save(client);
+
+        verifyNoMoreInteractions(clientRepository);
     }
 }

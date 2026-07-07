@@ -17,8 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ChangeClientEmailUseCaseTest {
@@ -54,6 +53,14 @@ public class ChangeClientEmailUseCaseTest {
                 newEmail,
                 output.email()
         );
+
+        verify(clientRepository)
+                .getClientByCpf(client.getCpf());
+
+        verify(clientRepository)
+                .save(client);
+
+        verifyNoMoreInteractions(clientRepository);
     }
 
     @Test
@@ -62,26 +69,13 @@ public class ChangeClientEmailUseCaseTest {
         Client client =
                 ClientFactory.create();
 
-        Email email =
-                new Email("novoEmail@gmail.com");
-
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
-
-        GetClientDataOutput output =
-                useCase.execute(
-                        client.getCpf(),
-                        email
-                );
-
-        verify(clientRepository)
-                .save(client);
+        when(clientRepository.getClientByCpf(client.getCpf())).thenReturn(Optional.of(client));
 
         assertThrows(
                 InvalidClientChangeException.class,
                 () -> useCase.execute(
-                        output.cpf(),
-                        email
+                        client.getCpf(),
+                        client.getEmail()
                 )
         );
     }

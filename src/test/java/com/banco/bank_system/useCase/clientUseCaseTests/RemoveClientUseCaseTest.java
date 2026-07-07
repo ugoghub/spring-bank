@@ -59,7 +59,15 @@ public class RemoveClientUseCaseTest {
         when(accountRepository.getAccountsByClient(client.getId()))
                 .thenReturn(accounts);
 
+        // Act
         useCase.execute(client.getCpf());
+
+        // Assert
+        verify(clientRepository)
+                .getClientByCpf(client.getCpf());
+
+        verify(accountRepository)
+                .getAccountsByClient(client.getId());
 
         verify(accountRepository)
                 .removeClientAccounts(client.getId());
@@ -67,6 +75,8 @@ public class RemoveClientUseCaseTest {
         verify(clientRepository)
                 .delete(client.getId());
 
+        verifyNoMoreInteractions(clientRepository);
+        verifyNoMoreInteractions(accountRepository);
     }
 
     @Test

@@ -137,5 +137,7 @@ class CreateClientUseCaseTest {
 
         verify(clientRepository, times(1))
                 .save(any(Client.class));
+
+        verifyNoMoreInteractions(clientRepository);
     }
 }
