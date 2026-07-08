@@ -50,9 +50,8 @@ ClientController {
                 new Email(client.email())
         );
 
-        return ResponseEntity.ok(
-                CreateClientResponse.from(output)
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CreateClientResponse.from(output));
     }
 
     @GetMapping(path = "/{cpf}")

@@ -46,18 +46,14 @@ public class CreateClientUseCase {
     private void validateCpfUniqueness(CPF cpf) {
 
         if (clientRepository.existsByCpf(cpf)) {
-            throw new CpfAlreadyExistsException(
-                    "CPF já cadastrado"
-            );
+            throw new CpfAlreadyExistsException();
         }
     }
 
     private void validateEmailUniqueness(Email email) {
 
         if (clientRepository.existsByEmail(email)) {
-            throw new EmailAlreadyExistsException(
-                    "Email já cadastrado"
-            );
+            throw new EmailAlreadyExistsException();
         }
     }
 }

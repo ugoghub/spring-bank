@@ -31,7 +31,7 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
 
     @Override
     public List<Transaction> findByAccountId(AccountId accountId) {
-        return repository.findByAccountId(accountId)
+        return repository.findByAccountId(accountId.id())
                 .stream()
                 .map(TransactionEntity::toDomain)
                 .toList();

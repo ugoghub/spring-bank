@@ -2,14 +2,16 @@ package com.banco.bank_system.infrastructure;
 
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
+import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.enums.TransactionType;
 import com.banco.bank_system.domain.valueobject.Money;
+import com.banco.bank_system.domain.valueobject.OperationId;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import com.banco.bank_system.infrastructure.database.adapters.AccountRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.adapters.TransactionRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
-import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
+import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
 import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -42,9 +45,6 @@ class TransactionRepositoryAdapterTest {
 
     @Autowired
     private JpaTransactionRepository repository;
-
-    @Autowired
-    private JpaAccountRepository accountRepository;
 
     @Autowired
     private JpaClientRepository clientRepository;
@@ -81,6 +81,23 @@ class TransactionRepositoryAdapterTest {
         adapter.save(transaction);
 
         assertEquals(1, repository.count());
+
+        TransactionEntity entity = repository.findAll().getFirst();
+
+        assertEquals(
+                transaction.getType(),
+                entity.getType()
+        );
+
+        assertEquals(
+                transaction.getAmount().value(),
+                entity.getAmount()
+        );
+
+        assertEquals(
+                transaction.getAccountId().id(),
+                entity.getAccountId()
+        );
     }
 
     @Test
@@ -117,6 +134,16 @@ class TransactionRepositoryAdapterTest {
                 adapter.findByAccountId(account.getId());
 
         assertEquals(2, result.size());
+
+        assertEquals(
+                TransactionType.DEPOSIT,
+                result.getFirst().getType()
+        );
+
+        assertEquals(
+                TransactionType.WITHDRAW,
+                result.getLast().getType()
+        );
     }
 
     @Test
@@ -137,46 +164,292 @@ class TransactionRepositoryAdapterTest {
     }
 
     @Test
-    void shouldReturnTransactionsInCreationOrder() {
+    void shouldSaveTransferSentTransaction() {
 
         Client client = ClientFactory.create();
         clientRepository.save(ClientEntity.fromDomain(client));
 
-        CheckingAccount account =
+        CheckingAccount from =
                 AccountFactory.checking(client.getId(), clock);
 
-        accountRepositoryAdapter.save(account);
+        SavingsAccount to =
+                AccountFactory.savings(client.getId(), clock);
 
-        Transaction deposit =
-                Transaction.deposit(
-                        account.getId(),
-                        account.getAccountIdentity(),
-                        Money.of("100"),
+        accountRepositoryAdapter.save(from);
+        accountRepositoryAdapter.save(to);
+
+        OperationId operationId = OperationId.generate();
+
+        Transaction transaction =
+                Transaction.transferSent(
+                        from.getId(),
+                        operationId,
+                        from.getAccountIdentity(),
+                        to.getAccountIdentity(),
+                        Money.of("200"),
                         clock
                 );
 
-        Transaction withdraw =
-                Transaction.withdraw(
-                        account.getId(),
-                        account.getAccountIdentity(),
-                        Money.of("50"),
-                        clock
-                );
+        adapter.save(transaction);
 
-        adapter.save(deposit);
-        adapter.save(withdraw);
-
-        List<Transaction> result =
-                adapter.findByAccountId(account.getId());
+        TransactionEntity entity =
+                repository.findAll().getFirst();
 
         assertEquals(
-                TransactionType.DEPOSIT,
-                result.getFirst().getType()
+                TransactionType.TRANSFER_SENT,
+                entity.getType()
         );
 
         assertEquals(
-                TransactionType.WITHDRAW,
-                result.getLast().getType()
+                operationId.id(),
+                entity.getOperationId()
+        );
+
+        assertEquals(
+                from.getId().id(),
+                entity.getAccountId()
+        );
+
+        assertEquals(
+                from.getAccountIdentity().branch(),
+                entity.getSource_branch()
+        );
+
+        assertEquals(
+                from.getAccountIdentity().accountNumber(),
+                entity.getSource_accountNumber()
+        );
+
+        assertEquals(
+                to.getAccountIdentity().branch(),
+                entity.getDestination_branch()
+        );
+
+        assertEquals(
+                to.getAccountIdentity().accountNumber(),
+                entity.getDestination_accountNumber()
+        );
+
+        assertEquals(
+                Money.of("200").value(),
+                entity.getAmount()
+        );
+    }
+
+    @Test
+    void shouldSaveTransferReceivedTransaction() {
+
+        Client client = ClientFactory.create();
+        clientRepository.save(ClientEntity.fromDomain(client));
+
+        CheckingAccount from =
+                AccountFactory.checking(client.getId(), clock);
+
+        SavingsAccount to =
+                AccountFactory.savings(client.getId(), clock);
+
+        accountRepositoryAdapter.save(from);
+        accountRepositoryAdapter.save(to);
+
+        OperationId operationId = OperationId.generate();
+
+        Transaction transaction =
+                Transaction.transferReceived(
+                        to.getId(),
+                        operationId,
+                        from.getAccountIdentity(),
+                        to.getAccountIdentity(),
+                        Money.of("200"),
+                        clock
+                );
+
+        adapter.save(transaction);
+
+        TransactionEntity entity =
+                repository.findAll().getFirst();
+
+        assertEquals(
+                TransactionType.TRANSFER_RECEIVED,
+                entity.getType()
+        );
+
+        assertEquals(
+                operationId.id(),
+                entity.getOperationId()
+        );
+
+        assertEquals(
+                to.getId().id(),
+                entity.getAccountId()
+        );
+
+        assertEquals(
+                from.getAccountIdentity().branch(),
+                entity.getSource_branch()
+        );
+
+        assertEquals(
+                from.getAccountIdentity().accountNumber(),
+                entity.getSource_accountNumber()
+        );
+
+        assertEquals(
+                to.getAccountIdentity().branch(),
+                entity.getDestination_branch()
+        );
+
+        assertEquals(
+                to.getAccountIdentity().accountNumber(),
+                entity.getDestination_accountNumber()
+        );
+
+        assertEquals(
+                Money.of("200").value(),
+                entity.getAmount()
+        );
+    }
+
+    @Test
+    void shouldRestoreTransferSentTransaction() {
+
+        Client client = ClientFactory.create();
+        clientRepository.save(ClientEntity.fromDomain(client));
+
+        CheckingAccount from =
+                AccountFactory.checking(client.getId(), clock);
+
+        SavingsAccount to =
+                AccountFactory.savings(client.getId(), clock);
+
+        accountRepositoryAdapter.save(from);
+        accountRepositoryAdapter.save(to);
+
+        OperationId operationId = OperationId.generate();
+
+        Transaction sent =
+                Transaction.transferSent(
+                        from.getId(),
+                        operationId,
+                        from.getAccountIdentity(),
+                        to.getAccountIdentity(),
+                        Money.of("200"),
+                        clock
+                );
+
+        adapter.save(sent);
+
+        List<Transaction> result =
+                adapter.findByAccountId(from.getId());
+
+        assertEquals(1, result.size());
+
+        Transaction restored = result.getFirst();
+
+        assertEquals(
+                TransactionType.TRANSFER_SENT,
+                restored.getType()
+        );
+
+        assertEquals(
+                operationId,
+                restored.getOperationId()
+        );
+
+        assertEquals(
+                from.getId(),
+                restored.getAccountId()
+        );
+
+        assertEquals(
+                from.getAccountIdentity(),
+                restored.getSource()
+        );
+
+        assertEquals(
+                to.getAccountIdentity(),
+                restored.getDestination()
+        );
+
+        assertEquals(
+                Money.of("200"),
+                restored.getAmount()
+        );
+
+        assertEquals(
+                LocalDateTime.of(2026, 1, 10, 10, 0),
+                restored.getDateTime()
+        );
+    }
+
+    @Test
+    void shouldRestoreTransferReceivedTransaction() {
+
+        Client client = ClientFactory.create();
+        clientRepository.save(ClientEntity.fromDomain(client));
+
+        CheckingAccount from =
+                AccountFactory.checking(client.getId(), clock);
+
+        SavingsAccount to =
+                AccountFactory.savings(client.getId(), clock);
+
+        accountRepositoryAdapter.save(from);
+        accountRepositoryAdapter.save(to);
+
+        OperationId operationId = OperationId.generate();
+
+        Transaction received =
+                Transaction.transferReceived(
+                        to.getId(),
+                        operationId,
+                        from.getAccountIdentity(),
+                        to.getAccountIdentity(),
+                        Money.of("200"),
+                        clock
+                );
+
+        adapter.save(received);
+
+        List<Transaction> result =
+                adapter.findByAccountId(to.getId());
+
+        assertEquals(1, result.size());
+
+        Transaction restored = result.getFirst();
+
+        assertEquals(
+                TransactionType.TRANSFER_RECEIVED,
+                restored.getType()
+        );
+
+        assertEquals(
+                operationId,
+                restored.getOperationId()
+        );
+
+        assertEquals(
+                to.getId(),
+                restored.getAccountId()
+        );
+
+        assertEquals(
+                from.getAccountIdentity(),
+                restored.getSource()
+        );
+
+        assertEquals(
+                to.getAccountIdentity(),
+                restored.getDestination()
+        );
+
+        assertEquals(
+                Money.of("200"),
+                restored.getAmount()
+        );
+
+        assertEquals(
+                LocalDateTime.of(2026, 1, 10, 10, 0),
+                restored.getDateTime()
         );
     }
 }

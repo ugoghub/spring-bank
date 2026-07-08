@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@NoArgsConstructor
+
 @Entity
 @Table(
         name = "tb_accounts",
@@ -28,8 +31,6 @@ import java.util.UUID;
                 )
         }
 )
-@Getter
-@NoArgsConstructor
 public class AccountEntity {
 
     @Id

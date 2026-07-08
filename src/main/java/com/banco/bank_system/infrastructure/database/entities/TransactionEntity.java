@@ -11,10 +11,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "tb_transactions")
 @Getter
 @NoArgsConstructor
+
+@Entity
+@Table(name = "tb_transactions")
 public class TransactionEntity {
 
     @Id
@@ -37,7 +38,7 @@ public class TransactionEntity {
     @Column(name = "source_branch")
     private String source_branch;
 
-    @Column(name = "asource_accountNumber")
+    @Column(name = "source_accountNumber")
     private String source_accountNumber;
 
     @Column(name = "destination_branch")
@@ -77,27 +78,14 @@ public class TransactionEntity {
 
         return new TransactionEntity(
                 transaction.getId().id(),
-                transaction.getOperationId().id(),
+                operationId(transaction.getOperationId()),
                 transaction.getAccountId().id(),
                 transaction.getType(),
                 transaction.getAmount().value(),
-
-                transaction.getSource().branch() != null
-                        ? transaction.getSource().branch()
-                        : null,
-
-                transaction.getSource().accountNumber() != null
-                        ? transaction.getSource().accountNumber()
-                        : null,
-
-                transaction.getDestination().branch() != null
-                        ? transaction.getDestination().branch()
-                        : null,
-
-                transaction.getDestination().accountNumber() != null
-                        ? transaction.getDestination().accountNumber()
-                        : null,
-
+                branch(transaction.getSource()),
+                accountNumber(transaction.getSource()),
+                branch(transaction.getDestination()),
+                accountNumber(transaction.getDestination()),
                 transaction.getDateTime()
         );
     }
@@ -106,13 +94,29 @@ public class TransactionEntity {
 
         return Transaction.restore(
                 new TransactionId(id),
-                new OperationId(operationId),
+                operationId == null ? null : new OperationId(operationId),
                 new AccountId(accountId),
                 type,
                 Money.of(amount),
-                new AccountIdentity(source_branch, source_accountNumber),
-                new AccountIdentity(destination_branch, destination_accountNumber),
+                accountIdentity(source_branch, source_accountNumber),
+                accountIdentity(destination_branch, destination_accountNumber),
                 createdAt
         );
+    }
+
+    private static UUID operationId(OperationId id) {
+        return id == null ? null : id.id();
+    }
+
+    private static AccountIdentity accountIdentity(String branch, String account) {
+        return branch == null ? null : new AccountIdentity(branch, account);
+    }
+
+    private static String branch(AccountIdentity identity) {
+        return identity == null ? null : identity.branch();
+    }
+
+    private static String accountNumber(AccountIdentity identity) {
+        return identity == null ? null : identity.accountNumber();
     }
 }

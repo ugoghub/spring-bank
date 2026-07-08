@@ -7,6 +7,7 @@ import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import com.banco.bank_system.infrastructure.database.adapters.AccountRepositoryAdapter;
+import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
@@ -57,6 +58,24 @@ class AccountRepositoryAdapterTest {
         adapter.save(account);
 
         assertEquals(1, repository.count());
+
+        AccountEntity entity =
+                repository.findById(account.getId().id()).orElseThrow();
+
+        assertEquals(
+                account.getClientId().id(),
+                entity.getClientId()
+        );
+
+        assertEquals(
+                account.getAccountIdentity().branch(),
+                entity.getBranch()
+        );
+
+        assertEquals(
+                account.getAccountIdentity().accountNumber(),
+                entity.getAccountNumber()
+        );
     }
 
     @Test
@@ -94,9 +113,7 @@ class AccountRepositoryAdapterTest {
     @Test
     void shouldReturnAccountsByClient() {
 
-        Client client = ClientFactory.create();
-
-        clientRepository.save(ClientEntity.fromDomain(client));
+        Client client = persistClient();
 
         CheckingAccount checking =
                 AccountFactory.checking(client.getId(), clock);
@@ -122,9 +139,7 @@ class AccountRepositoryAdapterTest {
     @Test
     void shouldDeleteAccount() {
 
-        Client client = ClientFactory.create();
-
-        clientRepository.save(ClientEntity.fromDomain(client));
+        Client client = persistClient();
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -136,14 +151,14 @@ class AccountRepositoryAdapterTest {
         assertFalse(
                 repository.existsById(account.getId().id())
         );
+
+        assertEquals(0, repository.count());
     }
 
     @Test
     void shouldCheckExistsByAccountIdentity() {
 
-        Client client = ClientFactory.create();
-
-        clientRepository.save(ClientEntity.fromDomain(client));
+        Client client = persistClient();
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -171,9 +186,7 @@ class AccountRepositoryAdapterTest {
     @Test
     void shouldRemoveAllAccountsFromClient() {
 
-        Client client = ClientFactory.create();
-
-        clientRepository.save(ClientEntity.fromDomain(client));
+        Client client = persistClient();
 
         adapter.save(
                 AccountFactory.checking(client.getId(), clock)
@@ -191,5 +204,11 @@ class AccountRepositoryAdapterTest {
         assertTrue(accounts.isEmpty());
 
         assertEquals(0, repository.count());
+    }
+
+    private Client persistClient() {
+        Client client = ClientFactory.create();
+        clientRepository.save(ClientEntity.fromDomain(client));
+        return client;
     }
 }
