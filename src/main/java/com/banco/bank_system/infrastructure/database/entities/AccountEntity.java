@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@NoArgsConstructor
 
 @Entity
 @Table(
@@ -31,6 +29,9 @@ import java.util.UUID;
                 )
         }
 )
+
+@Getter
+@NoArgsConstructor
 public class AccountEntity {
 
     @Id

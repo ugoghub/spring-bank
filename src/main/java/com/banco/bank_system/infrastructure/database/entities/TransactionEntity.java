@@ -11,11 +11,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@NoArgsConstructor
-
 @Entity
 @Table(name = "tb_transactions")
+
+@Getter
+@NoArgsConstructor
 public class TransactionEntity {
 
     @Id

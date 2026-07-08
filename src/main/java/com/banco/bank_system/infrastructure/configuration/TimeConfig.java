@@ -1,5 +1,6 @@
 package com.banco.bank_system.infrastructure.configuration;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,8 +10,8 @@ import java.time.Clock;
 public class TimeConfig {
 
     @Bean
+    @ConditionalOnMissingBean(Clock.class)
     public Clock clock() {
-        return Clock.systemUTC();
+        return Clock.systemDefaultZone();
     }
-
 }
