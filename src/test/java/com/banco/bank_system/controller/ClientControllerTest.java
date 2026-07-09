@@ -17,6 +17,7 @@ import com.banco.bank_system.presentation.dto.request.client.ChangeClientEmailRe
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientNameRequest;
 import com.banco.bank_system.presentation.dto.request.client.CreateClientRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -57,6 +58,8 @@ class ClientControllerTest {
 
         @MockitoBean
         private RemoveClientUseCase removeClientUseCase;
+
+
 
     @Test
     void shouldCreateClient() throws Exception {

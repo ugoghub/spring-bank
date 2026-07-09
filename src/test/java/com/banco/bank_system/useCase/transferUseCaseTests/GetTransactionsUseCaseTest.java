@@ -17,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -52,7 +55,6 @@ class GetTransactionsUseCaseTest {
     @Test
     void shouldReturnTransactions() {
 
-        // Arrange
         CheckingAccount account =
                 AccountFactory.checking(clock);
 
@@ -72,72 +74,85 @@ class GetTransactionsUseCaseTest {
                         clock
                 );
 
-        List<Transaction> transactions =
-                List.of(deposit, withdraw);
+        Page<Transaction> transactions =
+                new PageImpl<>(List.of(deposit, withdraw));
 
         when(accountFinder.byIdentity(account.getAccountIdentity()))
                 .thenReturn(account);
 
-        when(transactionRepository.findByAccountId(account.getId()))
-                .thenReturn(transactions);
+        when(transactionRepository.findByAccountId(
+                eq(account.getId()),
+                any(Pageable.class)
+        )).thenReturn(transactions);
 
-        // Act
-        List<TransactionDTO> output =
-                useCase.execute(account.getAccountIdentity());
+        Page<TransactionDTO> output =
+                useCase.execute(
+                        account.getAccountIdentity(),
+                        0,
+                        10
+                );
 
-        // Assert
         verify(accountFinder)
                 .byIdentity(account.getAccountIdentity());
 
         verify(transactionRepository)
-                .findByAccountId(account.getId());
+                .findByAccountId(
+                        eq(account.getId()),
+                        any(Pageable.class)
+                );
 
-        assertEquals(2, output.size());
+        assertEquals(2, output.getTotalElements());
 
         assertEquals(
                 TransactionType.DEPOSIT,
-                output.getFirst().type()
+                output.getContent().getFirst().type()
         );
 
         assertEquals(
                 TransactionType.WITHDRAW,
-                output.getLast().type()
+                output.getContent().getLast().type()
         );
 
         assertEquals(
                 Money.of("500"),
-                output.getFirst().amount()
+                output.getContent().getFirst().amount()
         );
 
         assertEquals(
                 Money.of("200"),
-                output.getLast().amount()
+                output.getContent().getLast().amount()
         );
     }
 
     @Test
     void shouldReturnEmptyListWhenAccountHasNoTransactions() {
 
-        // Arrange
         CheckingAccount account =
                 AccountFactory.checking(clock);
 
         when(accountFinder.byIdentity(account.getAccountIdentity()))
                 .thenReturn(account);
 
-        when(transactionRepository.findByAccountId(account.getId()))
-                .thenReturn(List.of());
+        when(transactionRepository.findByAccountId(
+                eq(account.getId()),
+                any(Pageable.class)
+        )).thenReturn(Page.empty());
 
-        // Act
-        List<TransactionDTO> output =
-                useCase.execute(account.getAccountIdentity());
+        Page<TransactionDTO> output =
+                useCase.execute(
+                        account.getAccountIdentity(),
+                        0,
+                        10
+                );
 
-        // Assert
         verify(accountFinder)
                 .byIdentity(account.getAccountIdentity());
 
         verify(transactionRepository)
-                .findByAccountId(account.getId());
+                .findByAccountId(
+                        eq(account.getId()),
+                        any(Pageable.class)
+                );
 
         assertTrue(output.isEmpty());
     }
@@ -145,24 +160,22 @@ class GetTransactionsUseCaseTest {
     @Test
     void shouldThrowExceptionWhenAccountDoesNotExist() {
 
-        // Arrange
         AccountIdentity identity =
                 new AccountIdentity("01", "123456-1");
 
         when(accountFinder.byIdentity(identity))
                 .thenThrow(new AccountNotFoundException());
 
-        // Assert
         assertThrows(
                 AccountNotFoundException.class,
-                () -> useCase.execute(identity)
+                () -> useCase.execute(identity, 0, 10)
         );
 
         verify(accountFinder)
                 .byIdentity(identity);
 
         verify(transactionRepository, never())
-                .findByAccountId(any());
+                .findByAccountId(any(), any(Pageable.class));
 
         verifyNoMoreInteractions(accountFinder);
         verifyNoMoreInteractions(transactionRepository);

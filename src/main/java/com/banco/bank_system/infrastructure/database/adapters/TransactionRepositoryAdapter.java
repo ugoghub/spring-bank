@@ -5,11 +5,11 @@ import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
@@ -30,10 +30,12 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
     }
 
     @Override
-    public List<Transaction> findByAccountId(AccountId accountId) {
-        return repository.findByAccountId(accountId.id())
-                .stream()
-                .map(TransactionEntity::toDomain)
-                .toList();
+    public Page<Transaction> findByAccountId(
+            AccountId accountId,
+            Pageable pageable
+    ) {
+        return repository
+                .findByAccountId(accountId.id(), pageable)
+                .map(TransactionEntity::toDomain);
     }
 }

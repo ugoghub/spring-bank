@@ -20,12 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -130,19 +131,22 @@ class TransactionRepositoryAdapterTest {
         adapter.save(deposit);
         adapter.save(withdraw);
 
-        List<Transaction> result =
-                adapter.findByAccountId(account.getId());
+        Page<Transaction> result =
+                adapter.findByAccountId(
+                        account.getId(),
+                        PageRequest.of(0, 10)
+                );
 
-        assertEquals(2, result.size());
+        assertEquals(2, result.getTotalElements());
 
         assertEquals(
                 TransactionType.DEPOSIT,
-                result.getFirst().getType()
+                result.getContent().getFirst().getType()
         );
 
         assertEquals(
                 TransactionType.WITHDRAW,
-                result.getLast().getType()
+                result.getContent().getLast().getType()
         );
     }
 
@@ -157,8 +161,11 @@ class TransactionRepositoryAdapterTest {
 
         accountRepositoryAdapter.save(account);
 
-        List<Transaction> result =
-                adapter.findByAccountId(account.getId());
+        Page<Transaction> result =
+                adapter.findByAccountId(
+                        account.getId(),
+                        PageRequest.of(0, 10)
+                );
 
         assertTrue(result.isEmpty());
     }
@@ -338,12 +345,15 @@ class TransactionRepositoryAdapterTest {
 
         adapter.save(sent);
 
-        List<Transaction> result =
-                adapter.findByAccountId(from.getId());
+        Page<Transaction> result =
+                adapter.findByAccountId(
+                        from.getId(),
+                        PageRequest.of(0, 10)
+                );
 
-        assertEquals(1, result.size());
+        assertEquals(1, result.getTotalElements());
 
-        Transaction restored = result.getFirst();
+        Transaction restored = result.getContent().getFirst();
 
         assertEquals(
                 TransactionType.TRANSFER_SENT,
@@ -410,12 +420,15 @@ class TransactionRepositoryAdapterTest {
 
         adapter.save(received);
 
-        List<Transaction> result =
-                adapter.findByAccountId(to.getId());
+        Page<Transaction> result =
+                adapter.findByAccountId(
+                        to.getId(),
+                        PageRequest.of(0, 10)
+                );
 
-        assertEquals(1, result.size());
+        assertEquals(1, result.getTotalElements());
 
-        Transaction restored = result.getFirst();
+        Transaction restored = result.getContent().getFirst();
 
         assertEquals(
                 TransactionType.TRANSFER_RECEIVED,

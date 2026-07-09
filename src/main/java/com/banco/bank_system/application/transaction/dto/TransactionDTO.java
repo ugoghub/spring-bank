@@ -9,7 +9,6 @@ import com.banco.bank_system.domain.valueobject.TransactionId;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 public record TransactionDTO(
         TransactionId id,
         OperationId operationId,
@@ -22,34 +21,25 @@ public record TransactionDTO(
         LocalDateTime dateTime
 ) {
 
-    public static List<TransactionDTO> from(List<Transaction> transactions) {
-        return transactions.stream()
-                .map(t -> new TransactionDTO(
-                        t.getId(),
-                        t.getOperationId(),
-                        t.getType(),
-                        t.getAmount(),
-
-                        branch(t.getSource()),
-                        accountNumber(t.getSource()),
-
-                        branch(t.getDestination()),
-                        accountNumber(t.getDestination()),
-
-                        t.getDateTime()
-                ))
-                .toList();
+    public static TransactionDTO from(Transaction transaction) {
+        return new TransactionDTO(
+                transaction.getId(),
+                transaction.getOperationId(),
+                transaction.getType(),
+                transaction.getAmount(),
+                branch(transaction.getSource()),
+                accountNumber(transaction.getSource()),
+                branch(transaction.getDestination()),
+                accountNumber(transaction.getDestination()),
+                transaction.getDateTime()
+        );
     }
 
     private static String branch(AccountIdentity accountIdentity) {
-        return accountIdentity == null
-                ? null
-                : accountIdentity.branch();
+        return accountIdentity == null ? null : accountIdentity.branch();
     }
 
     private static String accountNumber(AccountIdentity accountIdentity) {
-        return accountIdentity == null
-                ? null
-                : accountIdentity.accountNumber();
+        return accountIdentity == null ? null : accountIdentity.accountNumber();
     }
 }

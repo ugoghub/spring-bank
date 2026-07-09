@@ -6,16 +6,18 @@ import com.banco.bank_system.application.transaction.port.TransactionRepositoryP
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class GetTransactionsUseCase {
 
     private final TransactionRepositoryPort transactionRepository;
     private final AccountFinder accountFinder;
-    ;
+
 
     public GetTransactionsUseCase(TransactionRepositoryPort transactionRepository,
                           AccountFinder accountFinder) {
@@ -23,12 +25,27 @@ public class GetTransactionsUseCase {
         this.accountFinder = accountFinder;
     }
 
-    public List<TransactionDTO> execute(AccountIdentity accountIdentity){
+    public Page<TransactionDTO> execute(
+            AccountIdentity accountIdentity,
+            int page,
+            int size
+    ){
 
         Account account = accountFinder.byIdentity(accountIdentity);
 
-        List<Transaction> transactions = transactionRepository.findByAccountId(account.getId());
+        Pageable pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        Sort.by("createdAt").descending()
+                );
 
-        return TransactionDTO.from(transactions);
+        Page<Transaction> transactions =
+                transactionRepository.findByAccountId(
+                        account.getId(),
+                        pageable
+                );
+
+        return transactions.map(TransactionDTO::from);
     }
 }

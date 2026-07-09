@@ -12,12 +12,19 @@ import com.banco.bank_system.presentation.dto.request.client.ChangeClientNameReq
 import com.banco.bank_system.presentation.dto.request.client.CreateClientRequest;
 import com.banco.bank_system.presentation.dto.response.client.ClientDataResponse;
 import com.banco.bank_system.presentation.dto.response.client.CreateClientResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clients")
+@Tag(name = "Clientes", description = "Operações relacionadas aos clientes")
 public class
 ClientController {
 
@@ -39,9 +46,18 @@ ClientController {
         this.removeClientUseCase = removeClientUseCase;
     }
 
+    @Operation(
+            summary = "Cadastrar cliente",
+            description = "Realiza o cadastro de um novo cliente."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Cliente criado"),
+            @ApiResponse(responseCode = "409", description = "CPF ou e-mail já cadastrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     @PostMapping
     public ResponseEntity<CreateClientResponse> createClient(
-            @RequestBody CreateClientRequest client
+            @Valid @RequestBody CreateClientRequest client
     ) {
 
         CreateClientOutput output = createClientUseCase.execute(
@@ -54,8 +70,22 @@ ClientController {
                 .body(CreateClientResponse.from(output));
     }
 
+
+    @Operation(
+            summary = "Consultar cliente",
+            description = "Consulta os dados de um cliente a partir do CPF."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            @ApiResponse(responseCode = "400", description = "CPF inválido")
+    })
     @GetMapping(path = "/{cpf}")
     public ResponseEntity<ClientDataResponse> clientData(
+            @Parameter(
+                    description = "CPF do cliente",
+                    example = "52998224725"
+            )
             @PathVariable String cpf
     ) {
 
@@ -69,10 +99,25 @@ ClientController {
         );
     }
 
+    @Operation(
+            summary = "Atualizar o nome do cliente",
+            description = "Altera o nome de um cliente."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Nome alterado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     @PutMapping("/changeName/{cpf}")
     public ResponseEntity<ClientDataResponse> changeClientName(
+
+            @Parameter(
+                    description = "CPF do cliente",
+                    example = "52998224725"
+            )
             @PathVariable String cpf,
-            @RequestBody ChangeClientNameRequest client
+
+            @Valid @RequestBody ChangeClientNameRequest client
     ) {
 
         GetClientDataOutput output = changeClientNameUseCase.execute(
@@ -85,10 +130,26 @@ ClientController {
         );
     }
 
+    @Operation(
+            summary = "Atualizar o email do cliente",
+            description = "Altera o e-mail de um cliente."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "E-mail alterado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            @ApiResponse(responseCode = "409", description = "E-mail já cadastrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     @PutMapping("/changeEmail/{cpf}")
     public ResponseEntity<ClientDataResponse> changeClientEmail(
+
+            @Parameter(
+                    description = "CPF do cliente",
+                    example = "52998224725"
+            )
             @PathVariable String cpf,
-            @RequestBody ChangeClientEmailRequest client
+
+            @Valid @RequestBody ChangeClientEmailRequest client
     ) {
 
         GetClientDataOutput output = changeClientEmailUseCase.execute(
@@ -101,10 +162,23 @@ ClientController {
         );
     }
 
+    @Operation(
+            summary = "Remover cliente",
+            description = "Remove um cliente pelo CPF."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Cliente removido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            @ApiResponse(responseCode = "400", description = "CPF inválido")
+    })
     @DeleteMapping(path = "/{cpf}")
     public ResponseEntity<Void> removeClient(
-        @PathVariable String cpf
-    ){
+            @Parameter(
+                    description = "CPF do cliente",
+                    example = "52998224725"
+            )
+            @PathVariable String cpf
+    ) {
         removeClientUseCase.execute(new CPF(cpf));
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

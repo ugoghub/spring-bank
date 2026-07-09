@@ -3,9 +3,7 @@ package com.banco.bank_system.presentation.dto.response.transactions;
 import com.banco.bank_system.application.transaction.dto.TransactionDTO;
 
 import java.text.NumberFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -21,7 +19,7 @@ public record TransactionResponse(
         String dateTime
 ) {
 
-    private static final DateTimeFormatter formatter =
+    private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     private static final NumberFormat FORMAT =
@@ -29,24 +27,17 @@ public record TransactionResponse(
                     Locale.of("pt", "BR")
             );
 
-    public static List<TransactionResponse> from(List<TransactionDTO> output) {
-        return output.stream()
-                .map(t -> new TransactionResponse(
-                                t.id().id(),
-
-                                t.operationId() == null
-                                        ? null
-                                        : t.operationId().id(),
-
-                                t.type().toString(),
-                                FORMAT.format(t.amount().value()),
-                                t.source_branch(),
-                                t.source_accountNumber(),
-                                t.destination_branch(),
-                                t.destination_accountNumber(),
-                                formatter.format(t.dateTime())
-                        )
-                )
-                .toList();
+    public static TransactionResponse from(TransactionDTO dto) {
+        return new TransactionResponse(
+                dto.id().id(),
+                dto.operationId() == null ? null : dto.operationId().id(),
+                dto.type().toString(),
+                FORMAT.format(dto.amount().value()),
+                dto.source_branch(),
+                dto.source_accountNumber(),
+                dto.destination_branch(),
+                dto.destination_accountNumber(),
+                FORMATTER.format(dto.dateTime())
+        );
     }
 }

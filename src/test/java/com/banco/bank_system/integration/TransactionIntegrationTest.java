@@ -195,7 +195,10 @@ class TransactionIntegrationTest {
                                 account.getAccountIdentity().accountNumber())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].type").value("DEPOSIT"));
+                .andExpect(jsonPath("$.content[0].type").value("DEPOSIT"))
+                .andExpect(jsonPath("$.content[0].amount").exists())
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 
     @Test

@@ -1,23 +1,27 @@
 spring:
   application:
-    name: bank-system-test
+    name: bank-system
 
   datasource:
-    url: jdbc:h2:mem:bank-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:postgresql://localhost:5433/bank
+    username: postgres
+    password: postgres
 
   jpa:
-    show-sql: false
+    show-sql: true
 
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
     properties:
       hibernate:
         format_sql: true
 
-  h2:
-    console:
-      enabled: true
+springdoc:
+  swagger-ui:
+    path: /swagger
+    operationsSorter: method
+    tagsSorter: alpha
+
+  api-docs:
+    path: /api-docs

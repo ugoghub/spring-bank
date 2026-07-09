@@ -18,10 +18,11 @@ import com.banco.bank_system.presentation.dto.response.transactions.DepositRespo
 import com.banco.bank_system.presentation.dto.response.transactions.TransactionResponse;
 import com.banco.bank_system.presentation.dto.response.transactions.TransferResponse;
 import com.banco.bank_system.presentation.dto.response.transactions.WithdrawResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/transactions")
@@ -30,7 +31,7 @@ public class TransactionController {
     private final DepositUseCase depositUseCase;
     private final WithdrawUseCase withdrawUseCase;
     private final TransferUseCase transferUseCase;
-    private final GetTransactionsUseCase getAccountTransactionsUseCase;
+    private final GetTransactionsUseCase getTransactionsUseCase;
 
     public TransactionController(
             DepositUseCase depositUseCase,
@@ -40,13 +41,13 @@ public class TransactionController {
     ) {
         this.depositUseCase = depositUseCase;
         this.withdrawUseCase = withdrawUseCase;
-        this.getAccountTransactionsUseCase = getAccountTransactionsUseCase;
+        this.getTransactionsUseCase = getAccountTransactionsUseCase;
         this.transferUseCase = transferUseCase;
     }
 
     @PostMapping("/deposit")
     public ResponseEntity<DepositResponse> deposit(
-            @RequestBody DepositRequest request
+            @Valid @RequestBody DepositRequest request
     ) {
 
         DepositOutput output = depositUseCase.execute(
@@ -64,7 +65,7 @@ public class TransactionController {
 
     @PostMapping("/withdraw")
     public ResponseEntity<WithdrawResponse> withdraw(
-            @RequestBody WithdrawRequest request
+            @Valid @RequestBody WithdrawRequest request
     ) {
 
         WithdrawOutput output = withdrawUseCase.execute(
@@ -82,7 +83,7 @@ public class TransactionController {
 
     @PostMapping("/transfer")
     public ResponseEntity<TransferResponse> transfer(
-            @RequestBody TransferRequest request
+            @Valid @RequestBody TransferRequest request
     ) {
 
         TransferOutput output = transferUseCase.execute(
@@ -103,16 +104,33 @@ public class TransactionController {
     }
 
     @GetMapping("/{branch}/{accountNumber}")
-    public ResponseEntity<List<TransactionResponse>> getTransactions(
+    public ResponseEntity<Page<TransactionResponse>> getTransactions(
+            @Parameter(
+                    description = "Agência da conta",
+                    example = "01"
+            )
             @PathVariable String branch,
-            @PathVariable String accountNumber
-    ){
+
+            @Parameter(
+                    description = "Número da conta",
+                    example = "123456-1"
+            )
+            @PathVariable String accountNumber,
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         AccountIdentity accountIdentity = new AccountIdentity(branch, accountNumber);
 
-        List<TransactionDTO> output = getAccountTransactionsUseCase.execute(accountIdentity);
+        Page<TransactionDTO> output =
+                getTransactionsUseCase.execute(
+                        accountIdentity,
+                        page,
+                        size
+                );
 
         return ResponseEntity.ok(
-                TransactionResponse.from(output)
+                output.map(TransactionResponse::from)
         );
     }
 }
