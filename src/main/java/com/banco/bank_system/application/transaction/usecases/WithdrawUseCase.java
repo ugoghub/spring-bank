@@ -39,14 +39,14 @@ public class WithdrawUseCase {
 
         account.withdraw(value);
 
-        accountRepository.save(account);
-
         Transaction withdraw = Transaction.withdraw(
                 account.getId(),
                 account.getAccountIdentity(),
                 value,
                 clock
         );
+
+        accountRepository.save(account);
 
         transactionRepository.save(withdraw);
 

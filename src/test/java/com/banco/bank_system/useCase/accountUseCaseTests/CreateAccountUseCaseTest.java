@@ -3,6 +3,7 @@ package com.banco.bank_system.useCase.accountUseCaseTests;
 import com.banco.bank_system.application.account.dto.CreateAccountOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.usecases.CreateAccountUseCase;
+import com.banco.bank_system.application.account.util.UniqueAccountIdentityGenerator;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.application.exception.ClientNotFoundException;
 import com.banco.bank_system.domain.entities.Account;
@@ -35,6 +36,9 @@ class CreateAccountUseCaseTest {
     @Mock
     private AccountRepositoryPort accountRepository;
 
+    @Mock
+    private UniqueAccountIdentityGenerator uniqueAccountIdentityGenerator;
+
     private CreateAccountUseCase useCase;
 
     private Client client;
@@ -52,6 +56,7 @@ class CreateAccountUseCaseTest {
         useCase = new CreateAccountUseCase(
                 accountRepository,
                 clientRepository,
+                uniqueAccountIdentityGenerator,
                 clock);
     }
 

@@ -4,21 +4,21 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class AccountIdentityFactory {
 
-    private static final int MAX_ACCOUNT_NUMBER = 1_000_000;
-    private static final int MAX_BRANCH_NUMBER = 50;
+    private static final int ACCOUNT_NUMBER_LIMIT = 1_000_000;
+    private static final int BRANCH_LIMIT = 50;
 
     private AccountIdentityFactory() {
     }
 
     private static String generateBranch() {
-        int branch = ThreadLocalRandom.current().nextInt(0, MAX_BRANCH_NUMBER);
+        int branch = ThreadLocalRandom.current().nextInt(0, ACCOUNT_NUMBER_LIMIT);
 
         return String.format("%02d", branch);
     }
 
     private static String generateAccountNumber() {
         String accountNumber = String.format("%06d",
-                ThreadLocalRandom.current().nextInt(0, MAX_ACCOUNT_NUMBER));
+                ThreadLocalRandom.current().nextInt(0, BRANCH_LIMIT));
 
         return accountNumber + "-" + generateDigit(accountNumber);
     }

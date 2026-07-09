@@ -29,7 +29,11 @@ public class Transaction {
             LocalDateTime dateTime
     ) {
 
-        validateTransactionState(type, operationId, sourceIdentity, destinationIdentity);
+        if(id == null){
+            throw new InvalidTransactionException("ID inválido");
+        }
+
+        validateTransactionState(accountId, type, operationId, sourceIdentity, destinationIdentity, dateTime);
 
         validateAmount(amount);
 
@@ -51,13 +55,12 @@ public class Transaction {
                         AccountIdentity destinationIdentity,
                         Clock clock) {
 
-        validateTransactionState(type, operationId, sourceIdentity, destinationIdentity);
+
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        validateTransactionState(accountId, type, operationId, sourceIdentity, destinationIdentity, now);
 
         validateAmount(amount);
-
-        if (clock == null) {
-            throw new InvalidTransactionException("Horário inválido");
-        }
 
         this.id = TransactionId.generate();
         this.operationId = operationId;
@@ -66,7 +69,7 @@ public class Transaction {
         this.destinationIdentity = destinationIdentity;
         this.type = type;
         this.amount = amount;
-        this.dateTime = LocalDateTime.now(clock);
+        this.dateTime = now;
     }
 
     public static Transaction restore(
@@ -208,12 +211,22 @@ public class Transaction {
     // =========================
 
     private static void validateTransactionState(
+            AccountId accountId,
             TransactionType type,
             OperationId operationId,
             AccountIdentity sourceIdentity,
-            AccountIdentity destinationIdentity
+            AccountIdentity destinationIdentity,
+            LocalDateTime dateTime
     ) {
         //validação defensiva
+
+        if(accountId == null){
+            throw new InvalidTransactionException("ID da conta inválido");
+        }
+
+        if(dateTime == null){
+            throw new InvalidTransactionException("Horário inválido");
+        }
 
         if (type == null) {
             throw new InvalidTransactionException(

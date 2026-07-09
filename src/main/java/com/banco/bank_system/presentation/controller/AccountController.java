@@ -31,13 +31,13 @@ public class AccountController {
     private final CreateAccountUseCase createAccountUseCase;
     private final GetAccountBalanceUseCase getAccountBalanceUseCase;
     private final GetClientAccountsUseCase getClientAccountsUseCase;
-    private final GetClientAccountUseCase getClientAccountUseCase;
+    private final GetAccountUseCase getClientAccountUseCase;
     private final RemoveAccountUseCase removeAccountUseCase;
 
     public AccountController(CreateAccountUseCase createAccountUseCase,
                              GetAccountBalanceUseCase getAccountBalanceUseCase,
                              GetClientAccountsUseCase getClientAccountsUseCase,
-                             GetClientAccountUseCase getClientAccountUseCase,
+                             GetAccountUseCase getClientAccountUseCase,
                              RemoveAccountUseCase removeAccountUseCase) {
         this.createAccountUseCase = createAccountUseCase;
         this.getAccountBalanceUseCase = getAccountBalanceUseCase;

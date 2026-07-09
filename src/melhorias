@@ -1,7 +1,5 @@
 AccountFactory
 
-accountid transactionid operationid como valueobject
-
 ClientUniquenessValidator
 
 clientFinder

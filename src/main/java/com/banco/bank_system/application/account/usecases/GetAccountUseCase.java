@@ -7,11 +7,11 @@ import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetClientAccountUseCase {
+public class GetAccountUseCase {
 
     private final AccountFinder accountFinder;
 
-    public GetClientAccountUseCase(AccountFinder accountFinder) {
+    public GetAccountUseCase(AccountFinder accountFinder) {
         this.accountFinder = accountFinder;
     }
 

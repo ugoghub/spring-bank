@@ -25,7 +25,7 @@ public class TransactionEntity {
     @Column(name = "operation_id")
     private UUID operationId;
 
-    @Column(name = "accountId")
+    @Column(name = "account_Id")
     private UUID accountId;
 
     @Enumerated(EnumType.STRING)

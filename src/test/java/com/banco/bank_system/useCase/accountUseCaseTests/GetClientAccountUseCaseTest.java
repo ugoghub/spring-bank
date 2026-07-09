@@ -1,12 +1,9 @@
 package com.banco.bank_system.useCase.accountUseCaseTests;
 
-import com.banco.bank_system.application.account.dto.GetBalanceOutput;
 import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
-import com.banco.bank_system.application.account.usecases.GetAccountBalanceUseCase;
-import com.banco.bank_system.application.account.usecases.GetClientAccountUseCase;
+import com.banco.bank_system.application.account.usecases.GetAccountUseCase;
 import com.banco.bank_system.application.account.util.AccountFinder;
 import com.banco.bank_system.domain.entities.Account;
-import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +23,7 @@ public class GetClientAccountUseCaseTest {
     private AccountFinder accountFinder;
 
     @InjectMocks
-    private GetClientAccountUseCase useCase;
+    private GetAccountUseCase useCase;
 
     @Test
     void shouldReturnClientAccount() {

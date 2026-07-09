@@ -9,6 +9,7 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,30 +25,31 @@ public class RemoveClientUseCase {
         this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public void execute(CPF cpf) {
         Client client =
                 clientRepository.getClientByCpf(cpf)
                         .orElseThrow(ClientNotFoundException::new);
 
         validateAccounts(client.getId());
-        removeAllClientAccounts(client.getId());
+
+        accountRepository.removeClientAccounts(client.getId());
 
         clientRepository.delete(client.getId());
     }
 
     private void validateAccounts(ClientId clientId) {
-        List<Account> accounts = accountRepository.getAccountsByClient(clientId);
 
-        for (Account account : accounts) {
-            if (!account.isRemovable()) {
-                throw new CannotRemoveAccountException(
-                        "Não foi possível remover as contas. Cliente possui conta com saldo ativo"
-                );
-            }
+        boolean hasNonRemovableAccount =
+                accountRepository
+                        .getAccountsByClient(clientId)
+                        .stream()
+                        .anyMatch(account -> !account.isRemovable());
+
+        if (hasNonRemovableAccount) {
+            throw new CannotRemoveAccountException(
+                    "Não foi possível remover as contas. Cliente possui conta com saldo ativo"
+            );
         }
-    }
-
-    private void removeAllClientAccounts(ClientId clientId){
-        accountRepository.removeClientAccounts(clientId);
     }
 }

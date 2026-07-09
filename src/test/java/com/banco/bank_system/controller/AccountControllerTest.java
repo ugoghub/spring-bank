@@ -53,7 +53,7 @@ class AccountControllerTest {
     private GetClientAccountsUseCase getClientAccountsUseCase;
 
     @MockitoBean
-    private GetClientAccountUseCase getClientAccountUseCase;
+    private GetAccountUseCase getClientAccountUseCase;
 
     @MockitoBean
     private RemoveAccountUseCase removeAccountUseCase;

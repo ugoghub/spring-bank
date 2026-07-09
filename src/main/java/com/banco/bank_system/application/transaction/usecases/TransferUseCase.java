@@ -45,9 +45,11 @@ public class TransferUseCase {
 
         Account to = accountFinder.byIdentity(toAccountIdentity);
 
-        if (from.equals(to)) {
+        if (from.getId().equals(to.getId())) {
             throw new InvalidTransferException("Não é possível transferir para a mesma conta");
         }
+
+        OperationId operationId = OperationId.generate();
 
         from.withdraw(value);
 
@@ -56,7 +58,6 @@ public class TransferUseCase {
         accountRepository.save(from);
         accountRepository.save(to);
 
-        OperationId operationId = OperationId.generate();
 
         Transaction fromTransaction = Transaction.transferSent(
                 from.getId(),

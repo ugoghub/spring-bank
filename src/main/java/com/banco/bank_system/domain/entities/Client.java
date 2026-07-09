@@ -1,16 +1,12 @@
 package com.banco.bank_system.domain.entities;
 
-import com.banco.bank_system.domain.exception.InvalidClientChangeException;
-import com.banco.bank_system.domain.exception.InvalidCpfException;
-import com.banco.bank_system.domain.exception.InvalidEmailException;
-import com.banco.bank_system.domain.exception.InvalidPersonNameException;
+import com.banco.bank_system.domain.exception.*;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class Client {
     private final ClientId id;
@@ -26,7 +22,7 @@ public class Client {
     ){
 
         if(id == null){
-            throw new IllegalArgumentException("ID inválido");
+            throw new InvalidClientIdException("ID inválido");
         }
 
         if(name == null){
@@ -52,7 +48,12 @@ public class Client {
             CPF cpf,
             Email email
     ){
-        return new Client(new ClientId(UUID.randomUUID()), name, cpf, email);
+        return new Client(
+                ClientId.generate(),
+                name,
+                cpf,
+                email
+        );
     }
 
     public static Client restore(
@@ -103,14 +104,6 @@ public class Client {
 
 
         this.email = newEmail;
-    }
-
-    public boolean hasSameName(PersonName newName) {
-        return this.name.equals(newName);
-    }
-
-    public boolean hasSameEmail(Email newEmail) {
-        return this.email.equals(newEmail);
     }
 
     public ClientId getId() {

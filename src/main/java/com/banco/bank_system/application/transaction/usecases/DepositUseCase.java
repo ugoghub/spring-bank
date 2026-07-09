@@ -39,14 +39,14 @@ public class DepositUseCase {
 
         account.deposit(value);
 
-        accountRepository.save(account);
-
         Transaction deposit = Transaction.deposit(
                 account.getId(),
                 account.getAccountIdentity(),
                 value,
                 clock
         );
+
+        accountRepository.save(account);
 
         transactionRepository.save(deposit);
 

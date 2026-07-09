@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Entity
 @Table(
         name = "tb_accounts",
@@ -82,6 +81,9 @@ public class AccountEntity {
     )
     private LocalDateTime createdAt;
 
+    @Column(name = "last_interest_applied_at")
+    private LocalDateTime lastInterestAppliedAt;
+
     public AccountEntity(
             UUID id,
             UUID clientId,
@@ -89,7 +91,8 @@ public class AccountEntity {
             String branch,
             BigDecimal balance,
             AccountType accountType,
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            LocalDateTime lastInterestAppliedAt
     ) {
 
         this.id = id;
@@ -99,6 +102,7 @@ public class AccountEntity {
         this.balance = balance;
         this.accountType = accountType;
         this.createdAt = createdAt;
+        this.lastInterestAppliedAt = lastInterestAppliedAt;
     }
 
     public Account toDomain() {
@@ -126,7 +130,8 @@ public class AccountEntity {
                     new ClientId(clientId),
                     identity,
                     money,
-                    createdAt
+                    createdAt,
+                    lastInterestAppliedAt
             );
         };
     }
@@ -137,6 +142,12 @@ public class AccountEntity {
                 ? AccountType.CHECKING
                 : AccountType.SAVINGS;
 
+        LocalDateTime lastInterestAppliedAt = null;
+
+        if (account instanceof SavingsAccount savingsAccount) {
+            lastInterestAppliedAt = savingsAccount.getLastInterestAppliedAt();
+        }
+
         return new AccountEntity(
                 account.getId().id(),
                 account.getClientId().id(),
@@ -144,7 +155,8 @@ public class AccountEntity {
                 account.getAccountIdentity().branch(),
                 account.getBalance().value(),
                 type,
-                account.getCreationTime()
+                account.getCreationTime(),
+                lastInterestAppliedAt
         );
     }
 }

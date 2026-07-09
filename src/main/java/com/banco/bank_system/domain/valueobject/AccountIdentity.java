@@ -31,7 +31,9 @@ public record AccountIdentity(String branch, String accountNumber) {
     }
 
     private static boolean isValidDigit(String accountNumber){
-        int digit = accountNumber.charAt(accountNumber.length() - 1) - '0';
+        int lastIndex = accountNumber.length() - 1;
+
+        int digit = accountNumber.charAt(lastIndex) - '0';
 
         int sum = 0;
 

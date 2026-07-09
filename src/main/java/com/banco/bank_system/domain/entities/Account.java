@@ -1,9 +1,6 @@
 package com.banco.bank_system.domain.entities;
 
-import com.banco.bank_system.domain.exception.InsufficientBalanceException;
-import com.banco.bank_system.domain.exception.InvalidAccountIdentityException;
-import com.banco.bank_system.domain.exception.InvalidClientIdException;
-import com.banco.bank_system.domain.exception.InvalidMoneyException;
+import com.banco.bank_system.domain.exception.*;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
@@ -45,7 +42,7 @@ public abstract class Account {
         }
 
         if(creationTime == null){
-            throw new IllegalArgumentException("Data inválida");
+            throw new InvalidClockException("Data inválida");
         }
 
 

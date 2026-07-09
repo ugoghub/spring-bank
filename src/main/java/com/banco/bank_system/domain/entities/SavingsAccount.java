@@ -1,5 +1,6 @@
 package com.banco.bank_system.domain.entities;
 
+import com.banco.bank_system.domain.exception.InvalidClockException;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
@@ -23,7 +24,8 @@ public class SavingsAccount extends Account {
             ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
-            LocalDateTime creationTime
+            LocalDateTime creationTime,
+            LocalDateTime lastInterestAppliedAt
     ) {
 
         super(
@@ -34,24 +36,27 @@ public class SavingsAccount extends Account {
                 creationTime
         );
 
-        this.lastInterestAppliedAt = creationTime;
+        if (lastInterestAppliedAt == null) {
+            throw new InvalidClockException("Data da última aplicação de juros inválida");
+        }
+
+        this.lastInterestAppliedAt = lastInterestAppliedAt;
     }
 
     private SavingsAccount(
             ClientId clientId,
             AccountIdentity accountIdentity,
             Clock clock
-    ){
+    ) {
 
-        super(
+        this(
                 AccountId.generate(),
                 clientId,
                 accountIdentity,
                 Money.ZERO,
+                LocalDateTime.now(clock),
                 LocalDateTime.now(clock)
         );
-
-        this.lastInterestAppliedAt = LocalDateTime.now(clock);
     }
 
     public static SavingsAccount create(
@@ -67,9 +72,17 @@ public class SavingsAccount extends Account {
             ClientId clientId,
             AccountIdentity accountIdentity,
             Money balance,
-            LocalDateTime creationTime
-    ){
-        return new SavingsAccount(id, clientId, accountIdentity, balance, creationTime);
+            LocalDateTime creationTime,
+            LocalDateTime lastInterestAppliedAt
+    ) {
+        return new SavingsAccount(
+                id,
+                clientId,
+                accountIdentity,
+                balance,
+                creationTime,
+                lastInterestAppliedAt
+        );
     }
 
     @Override
@@ -105,5 +118,9 @@ public class SavingsAccount extends Account {
         }
 
         return appliedInterests;
+    }
+
+    public LocalDateTime getLastInterestAppliedAt() {
+        return lastInterestAppliedAt;
     }
 }
