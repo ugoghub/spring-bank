@@ -3,8 +3,7 @@ package com.banco.bank_system.application.account.usecases;
 import com.banco.bank_system.application.account.dto.CreateAccountOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.util.UniqueAccountIdentityGenerator;
-import com.banco.bank_system.application.client.port.ClientRepositoryPort;
-import com.banco.bank_system.application.exception.ClientNotFoundException;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
@@ -20,7 +19,7 @@ import java.time.Clock;
 public class CreateAccountUseCase {
 
     private final AccountRepositoryPort accountRepository;
-    private final ClientRepositoryPort clientRepository;
+    private final ClientFinder clientFinder;
 
     private final UniqueAccountIdentityGenerator uniqueAccountIdentityGenerator;
 
@@ -28,19 +27,18 @@ public class CreateAccountUseCase {
 
 
     public CreateAccountUseCase(AccountRepositoryPort accountRepository,
-                                ClientRepositoryPort clientRepository,
+                                ClientFinder clientFinder,
                                 UniqueAccountIdentityGenerator uniqueAccountIdentityGenerator,
                                 Clock clock) {
         this.accountRepository = accountRepository;
-        this.clientRepository = clientRepository;
+        this.clientFinder = clientFinder;
         this.uniqueAccountIdentityGenerator = uniqueAccountIdentityGenerator;
         this.clock = clock;
     }
 
     public CreateAccountOutput execute(CPF cpf, AccountType type){
 
-        Client client = clientRepository.getClientByCpf(cpf)
-                .orElseThrow(ClientNotFoundException::new);
+        Client client = clientFinder.find(cpf);
 
         AccountIdentity accountIdentity = uniqueAccountIdentityGenerator.generate();
 

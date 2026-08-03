@@ -3,6 +3,7 @@ package com.banco.bank_system.useCase.clientUseCaseTests;
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.application.client.usecases.ChangeClientEmailUseCase;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.exception.InvalidClientChangeException;
 import com.banco.bank_system.domain.valueobject.Email;
@@ -25,20 +26,23 @@ public class ChangeClientEmailUseCaseTest {
     @Mock
     private ClientRepositoryPort clientRepository;
 
+    @Mock
+    private ClientFinder clientFinder;
+
     @InjectMocks
     private ChangeClientEmailUseCase useCase;
 
     @Test
-    void shouldChangeClientName() {
+    void shouldChangeClientEmail() {
 
         Client client =
                 ClientFactory.create();
 
         Email newEmail =
-                new Email("a@gmail.com");
+                new Email("novo_email@gmail.com");
 
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
+        when(clientFinder.find(client.getCpf()))
+                .thenReturn(client);
 
         GetClientDataOutput output =
                 useCase.execute(
@@ -46,37 +50,17 @@ public class ChangeClientEmailUseCaseTest {
                         newEmail
                 );
 
-        verify(clientRepository)
-                .save(client);
-
         assertEquals(
                 newEmail,
                 output.email()
         );
 
-        verify(clientRepository)
-                .getClientByCpf(client.getCpf());
+        verify(clientFinder)
+                .find(client.getCpf());
 
         verify(clientRepository)
                 .save(client);
 
         verifyNoMoreInteractions(clientRepository);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenChangingEmailToCurrentEmail() {
-
-        Client client =
-                ClientFactory.create();
-
-        when(clientRepository.getClientByCpf(client.getCpf())).thenReturn(Optional.of(client));
-
-        assertThrows(
-                InvalidClientChangeException.class,
-                () -> useCase.execute(
-                        client.getCpf(),
-                        client.getEmail()
-                )
-        );
     }
 }

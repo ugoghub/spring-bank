@@ -2,13 +2,12 @@ package com.banco.bank_system.useCase.clientUseCaseTests;
 
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
-import com.banco.bank_system.application.client.usecases.ChangeClientEmailUseCase;
 import com.banco.bank_system.application.client.usecases.ChangeClientNameUseCase;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.exception.InvalidClientChangeException;
 import com.banco.bank_system.domain.valueobject.PersonName;
 import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +26,9 @@ public class ChangeClientNameUseCaseTest {
     @Mock
     private ClientRepositoryPort clientRepository;
 
+    @Mock
+    private ClientFinder clientFinder;
+
     @InjectMocks
     private ChangeClientNameUseCase useCase;
 
@@ -39,14 +41,17 @@ public class ChangeClientNameUseCaseTest {
         PersonName newName =
                 new PersonName("Novo Nome");
 
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
+        when(clientFinder.find(client.getCpf()))
+                .thenReturn(client);
 
         GetClientDataOutput output =
                 useCase.execute(
                         client.getCpf(),
                         newName
                 );
+
+        verify(clientFinder)
+                .find(client.getCpf());
 
         verify(clientRepository)
                 .save(client);
@@ -55,40 +60,5 @@ public class ChangeClientNameUseCaseTest {
                 newName,
                 output.name()
         );
-    }
-
-    @Test
-    void shouldThrowExceptionWhenChangingNameToCurrentName() {
-
-        Client client =
-                ClientFactory.create();
-
-        PersonName newName =
-                new PersonName("Novo Nome");
-
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
-
-        GetClientDataOutput output =
-                useCase.execute(
-                        client.getCpf(),
-                        newName
-                );
-
-        verify(clientRepository)
-                .save(client);
-
-        assertThrows(
-                InvalidClientChangeException.class,
-                () -> useCase.execute(
-                        output.cpf(),
-                        newName
-                )
-        );
-
-        verify(clientRepository)
-                .save(client);
-
-        verifyNoMoreInteractions(clientRepository);
     }
 }

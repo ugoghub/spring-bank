@@ -1,24 +1,23 @@
 package com.banco.bank_system.application.client.usecases;
 
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
-import com.banco.bank_system.application.client.port.ClientRepositoryPort;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
-import com.banco.bank_system.application.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GetClientDataUseCase {
 
-    private final ClientRepositoryPort clientRepository;
+    private final ClientFinder clientFinder;
 
-    public GetClientDataUseCase(ClientRepositoryPort clientRepository) {
-        this.clientRepository = clientRepository;
+    public GetClientDataUseCase(ClientFinder clientFinder) {
+        this.clientFinder = clientFinder;
     }
 
     public GetClientDataOutput execute(CPF cpf){
-        Client client = clientRepository.getClientByCpf(cpf)
-                .orElseThrow(ClientNotFoundException::new);
+
+        Client client = clientFinder.find(cpf);
 
         return new GetClientDataOutput(
                 client.getName(),

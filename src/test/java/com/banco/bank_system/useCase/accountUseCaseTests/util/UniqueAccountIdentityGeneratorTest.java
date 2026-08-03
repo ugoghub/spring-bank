@@ -1,4 +1,4 @@
-package com.banco.bank_system.useCase.util;
+package com.banco.bank_system.useCase.accountUseCaseTests.util;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.util.UniqueAccountIdentityGenerator;

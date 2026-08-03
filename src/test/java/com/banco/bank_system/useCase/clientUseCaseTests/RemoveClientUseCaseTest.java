@@ -3,8 +3,8 @@ package com.banco.bank_system.useCase.clientUseCaseTests;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.application.client.usecases.RemoveClientUseCase;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.application.exception.CannotRemoveAccountException;
-import com.banco.bank_system.application.exception.ClientNotFoundException;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -34,11 +33,13 @@ public class RemoveClientUseCaseTest {
     @Mock
     private AccountRepositoryPort accountRepository;
 
+    @Mock
+    private ClientFinder clientFinder;
+
     @InjectMocks
     private RemoveClientUseCase useCase;
 
     private Client client;
-
 
     @BeforeEach
     void setup() {
@@ -53,8 +54,8 @@ public class RemoveClientUseCaseTest {
                 AccountFactory.savings(Clock.systemUTC())
         );
 
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
+        when(clientFinder.find(client.getCpf()))
+                .thenReturn(client);
 
         when(accountRepository.getAccountsByClient(client.getId()))
                 .thenReturn(accounts);
@@ -63,8 +64,8 @@ public class RemoveClientUseCaseTest {
         useCase.execute(client.getCpf());
 
         // Assert
-        verify(clientRepository)
-                .getClientByCpf(client.getCpf());
+        verify(clientFinder)
+                .find(client.getCpf());
 
         verify(accountRepository)
                 .getAccountsByClient(client.getId());
@@ -80,24 +81,6 @@ public class RemoveClientUseCaseTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenClientDoesNotExist() {
-
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.empty());
-
-        assertThrows(
-                ClientNotFoundException.class,
-                () -> useCase.execute(client.getCpf())
-        );
-
-        verify(accountRepository, never())
-                .removeClientAccounts(any());
-
-        verify(clientRepository, never())
-                .delete(any());
-    }
-
-    @Test
     void shouldThrowExceptionWhenClientAccountHasActiveBalance() {
 
         CheckingAccount account =
@@ -105,8 +88,8 @@ public class RemoveClientUseCaseTest {
 
         account.deposit(Money.of("100"));
 
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
+        when(clientFinder.find(client.getCpf()))
+                .thenReturn(client);
 
         when(accountRepository.getAccountsByClient(client.getId()))
                 .thenReturn(List.of(account));
@@ -115,6 +98,9 @@ public class RemoveClientUseCaseTest {
                 CannotRemoveAccountException.class,
                 () -> useCase.execute(client.getCpf())
         );
+
+        verify(clientFinder)
+                .find(client.getCpf());
 
         verify(accountRepository, never())
                 .removeClientAccounts(any());

@@ -3,7 +3,7 @@ package com.banco.bank_system.useCase.accountUseCaseTests;
 import com.banco.bank_system.application.account.dto.GetClientAccountsOutput;
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.usecases.GetClientAccountsUseCase;
-import com.banco.bank_system.application.client.port.ClientRepositoryPort;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.entities.helper.AccountFactory;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -28,7 +27,7 @@ public class GetClientAccountsUseCaseTest {
     private AccountRepositoryPort accountRepository;
 
     @Mock
-    private ClientRepositoryPort clientRepository;
+    private ClientFinder clientFinder;
 
     @InjectMocks
     private GetClientAccountsUseCase useCase;
@@ -43,8 +42,8 @@ public class GetClientAccountsUseCaseTest {
                 AccountFactory.savings(Clock.systemUTC())
         );
 
-        when(clientRepository.getClientByCpf(client.getCpf()))
-                .thenReturn(Optional.of(client));
+        when(clientFinder.find(client.getCpf()))
+                .thenReturn(client);
 
         when(accountRepository.getAccountsByClient(client.getId()))
                 .thenReturn(accounts);
@@ -53,12 +52,12 @@ public class GetClientAccountsUseCaseTest {
 
         assertEquals(2, output.accountIdentities().size());
 
-        verify(clientRepository)
-                .getClientByCpf(client.getCpf());
+        verify(clientFinder)
+                .find(client.getCpf());
 
         verify(accountRepository)
                 .getAccountsByClient(client.getId());
 
-        verifyNoMoreInteractions(clientRepository, accountRepository);
+        verifyNoMoreInteractions(clientFinder, accountRepository);
     }
 }

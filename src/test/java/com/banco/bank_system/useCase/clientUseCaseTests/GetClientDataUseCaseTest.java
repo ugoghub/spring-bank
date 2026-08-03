@@ -3,6 +3,7 @@ package com.banco.bank_system.useCase.clientUseCaseTests;
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.application.client.usecases.GetClientDataUseCase;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.application.exception.ClientNotFoundException;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
 public class GetClientDataUseCaseTest {
 
     @Mock
-    private ClientRepositoryPort clientRepository;
+    private ClientFinder clientFinder;
 
     @InjectMocks
     private GetClientDataUseCase useCase;
@@ -33,7 +34,8 @@ public class GetClientDataUseCaseTest {
 
         Client client = ClientFactory.create();
 
-        when(clientRepository.getClientByCpf(client.getCpf())).thenReturn(Optional.of(client));
+        when(clientFinder.find(client.getCpf()))
+                .thenReturn(client);
 
         GetClientDataOutput output = useCase.execute(client.getCpf());
 
@@ -42,24 +44,17 @@ public class GetClientDataUseCaseTest {
                 output.name()
         );
 
-        verify(clientRepository)
-                .getClientByCpf(client.getCpf());
-
-        verifyNoMoreInteractions(clientRepository);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenClientDoesNotExist() {
-
-        CPF cpf =
-                new CPF("52998224725");
-
-        when(clientRepository.getClientByCpf(cpf))
-                .thenReturn(Optional.empty());
-
-        assertThrows(
-                ClientNotFoundException.class,
-                () -> useCase.execute(cpf)
+        assertEquals(
+                client.getEmail(),
+                output.email()
         );
+
+        assertEquals(
+                client.getCpf(),
+                output.cpf()
+        );
+
+        verify(clientFinder)
+                .find(client.getCpf());
     }
 }

@@ -2,6 +2,7 @@ package com.banco.bank_system.application.client.usecases;
 
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
+import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
@@ -13,16 +14,19 @@ public class ChangeClientEmailUseCase {
 
     private final ClientRepositoryPort clientRepository;
 
-    public ChangeClientEmailUseCase(ClientRepositoryPort clientRepository) {
+    private final ClientFinder clientFinder;
+
+    public ChangeClientEmailUseCase(ClientRepositoryPort clientRepository,
+                                    ClientFinder clientFinder) {
         this.clientRepository = clientRepository;
+        this.clientFinder = clientFinder;
     }
 
     public GetClientDataOutput execute(
             CPF cpf,
             Email newEmail
     ){
-        Client client = clientRepository.getClientByCpf(cpf)
-                        .orElseThrow(ClientNotFoundException::new);
+        Client client = clientFinder.find(cpf);
 
         client.changeEmail(newEmail);
 
