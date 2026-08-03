@@ -9,6 +9,7 @@ import com.banco.bank_system.application.exception.ClientNotFoundException;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.enums.AccountType;
+import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,8 +67,10 @@ class CreateAccountUseCaseTest {
         when(clientRepository.getClientByCpf(client.getCpf()))
                 .thenReturn(Optional.of(client));
 
-        when(accountRepository.existsByAccountIdentity(any()))
-                .thenReturn(false);
+        when(uniqueAccountIdentityGenerator.generate())
+                .thenReturn(
+                        new AccountIdentity("01", "123456-1")
+                );
 
         CreateAccountOutput output =
                 useCase.execute(client.getCpf(), AccountType.CHECKING);
@@ -75,8 +78,11 @@ class CreateAccountUseCaseTest {
         assertEquals(client.getId(), output.clientId());
 
         verify(clientRepository).getClientByCpf(client.getCpf());
-        verify(accountRepository).existsByAccountIdentity(any());
+
+        verify(uniqueAccountIdentityGenerator).generate();
+
         verify(accountRepository).save(any(Account.class));
+
         verifyNoMoreInteractions(accountRepository);
     }
 

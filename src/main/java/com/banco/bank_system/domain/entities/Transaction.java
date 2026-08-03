@@ -55,6 +55,8 @@ public class Transaction {
                         AccountIdentity destinationIdentity,
                         Clock clock) {
 
+        if(clock == null) throw new InvalidTransactionException("Clock inválido");
+
 
         LocalDateTime now = LocalDateTime.now(clock);
 

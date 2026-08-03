@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UniqueAccountIdentityGenerator {
 
-    private final AccountRepositoryPort repository;
+    private final AccountRepositoryPort accountRepository;
 
-    public UniqueAccountIdentityGenerator(AccountRepositoryPort repository) {
-        this.repository = repository;
+    public UniqueAccountIdentityGenerator(AccountRepositoryPort accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     public AccountIdentity generate() {
@@ -20,7 +20,7 @@ public class UniqueAccountIdentityGenerator {
 
         do {
             identity = AccountIdentityFactory.generate();
-        } while (repository.existsByAccountIdentity(identity));
+        } while (accountRepository.existsByAccountIdentity(identity));
 
         return identity;
     }

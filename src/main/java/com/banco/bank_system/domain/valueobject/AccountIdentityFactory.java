@@ -11,14 +11,14 @@ public final class AccountIdentityFactory {
     }
 
     private static String generateBranch() {
-        int branch = ThreadLocalRandom.current().nextInt(0, ACCOUNT_NUMBER_LIMIT);
+        int branch = ThreadLocalRandom.current().nextInt(0, BRANCH_LIMIT);
 
         return String.format("%02d", branch);
     }
 
     private static String generateAccountNumber() {
         String accountNumber = String.format("%06d",
-                ThreadLocalRandom.current().nextInt(0, BRANCH_LIMIT));
+                ThreadLocalRandom.current().nextInt(0, ACCOUNT_NUMBER_LIMIT));
 
         return accountNumber + "-" + generateDigit(accountNumber);
     }
