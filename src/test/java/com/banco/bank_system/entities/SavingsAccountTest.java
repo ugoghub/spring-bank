@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SavingsAccountUnitTest {
+public class SavingsAccountTest {
 
     // =========================
     // Interest

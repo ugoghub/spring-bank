@@ -17,10 +17,6 @@ import com.banco.bank_system.presentation.dto.request.transactions.TransferReque
 import com.banco.bank_system.presentation.dto.request.transactions.WithdrawRequest;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -46,10 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TransactionController.class)
 @Import(FixedClockTestConfiguration.class)
-@Tag(
-        name = "Transações",
-        description = "Operações relacionadas às movimentações financeiras das contas"
-)
 class TransactionControllerTest {
 
     @Autowired
@@ -70,15 +62,6 @@ class TransactionControllerTest {
     @MockitoBean
     private GetTransactionsUseCase getTransactionsUseCase;
 
-    @Operation(
-            summary = "Realizar depósito",
-            description = "Realiza um depósito em uma conta."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Depósito realizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
-    })
     @Test
     void shouldDeposit() throws Exception {
 
@@ -117,16 +100,6 @@ class TransactionControllerTest {
                 );
     }
 
-
-    @Operation(
-            summary = "Realizar saque",
-            description = "Realiza um saque em uma conta."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Saque realizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos"),
-            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
-    })
     @Test
     void shouldWithdraw() throws Exception {
 
@@ -165,15 +138,6 @@ class TransactionControllerTest {
                 );
     }
 
-    @Operation(
-            summary = "Realizar transferência",
-            description = "Transfere um valor entre duas contas."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos"),
-            @ApiResponse(responseCode = "404", description = "Conta de origem ou destino não encontrada")
-    })
     @Test
     void shouldTransfer() throws Exception {
 
@@ -223,15 +187,7 @@ class TransactionControllerTest {
                 );
     }
 
-    @Operation(
-            summary = "Consultar extrato",
-            description = "Retorna o histórico de transações de uma conta."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Extrato retornado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
-    })
+
     @Test
     void shouldReturnTransactions() throws Exception {
 

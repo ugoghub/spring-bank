@@ -18,7 +18,7 @@ import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AccountUnitTest {
+public class AccountTest {
 
     private final Clock clock =
             Clock.systemUTC();

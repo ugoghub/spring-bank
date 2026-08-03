@@ -18,7 +18,11 @@ import com.banco.bank_system.presentation.dto.response.transactions.DepositRespo
 import com.banco.bank_system.presentation.dto.response.transactions.TransactionResponse;
 import com.banco.bank_system.presentation.dto.response.transactions.TransferResponse;
 import com.banco.bank_system.presentation.dto.response.transactions.WithdrawResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +30,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/transactions")
+@Tag(
+        name = "Transações",
+        description = "Operações relacionadas às movimentações financeiras das contas"
+)
 public class TransactionController {
 
     private final DepositUseCase depositUseCase;
@@ -45,6 +53,15 @@ public class TransactionController {
         this.transferUseCase = transferUseCase;
     }
 
+    @Operation(
+            summary = "Realizar depósito",
+            description = "Realiza um depósito em uma conta."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Depósito realizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
+    })
     @PostMapping("/deposit")
     public ResponseEntity<DepositResponse> deposit(
             @Valid @RequestBody DepositRequest request
@@ -63,6 +80,15 @@ public class TransactionController {
         );
     }
 
+    @Operation(
+            summary = "Realizar saque",
+            description = "Realiza um saque em uma conta."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Saque realizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
+    })
     @PostMapping("/withdraw")
     public ResponseEntity<WithdrawResponse> withdraw(
             @Valid @RequestBody WithdrawRequest request
@@ -81,6 +107,16 @@ public class TransactionController {
         );
     }
 
+
+    @Operation(
+            summary = "Realizar transferência",
+            description = "Transfere um valor entre duas contas."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Conta de origem ou destino não encontrada")
+    })
     @PostMapping("/transfer")
     public ResponseEntity<TransferResponse> transfer(
             @Valid @RequestBody TransferRequest request
@@ -103,6 +139,16 @@ public class TransactionController {
         );
     }
 
+
+    @Operation(
+            summary = "Consultar extrato",
+            description = "Retorna o histórico de transações de uma conta."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Extrato retornado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
+    })
     @GetMapping("/{branch}/{accountNumber}")
     public ResponseEntity<Page<TransactionResponse>> getTransactions(
             @Parameter(

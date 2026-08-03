@@ -12,7 +12,7 @@ import java.time.Clock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CheckingAccountUnitTest {
+public class CheckingAccountTest {
 
     private final Clock clock =
             Clock.systemUTC();

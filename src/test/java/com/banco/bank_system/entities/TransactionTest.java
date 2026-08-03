@@ -17,7 +17,7 @@ import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TransactionUnitTest {
+public class TransactionTest {
 
     // =========================
     // Deposit
