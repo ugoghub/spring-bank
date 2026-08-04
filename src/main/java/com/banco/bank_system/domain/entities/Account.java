@@ -1,5 +1,6 @@
 package com.banco.bank_system.domain.entities;
 
+import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.exception.*;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
@@ -131,6 +132,12 @@ public abstract class Account {
 
     public Money getBalance() {
         return balance;
+    }
+
+    public abstract AccountType getType();
+
+    public LocalDateTime getLastInterestAppliedAt() {
+        return null;
     }
 
     // =========================

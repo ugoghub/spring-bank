@@ -80,7 +80,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handle(
-            Exception ex,
             HttpServletRequest request
     ){
         return buildResponse(

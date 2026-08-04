@@ -12,6 +12,7 @@ import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.*;
 import com.banco.bank_system.presentation.controller.AccountController;
 import com.banco.bank_system.presentation.dto.request.account.CreateAccountRequest;
+import com.banco.bank_system.presentation.util.CurrencyFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -57,12 +55,6 @@ class AccountControllerTest {
 
     @MockitoBean
     private RemoveAccountUseCase removeAccountUseCase;
-
-
-    private static final NumberFormat FORMAT =
-            NumberFormat.getCurrencyInstance(
-                    Locale.of("pt", "BR")
-            );
 
     @Test
     void shouldCreateAccount() throws Exception {
@@ -114,7 +106,7 @@ class AccountControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.balance")
-                .value(FORMAT.format(BigDecimal.valueOf(1500))));
+                .value(CurrencyFormatter.format(Money.of("1500"))));
 
         verify(getAccountBalanceUseCase)
                 .execute(any(AccountIdentity.class));

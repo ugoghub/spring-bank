@@ -9,7 +9,7 @@ public record CreateClientRequest(
 
         @Schema(
                 description = "Nome completo do cliente",
-                example = "Marcy Mendes"
+                example = "Bruno Fernandes"
         )
         @NotBlank
         String name,
@@ -23,7 +23,7 @@ public record CreateClientRequest(
 
         @Schema(
                 description = "E-mail do cliente",
-                example = "marcy.mendes@gmail.com"
+                example = "brunofernandes@email.com"
         )
         String email
 ) {}

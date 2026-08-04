@@ -7,7 +7,7 @@ public record ChangeClientNameRequest(
 
         @Schema(
                 description = "Novo nome do cliente",
-                example = "Marcy Mendes"
+                example = "Bruno"
         )
         @NotBlank
         String name

@@ -5,10 +5,10 @@ import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
-import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
+import com.banco.bank_system.infrastructure.mapper.AccountMapper;
 import com.banco.bank_system.presentation.dto.request.account.CreateAccountRequest;
 import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,7 +88,7 @@ class AccountIntegrationTest {
                 AccountFactory.checking(client.getId(), Clock.systemUTC());
 
         accountRepository.save(
-                AccountEntity.fromDomain(account)
+                AccountMapper.fromDomain(account)
         );
 
         mockMvc.perform(
@@ -110,13 +110,13 @@ class AccountIntegrationTest {
         );
 
         accountRepository.save(
-                AccountEntity.fromDomain(
+                AccountMapper.fromDomain(
                         AccountFactory.checking(client.getId(), Clock.systemUTC())
                 )
         );
 
         accountRepository.save(
-                AccountEntity.fromDomain(
+                AccountMapper.fromDomain(
                         AccountFactory.savings(client.getId(), Clock.systemUTC())
                 )
         );
@@ -141,7 +141,7 @@ class AccountIntegrationTest {
                 AccountFactory.checking(client.getId(), Clock.systemUTC());
 
         accountRepository.save(
-                AccountEntity.fromDomain(account)
+                AccountMapper.fromDomain(account)
         );
 
         mockMvc.perform(
@@ -169,7 +169,7 @@ class AccountIntegrationTest {
                 AccountFactory.checking(client.getId(), Clock.systemUTC());
 
         accountRepository.save(
-                AccountEntity.fromDomain(account)
+                AccountMapper.fromDomain(account)
         );
 
         mockMvc.perform(
@@ -238,7 +238,7 @@ class AccountIntegrationTest {
         account.deposit(Money.of("100"));
 
         accountRepository.save(
-                AccountEntity.fromDomain(account)
+                AccountMapper.fromDomain(account)
         );
 
         mockMvc.perform(

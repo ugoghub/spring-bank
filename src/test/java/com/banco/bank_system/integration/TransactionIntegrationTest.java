@@ -7,7 +7,7 @@ import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
-import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
+import com.banco.bank_system.infrastructure.mapper.AccountMapper;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
@@ -70,7 +70,7 @@ class TransactionIntegrationTest {
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
 
-        accountRepository.save(AccountEntity.fromDomain(account));
+        accountRepository.save(AccountMapper.fromDomain(account));
 
         DepositRequest request =
                 new DepositRequest(
@@ -104,7 +104,7 @@ class TransactionIntegrationTest {
 
         account.deposit(Money.of("1000"));
 
-        accountRepository.save(AccountEntity.fromDomain(account));
+        accountRepository.save(AccountMapper.fromDomain(account));
 
         WithdrawRequest request =
                 new WithdrawRequest(
@@ -141,8 +141,8 @@ class TransactionIntegrationTest {
         CheckingAccount destination =
                 AccountFactory.checking(client.getId(), clock);
 
-        accountRepository.save(AccountEntity.fromDomain(source));
-        accountRepository.save(AccountEntity.fromDomain(destination));
+        accountRepository.save(AccountMapper.fromDomain(source));
+        accountRepository.save(AccountMapper.fromDomain(destination));
 
         TransferRequest request =
                 new TransferRequest(
@@ -176,7 +176,7 @@ class TransactionIntegrationTest {
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
 
-        accountRepository.save(AccountEntity.fromDomain(account));
+        accountRepository.save(AccountMapper.fromDomain(account));
 
         transactionRepository.save(
                 TransactionEntity.fromDomain(
@@ -273,7 +273,7 @@ class TransactionIntegrationTest {
         SavingsAccount account =
                 AccountFactory.savings(client.getId(), clock);
 
-        accountRepository.save(AccountEntity.fromDomain(account));
+        accountRepository.save(AccountMapper.fromDomain(account));
 
         WithdrawRequest request =
                 new WithdrawRequest(

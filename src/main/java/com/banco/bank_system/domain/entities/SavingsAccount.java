@@ -1,5 +1,6 @@
 package com.banco.bank_system.domain.entities;
 
+import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.exception.InvalidClockException;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
@@ -120,6 +121,12 @@ public class SavingsAccount extends Account {
         return appliedInterests;
     }
 
+    @Override
+    public AccountType getType() {
+        return AccountType.SAVINGS;
+    }
+
+    @Override
     public LocalDateTime getLastInterestAppliedAt() {
         return lastInterestAppliedAt;
     }

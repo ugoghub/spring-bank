@@ -1,10 +1,9 @@
 package com.banco.bank_system.presentation.dto.response.transactions;
 
 import com.banco.bank_system.application.transaction.dto.WithdrawOutput;
+import com.banco.bank_system.presentation.util.CurrencyFormatter;
 
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.UUID;
 
 public record WithdrawResponse(
@@ -18,16 +17,11 @@ public record WithdrawResponse(
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    private static final NumberFormat FORMAT =
-            NumberFormat.getCurrencyInstance(
-                    Locale.of("pt", "BR")
-            );
-
     public static WithdrawResponse from(WithdrawOutput output){
         return new WithdrawResponse(
                 output.accountId().id(),
-                FORMAT.format(output.withdrawnAmount().value()),
-                FORMAT.format(output.newBalance().value()),
+                CurrencyFormatter.format(output.withdrawnAmount()),
+                CurrencyFormatter.format(output.newBalance()),
                 output.transactionId().id(),
                 output.transactionDate().format(formatter)
         );

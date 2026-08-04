@@ -7,7 +7,7 @@ public record ChangeClientEmailRequest(
 
         @Schema(
                 description = "Novo e-mail do cliente",
-                example = "marcy.mendes@gmail.com"
+                example = "novoemail@email.com"
         )
         @Email
         String email

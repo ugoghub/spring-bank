@@ -1,10 +1,9 @@
 package com.banco.bank_system.presentation.dto.response.transactions;
 
 import com.banco.bank_system.application.transaction.dto.TransactionDTO;
+import com.banco.bank_system.presentation.util.CurrencyFormatter;
 
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.UUID;
 
 public record TransactionResponse(
@@ -22,17 +21,12 @@ public record TransactionResponse(
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    private static final NumberFormat FORMAT =
-            NumberFormat.getCurrencyInstance(
-                    Locale.of("pt", "BR")
-            );
-
     public static TransactionResponse from(TransactionDTO dto) {
         return new TransactionResponse(
                 dto.id().id(),
                 dto.operationId() == null ? null : dto.operationId().id(),
                 dto.type().toString(),
-                FORMAT.format(dto.amount().value()),
+                CurrencyFormatter.format(dto.amount()),
                 dto.source_branch(),
                 dto.source_accountNumber(),
                 dto.destination_branch(),

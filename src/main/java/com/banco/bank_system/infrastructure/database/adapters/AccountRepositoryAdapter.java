@@ -5,8 +5,8 @@ import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
-import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
+import com.banco.bank_system.infrastructure.mapper.AccountMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,19 +18,14 @@ public class AccountRepositoryAdapter
 
     private final JpaAccountRepository repository;
 
-    public AccountRepositoryAdapter(
-            JpaAccountRepository repository
-    ) {
-
+    public AccountRepositoryAdapter(JpaAccountRepository repository) {
         this.repository = repository;
     }
 
     @Override
     public void save(Account account) {
 
-        repository.save(
-                AccountEntity.fromDomain(account)
-        );
+        repository.save(AccountMapper.fromDomain(account));
     }
 
 
@@ -40,7 +35,7 @@ public class AccountRepositoryAdapter
         return repository
                 .findByClientId(clientId.id())
                 .stream()
-                .map(AccountEntity::toDomain)
+                .map(AccountMapper::toDomain)
                 .toList();
     }
 
@@ -55,7 +50,7 @@ public class AccountRepositoryAdapter
                         accountIdentity.accountNumber(),
                         accountIdentity.branch()
                 )
-                .map(AccountEntity::toDomain);
+                .map(AccountMapper::toDomain);
     }
 
 
