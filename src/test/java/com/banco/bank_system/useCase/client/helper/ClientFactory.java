@@ -1,4 +1,4 @@
-package com.banco.bank_system.useCase.clientUseCaseTests.helper;
+package com.banco.bank_system.useCase.client.helper;
 
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;

@@ -14,7 +14,7 @@ import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

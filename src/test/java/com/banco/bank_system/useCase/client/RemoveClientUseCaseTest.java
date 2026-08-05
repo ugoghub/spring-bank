@@ -1,4 +1,4 @@
-package com.banco.bank_system.useCase.clientUseCaseTests;
+package com.banco.bank_system.useCase.client;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
@@ -10,7 +10,7 @@ import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

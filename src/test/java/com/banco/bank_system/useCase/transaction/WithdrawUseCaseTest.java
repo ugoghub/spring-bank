@@ -1,4 +1,4 @@
-package com.banco.bank_system.useCase.transferUseCaseTests;
+package com.banco.bank_system.useCase.transaction;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.util.AccountFinder;

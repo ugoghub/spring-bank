@@ -7,7 +7,7 @@ import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientEmailRequest;
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientNameRequest;
 import com.banco.bank_system.presentation.dto.request.client.CreateClientRequest;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,7 +7,7 @@ import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.infrastructure.database.adapters.ClientRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

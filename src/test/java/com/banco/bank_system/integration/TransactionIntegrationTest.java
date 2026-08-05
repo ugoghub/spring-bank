@@ -17,7 +17,7 @@ import com.banco.bank_system.presentation.dto.request.transactions.DepositReques
 import com.banco.bank_system.presentation.dto.request.transactions.TransferRequest;
 import com.banco.bank_system.presentation.dto.request.transactions.WithdrawRequest;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

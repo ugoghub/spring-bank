@@ -1,27 +1,24 @@
-package com.banco.bank_system.useCase.clientUseCaseTests;
+package com.banco.bank_system.useCase.client;
 
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;
-import com.banco.bank_system.application.client.usecases.ChangeClientNameUseCase;
+import com.banco.bank_system.application.client.usecases.ChangeClientEmailUseCase;
 import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Client;
-import com.banco.bank_system.domain.exception.InvalidClientChangeException;
-import com.banco.bank_system.domain.valueobject.PersonName;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.domain.valueobject.Email;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ChangeClientNameUseCaseTest {
+public class ChangeClientEmailUseCaseTest {
 
     @Mock
     private ClientRepositoryPort clientRepository;
@@ -30,16 +27,16 @@ public class ChangeClientNameUseCaseTest {
     private ClientFinder clientFinder;
 
     @InjectMocks
-    private ChangeClientNameUseCase useCase;
+    private ChangeClientEmailUseCase useCase;
 
     @Test
-    void shouldChangeClientName() {
+    void shouldChangeClientEmail() {
 
         Client client =
                 ClientFactory.create();
 
-        PersonName newName =
-                new PersonName("Novo Nome");
+        Email newEmail =
+                new Email("novo_email@gmail.com");
 
         when(clientFinder.find(client.getCpf()))
                 .thenReturn(client);
@@ -47,8 +44,13 @@ public class ChangeClientNameUseCaseTest {
         GetClientDataOutput output =
                 useCase.execute(
                         client.getCpf(),
-                        newName
+                        newEmail
                 );
+
+        assertEquals(
+                newEmail,
+                output.email()
+        );
 
         verify(clientFinder)
                 .find(client.getCpf());
@@ -56,9 +58,6 @@ public class ChangeClientNameUseCaseTest {
         verify(clientRepository)
                 .save(client);
 
-        assertEquals(
-                newName,
-                output.name()
-        );
+        verifyNoMoreInteractions(clientRepository);
     }
 }

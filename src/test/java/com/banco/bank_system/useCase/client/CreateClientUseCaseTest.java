@@ -1,4 +1,4 @@
-package com.banco.bank_system.useCase.clientUseCaseTests;
+package com.banco.bank_system.useCase.client;
 
 import com.banco.bank_system.application.client.dto.CreateClientOutput;
 import com.banco.bank_system.application.client.port.ClientRepositoryPort;

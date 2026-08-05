@@ -1,20 +1,15 @@
-package com.banco.bank_system.useCase.clientUseCaseTests;
+package com.banco.bank_system.useCase.client;
 
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
-import com.banco.bank_system.application.client.port.ClientRepositoryPort;
 import com.banco.bank_system.application.client.usecases.GetClientDataUseCase;
 import com.banco.bank_system.application.client.util.ClientFinder;
-import com.banco.bank_system.application.exception.ClientNotFoundException;
 import com.banco.bank_system.domain.entities.Client;
-import com.banco.bank_system.domain.valueobject.CPF;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

@@ -10,7 +10,7 @@ import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.infrastructure.mapper.AccountMapper;
 import com.banco.bank_system.presentation.dto.request.account.CreateAccountRequest;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

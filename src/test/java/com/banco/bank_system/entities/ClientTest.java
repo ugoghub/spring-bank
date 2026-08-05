@@ -8,7 +8,7 @@ import com.banco.bank_system.domain.exception.InvalidPersonNameException;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
-import com.banco.bank_system.useCase.clientUseCaseTests.helper.ClientFactory;
+import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

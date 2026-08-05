@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AccountIdentityUnitTest {
+class AccountIdentityTest {
 
     private static final AccountIdentity accountIdentity =
             new AccountIdentity(

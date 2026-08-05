@@ -1,10 +1,9 @@
-package com.banco.bank_system.useCase.accountUseCaseTests;
+package com.banco.bank_system.useCase.account;
 
-import com.banco.bank_system.application.account.dto.GetBalanceOutput;
-import com.banco.bank_system.application.account.usecases.GetAccountBalanceUseCase;
+import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
+import com.banco.bank_system.application.account.usecases.GetAccountUseCase;
 import com.banco.bank_system.application.account.util.AccountFinder;
 import com.banco.bank_system.domain.entities.Account;
-import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,32 +17,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetAccountBalanceUseCaseTest {
+public class GetClientAccountUseCaseTest {
 
     @Mock
     private AccountFinder accountFinder;
 
     @InjectMocks
-    private GetAccountBalanceUseCase useCase;
+    private GetAccountUseCase useCase;
 
     @Test
-    void shouldReturnBalance() {
+    void shouldReturnClientAccount() {
 
         Account account = AccountFactory.checking(Clock.systemUTC());
-
-        account.deposit(Money.of("500"));
 
         when(accountFinder.byIdentity(account.getAccountIdentity()))
                 .thenReturn(account);
 
-        GetBalanceOutput output = useCase.execute(account.getAccountIdentity());
+        GetClientAccountOutput output = useCase.execute(account.getAccountIdentity());
 
-        assertEquals(
-                Money.of("500"),
-                output.balance()
-        );
+        assertEquals(account.getId(), output.id());
 
-        verify(accountFinder).byIdentity(account.getAccountIdentity());
+        verify(accountFinder)
+                .byIdentity(account.getAccountIdentity());
+
         verifyNoMoreInteractions(accountFinder);
     }
 }
