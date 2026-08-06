@@ -8,6 +8,7 @@ import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.application.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChangeClientEmailUseCase {
@@ -22,6 +23,7 @@ public class ChangeClientEmailUseCase {
         this.clientFinder = clientFinder;
     }
 
+    @Transactional
     public GetClientDataOutput execute(
             CPF cpf,
             Email newEmail

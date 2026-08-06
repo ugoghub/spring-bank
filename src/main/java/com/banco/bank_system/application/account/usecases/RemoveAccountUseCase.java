@@ -2,10 +2,10 @@ package com.banco.bank_system.application.account.usecases;
 
 import com.banco.bank_system.application.account.port.AccountRepositoryPort;
 import com.banco.bank_system.application.account.util.AccountFinder;
-import com.banco.bank_system.application.exception.CannotRemoveAccountException;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RemoveAccountUseCase {
@@ -19,15 +19,12 @@ public class RemoveAccountUseCase {
         this.accountFinder = accountFinder;
     }
 
+    @Transactional
     public void execute(AccountIdentity accountIdentity){
 
         Account account = accountFinder.byIdentity(accountIdentity);
 
-        if (!account.isRemovable()) {
-            throw new CannotRemoveAccountException(
-                    "Conta não pode ser excluída com saldo diferente de zero"
-            );
-        }
+        account.validateRemoval();
 
         accountRepository.delete(account.getId());
     }

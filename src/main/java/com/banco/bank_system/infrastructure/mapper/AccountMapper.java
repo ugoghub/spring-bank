@@ -3,7 +3,6 @@ package com.banco.bank_system.infrastructure.mapper;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.SavingsAccount;
-import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
@@ -52,9 +51,11 @@ public final class AccountMapper {
 
     public static AccountEntity fromDomain(Account account) {
 
-        AccountType type = account.getType();
+        LocalDateTime lastInterestAppliedAt = null;
 
-        LocalDateTime lastInterestAppliedAt = account.getLastInterestAppliedAt();
+        if(account instanceof SavingsAccount savings){
+            lastInterestAppliedAt = savings.getLastInterestAppliedAt();
+        }
 
         return new AccountEntity(
                 account.getId().id(),
@@ -62,7 +63,7 @@ public final class AccountMapper {
                 account.getAccountIdentity().accountNumber(),
                 account.getAccountIdentity().branch(),
                 account.getBalance().value(),
-                type,
+                account.getType(),
                 account.getCreationTime(),
                 lastInterestAppliedAt
         );

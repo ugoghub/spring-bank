@@ -31,14 +31,14 @@ public class RemoveClientUseCase {
 
         Client client = clientFinder.find(cpf);
 
-        validateAccounts(client.getId());
+        validateClientAccountsRemoval(client.getId());
 
         accountRepository.removeClientAccounts(client.getId());
 
         clientRepository.delete(client.getId());
     }
 
-    private void validateAccounts(ClientId clientId) {
+    private void validateClientAccountsRemoval(ClientId clientId) {
 
         boolean hasNonRemovableAccount =
                 accountRepository

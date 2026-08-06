@@ -29,7 +29,7 @@ public class Transaction {
             LocalDateTime dateTime
     ) {
 
-        if(id == null){
+        if (id == null) {
             throw new InvalidTransactionException("ID inválido");
         }
 
@@ -55,8 +55,7 @@ public class Transaction {
                         AccountIdentity destinationIdentity,
                         Clock clock) {
 
-        if(clock == null) throw new InvalidTransactionException("Clock inválido");
-
+        if (clock == null) throw new InvalidTransactionException("Clock inválido");
 
         LocalDateTime now = LocalDateTime.now(clock);
 
@@ -222,11 +221,11 @@ public class Transaction {
     ) {
         //validação defensiva
 
-        if(accountId == null){
+        if (accountId == null) {
             throw new InvalidTransactionException("ID da conta inválido");
         }
 
-        if(dateTime == null){
+        if (dateTime == null) {
             throw new InvalidTransactionException("Horário inválido");
         }
 

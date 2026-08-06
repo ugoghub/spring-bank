@@ -8,6 +8,7 @@ import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.domain.valueobject.PersonName;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CreateClientUseCase {
@@ -21,6 +22,7 @@ public class CreateClientUseCase {
         this.validator = validator;
     }
 
+    @Transactional
     public CreateClientOutput execute(
             PersonName name,
             CPF cpf,

@@ -1,5 +1,6 @@
 package com.banco.bank_system.domain.entities;
 
+import com.banco.bank_system.application.exception.CannotRemoveAccountException;
 import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.exception.*;
 import com.banco.bank_system.domain.valueobject.AccountId;
@@ -27,7 +28,7 @@ public abstract class Account {
     ) {
 
         if(id == null){
-            throw new IllegalArgumentException("ID inválido");
+            throw new InvalidAccountIdException("ID inválido");
         }
 
         if(clientId == null){
@@ -110,6 +111,14 @@ public abstract class Account {
         return balance.isZero();
     }
 
+    public void validateRemoval() {
+        if (!balance.isZero()) {
+            throw new CannotRemoveAccountException(
+                    "Conta não pode ser excluída com saldo diferente de zero"
+            );
+        }
+    }
+
     // =========================
     // Getters
     // =========================
@@ -135,10 +144,6 @@ public abstract class Account {
     }
 
     public abstract AccountType getType();
-
-    public LocalDateTime getLastInterestAppliedAt() {
-        return null;
-    }
 
     // =========================
     // Equals e Hashcode

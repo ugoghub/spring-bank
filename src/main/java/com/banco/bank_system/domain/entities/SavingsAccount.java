@@ -126,7 +126,6 @@ public class SavingsAccount extends Account {
         return AccountType.SAVINGS;
     }
 
-    @Override
     public LocalDateTime getLastInterestAppliedAt() {
         return lastInterestAppliedAt;
     }

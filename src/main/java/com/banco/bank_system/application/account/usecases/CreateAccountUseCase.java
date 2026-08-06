@@ -12,6 +12,7 @@ import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.CPF;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 
@@ -36,13 +37,14 @@ public class CreateAccountUseCase {
         this.clock = clock;
     }
 
+    @Transactional
     public CreateAccountOutput execute(CPF cpf, AccountType type){
 
         Client client = clientFinder.find(cpf);
 
         AccountIdentity accountIdentity = uniqueAccountIdentityGenerator.generate();
 
-        final Account account =
+        Account account =
                 switch (type) {
                     case CHECKING ->
                             CheckingAccount.create(

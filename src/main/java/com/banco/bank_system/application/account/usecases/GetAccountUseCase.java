@@ -5,6 +5,7 @@ import com.banco.bank_system.application.account.util.AccountFinder;
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GetAccountUseCase {
@@ -15,6 +16,7 @@ public class GetAccountUseCase {
         this.accountFinder = accountFinder;
     }
 
+    @Transactional(readOnly = true)
     public GetClientAccountOutput execute(AccountIdentity accountIdentity) {
 
         Account account = accountFinder.byIdentity(accountIdentity);

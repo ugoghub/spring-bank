@@ -7,6 +7,7 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.PersonName;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChangeClientNameUseCase {
@@ -21,6 +22,7 @@ public class ChangeClientNameUseCase {
         this.clientFinder = clientFinder;
     }
 
+    @Transactional
     public GetClientDataOutput execute(
             CPF cpf,
             PersonName newName

@@ -5,6 +5,7 @@ import com.banco.bank_system.application.client.util.ClientFinder;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GetClientDataUseCase {
@@ -15,6 +16,7 @@ public class GetClientDataUseCase {
         this.clientFinder = clientFinder;
     }
 
+    @Transactional(readOnly = true)
     public GetClientDataOutput execute(CPF cpf){
 
         Client client = clientFinder.find(cpf);

@@ -16,9 +16,10 @@ import java.time.Clock;
 @Service
 public class WithdrawUseCase {
 
-    private final TransactionRepositoryPort transactionRepository;
-    private final AccountRepositoryPort accountRepository;
     private final AccountFinder accountFinder;
+
+    private final AccountRepositoryPort accountRepository;
+    private final TransactionRepositoryPort transactionRepository;
 
     private final Clock clock;
 

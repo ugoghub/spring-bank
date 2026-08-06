@@ -8,6 +8,7 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.CPF;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,7 +18,6 @@ public class GetClientAccountsUseCase {
     private final AccountRepositoryPort accountRepository;
     private final ClientFinder clientFinder;
 
-
     public GetClientAccountsUseCase(
             AccountRepositoryPort accountRepository,
             ClientFinder clientFinder
@@ -26,16 +26,17 @@ public class GetClientAccountsUseCase {
         this.clientFinder = clientFinder;
     }
 
+    @Transactional(readOnly = true)
     public GetClientAccountsOutput execute(CPF cpf){
 
         Client client = clientFinder.find(cpf);
 
-        List<AccountIdentity> list = accountRepository
+        List<AccountIdentity> accounts = accountRepository
                 .getAccountsByClient(client.getId())
                 .stream()
                 .map(Account::getAccountIdentity)
                 .toList();
 
-        return new GetClientAccountsOutput(list);
+        return new GetClientAccountsOutput(accounts);
     }
 }

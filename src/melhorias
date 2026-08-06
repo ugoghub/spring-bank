@@ -1,1 +1,33 @@
 AccountFactory
+
+@Transactional(readOnly = true) em casos de uso que apenas consultam dados LEITURAA
+@Transactional em casos de uso que alteram dados ESCRITA
+
+public record GetClientDataOutput(
+        PersonName name,
+        CPF cpf,
+        Email email
+) {
+
+    public static GetClientDataOutput from(Client client) {
+        return new GetClientDataOutput(
+                client.getName(),
+                client.getCpf(),
+                client.getEmail()
+        );
+    }
+}
+
+Clean Architecture
+DDD tático
+Rich Domain Model
+Value Objects
+Casos de uso separados
+Ports & Adapters
+Testes unitários
+Testes de integração
+Spring Data JPA
+Swagger/OpenAPI
+Docker
+Banco H2/PostgreSQL
+CI com GitHub Actions
