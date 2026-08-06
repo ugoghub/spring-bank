@@ -6,7 +6,7 @@ import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
-import com.banco.bank_system.infrastructure.mapper.AccountMapper;
+import com.banco.bank_system.infrastructure.database.mapper.AccountMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

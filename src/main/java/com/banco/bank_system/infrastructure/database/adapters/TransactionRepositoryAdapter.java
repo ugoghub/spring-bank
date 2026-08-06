@@ -4,12 +4,11 @@ import com.banco.bank_system.application.transaction.port.TransactionRepositoryP
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.AccountId;
 import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
+import com.banco.bank_system.infrastructure.database.mapper.TransactionMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
@@ -23,8 +22,7 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
     @Override
     public void save(Transaction transaction) {
 
-        TransactionEntity entity =
-                TransactionEntity.fromDomain(transaction);
+        TransactionEntity entity = TransactionMapper.fromDomain(transaction);
 
         repository.save(entity);
     }
@@ -36,6 +34,6 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
     ) {
         return repository
                 .findByAccountId(accountId.id(), pageable)
-                .map(TransactionEntity::toDomain);
+                .map(TransactionMapper::toDomain);
     }
 }

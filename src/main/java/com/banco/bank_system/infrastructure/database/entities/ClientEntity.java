@@ -1,14 +1,11 @@
 package com.banco.bank_system.infrastructure.database.entities;
 
-import com.banco.bank_system.domain.entities.Client;
-import com.banco.bank_system.domain.valueobject.CPF;
-import com.banco.bank_system.domain.valueobject.ClientId;
-import com.banco.bank_system.domain.valueobject.Email;
-import com.banco.bank_system.domain.valueobject.PersonName;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 import java.util.UUID;
 
@@ -37,9 +34,10 @@ public class ClientEntity {
 
 
     @Column(
-            name = "CPF",
-            nullable = false,
-            updatable = false
+            name="cpf",
+            nullable=false,
+            unique=true,
+            updatable=false
     )
     private String cpf;
 
@@ -57,25 +55,5 @@ public class ClientEntity {
         this.cpf = cpf;
         this.email = email;
 
-    }
-
-    public Client toDomain(){
-
-        return Client.restore(
-                new ClientId(id),
-                new PersonName(name),
-                new CPF(cpf),
-                new Email(email)
-        );
-    }
-
-    public static ClientEntity fromDomain(Client client){
-
-        return new ClientEntity(
-                client.getId().id(),
-                client.getName().value(),
-                client.getCpf().value(),
-                client.getEmail().value()
-        );
     }
 }

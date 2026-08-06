@@ -1,8 +1,6 @@
 package com.banco.bank_system.infrastructure.database.entities;
 
-import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.enums.TransactionType;
-import com.banco.bank_system.domain.valueobject.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +23,7 @@ public class TransactionEntity {
     @Column(name = "operation_id")
     private UUID operationId;
 
-    @Column(name = "account_Id")
+    @Column(name = "account_id")
     private UUID accountId;
 
     @Enumerated(EnumType.STRING)
@@ -36,16 +34,16 @@ public class TransactionEntity {
     private BigDecimal amount;
 
     @Column(name = "source_branch")
-    private String source_branch;
+    private String sourceBranch;
 
     @Column(name = "source_accountNumber")
-    private String source_accountNumber;
+    private String sourceAccountNumber;
 
     @Column(name = "destination_branch")
-    private String destination_branch;
+    private String destinationBranch;
 
     @Column(name = "destination_accountNumber")
-    private String destination_accountNumber;
+    private String destinationAccountNumber;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -67,56 +65,10 @@ public class TransactionEntity {
         this.accountId = accountId;
         this.type = type;
         this.amount = amount;
-        this.source_branch = source_branch;
-        this.source_accountNumber = source_accountNumber;
-        this.destination_branch = destination_branch;
-        this.destination_accountNumber = destination_accountNumber;
+        this.sourceBranch = source_branch;
+        this.sourceAccountNumber = source_accountNumber;
+        this.destinationBranch = destination_branch;
+        this.destinationAccountNumber = destination_accountNumber;
         this.createdAt = createdAt;
-    }
-
-    public static TransactionEntity fromDomain(Transaction transaction) {
-
-        return new TransactionEntity(
-                transaction.getId().id(),
-                operationId(transaction.getOperationId()),
-                transaction.getAccountId().id(),
-                transaction.getType(),
-                transaction.getAmount().value(),
-                branch(transaction.getSource()),
-                accountNumber(transaction.getSource()),
-                branch(transaction.getDestination()),
-                accountNumber(transaction.getDestination()),
-                transaction.getDateTime()
-        );
-    }
-
-    public Transaction toDomain() {
-
-        return Transaction.restore(
-                new TransactionId(id),
-                operationId == null ? null : new OperationId(operationId),
-                new AccountId(accountId),
-                type,
-                Money.of(amount),
-                accountIdentity(source_branch, source_accountNumber),
-                accountIdentity(destination_branch, destination_accountNumber),
-                createdAt
-        );
-    }
-
-    private static UUID operationId(OperationId id) {
-        return id == null ? null : id.id();
-    }
-
-    private static AccountIdentity accountIdentity(String branch, String account) {
-        return branch == null ? null : new AccountIdentity(branch, account);
-    }
-
-    private static String branch(AccountIdentity identity) {
-        return identity == null ? null : identity.branch();
-    }
-
-    private static String accountNumber(AccountIdentity identity) {
-        return identity == null ? null : identity.accountNumber();
     }
 }

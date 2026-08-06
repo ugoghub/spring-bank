@@ -3,6 +3,7 @@ package com.banco.bank_system.integration;
 import com.banco.bank_system.configuration.FixedClockTestConfiguration;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientEmailRequest;
 import com.banco.bank_system.presentation.dto.request.client.ChangeClientNameRequest;
@@ -71,7 +72,7 @@ class ClientIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         mockMvc.perform(
@@ -92,7 +93,7 @@ class ClientIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         ChangeClientNameRequest request =
@@ -118,7 +119,7 @@ class ClientIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         ChangeClientEmailRequest request =
@@ -147,7 +148,7 @@ class ClientIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         mockMvc.perform(
@@ -177,7 +178,7 @@ class ClientIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CreateClientRequest request =
@@ -203,7 +204,7 @@ class ClientIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CreateClientRequest request =

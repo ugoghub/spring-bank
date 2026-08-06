@@ -5,7 +5,7 @@ import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.CPF;
 import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
-import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import org.springframework.stereotype.Repository;
 
@@ -37,7 +37,7 @@ public class ClientRepositoryAdapter
 
         return repository
                 .findByCpf(cpf.value())
-                .map(ClientEntity::toDomain);
+                .map(ClientMapper::toDomain);
     }
 
 
@@ -75,13 +75,13 @@ public class ClientRepositoryAdapter
     @Override
     public Optional<Client> findById(ClientId clientId) {
         return repository.findById(clientId.id())
-                .map(ClientEntity::toDomain);
+                .map(ClientMapper::toDomain);
     }
 
     @Override
     public void save(Client client) {
 
-        repository.save(ClientEntity.fromDomain(client));
+        repository.save(ClientMapper.fromDomain(client));
     }
 
 }

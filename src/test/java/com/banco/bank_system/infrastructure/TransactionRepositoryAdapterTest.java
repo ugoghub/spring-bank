@@ -10,8 +10,8 @@ import com.banco.bank_system.domain.valueobject.OperationId;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import com.banco.bank_system.infrastructure.database.adapters.AccountRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.adapters.TransactionRepositoryAdapter;
-import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
 import com.banco.bank_system.useCase.client.helper.ClientFactory;
@@ -64,7 +64,7 @@ class TransactionRepositoryAdapterTest {
     void shouldSaveTransaction() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -105,7 +105,7 @@ class TransactionRepositoryAdapterTest {
     void shouldFindTransactionsByAccountId() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -154,7 +154,7 @@ class TransactionRepositoryAdapterTest {
     void shouldReturnEmptyWhenAccountHasNoTransactions() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -174,7 +174,7 @@ class TransactionRepositoryAdapterTest {
     void shouldSaveTransferSentTransaction() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount from =
                 AccountFactory.checking(client.getId(), clock);
@@ -199,8 +199,7 @@ class TransactionRepositoryAdapterTest {
 
         adapter.save(transaction);
 
-        TransactionEntity entity =
-                repository.findAll().getFirst();
+        TransactionEntity entity = repository.findAll().getFirst();
 
         assertEquals(
                 TransactionType.TRANSFER_SENT,
@@ -219,22 +218,22 @@ class TransactionRepositoryAdapterTest {
 
         assertEquals(
                 from.getAccountIdentity().branch(),
-                entity.getSource_branch()
+                entity.getSourceBranch()
         );
 
         assertEquals(
                 from.getAccountIdentity().accountNumber(),
-                entity.getSource_accountNumber()
+                entity.getSourceAccountNumber()
         );
 
         assertEquals(
                 to.getAccountIdentity().branch(),
-                entity.getDestination_branch()
+                entity.getDestinationBranch()
         );
 
         assertEquals(
                 to.getAccountIdentity().accountNumber(),
-                entity.getDestination_accountNumber()
+                entity.getDestinationAccountNumber()
         );
 
         assertEquals(
@@ -247,7 +246,7 @@ class TransactionRepositoryAdapterTest {
     void shouldSaveTransferReceivedTransaction() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount from =
                 AccountFactory.checking(client.getId(), clock);
@@ -292,22 +291,22 @@ class TransactionRepositoryAdapterTest {
 
         assertEquals(
                 from.getAccountIdentity().branch(),
-                entity.getSource_branch()
+                entity.getSourceBranch()
         );
 
         assertEquals(
                 from.getAccountIdentity().accountNumber(),
-                entity.getSource_accountNumber()
+                entity.getSourceAccountNumber()
         );
 
         assertEquals(
                 to.getAccountIdentity().branch(),
-                entity.getDestination_branch()
+                entity.getDestinationBranch()
         );
 
         assertEquals(
                 to.getAccountIdentity().accountNumber(),
-                entity.getDestination_accountNumber()
+                entity.getDestinationAccountNumber()
         );
 
         assertEquals(
@@ -320,7 +319,7 @@ class TransactionRepositoryAdapterTest {
     void shouldRestoreTransferSentTransaction() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount from =
                 AccountFactory.checking(client.getId(), clock);
@@ -395,7 +394,7 @@ class TransactionRepositoryAdapterTest {
     void shouldRestoreTransferReceivedTransaction() {
 
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount from =
                 AccountFactory.checking(client.getId(), clock);

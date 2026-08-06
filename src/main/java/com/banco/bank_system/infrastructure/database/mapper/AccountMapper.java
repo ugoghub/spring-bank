@@ -1,4 +1,4 @@
-package com.banco.bank_system.infrastructure.mapper;
+package com.banco.bank_system.infrastructure.database.mapper;
 
 import com.banco.bank_system.domain.entities.Account;
 import com.banco.bank_system.domain.entities.CheckingAccount;

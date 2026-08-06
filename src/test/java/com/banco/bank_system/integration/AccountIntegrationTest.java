@@ -5,10 +5,10 @@ import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
-import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
+import com.banco.bank_system.infrastructure.database.mapper.AccountMapper;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
-import com.banco.bank_system.infrastructure.mapper.AccountMapper;
 import com.banco.bank_system.presentation.dto.request.account.CreateAccountRequest;
 import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +52,7 @@ class AccountIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CreateAccountRequest request =
@@ -81,7 +81,7 @@ class AccountIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CheckingAccount account =
@@ -106,7 +106,7 @@ class AccountIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         accountRepository.save(
@@ -134,7 +134,7 @@ class AccountIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CheckingAccount account =
@@ -162,7 +162,7 @@ class AccountIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CheckingAccount account =
@@ -229,7 +229,7 @@ class AccountIntegrationTest {
         Client client = ClientFactory.create();
 
         clientRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         CheckingAccount account =

@@ -6,6 +6,7 @@ import com.banco.bank_system.domain.valueobject.ClientId;
 import com.banco.bank_system.domain.valueobject.Email;
 import com.banco.bank_system.infrastructure.database.adapters.ClientRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ class ClientRepositoryAdapterTest {
         Client client = ClientFactory.create();
 
         jpaRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         Optional<Client> result =
@@ -106,7 +107,7 @@ class ClientRepositoryAdapterTest {
 
         Client client = ClientFactory.create();
 
-        jpaRepository.save(ClientEntity.fromDomain(client));
+        jpaRepository.save(ClientMapper.fromDomain(client));
 
         assertTrue(
                 adapter.existsByEmail(client.getEmail())
@@ -129,7 +130,7 @@ class ClientRepositoryAdapterTest {
         Client client = ClientFactory.create();
 
         jpaRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         assertTrue(
@@ -153,7 +154,7 @@ class ClientRepositoryAdapterTest {
         Client client = ClientFactory.create();
 
         jpaRepository.save(
-                ClientEntity.fromDomain(client)
+                ClientMapper.fromDomain(client)
         );
 
         adapter.delete(client.getId());
@@ -170,7 +171,7 @@ class ClientRepositoryAdapterTest {
 
         Client client = ClientFactory.create();
 
-        jpaRepository.save(ClientEntity.fromDomain(client));
+        jpaRepository.save(ClientMapper.fromDomain(client));
 
         Optional<Client> result =
                 adapter.findById(client.getId());
@@ -199,7 +200,7 @@ class ClientRepositoryAdapterTest {
 
         Client client = ClientFactory.create();
 
-        jpaRepository.save(ClientEntity.fromDomain(client));
+        jpaRepository.save(ClientMapper.fromDomain(client));
 
         assertTrue(
                 adapter.existsById(client.getId())

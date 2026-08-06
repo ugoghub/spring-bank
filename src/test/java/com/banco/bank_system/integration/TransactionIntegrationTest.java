@@ -7,9 +7,9 @@ import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
-import com.banco.bank_system.infrastructure.mapper.AccountMapper;
-import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
-import com.banco.bank_system.infrastructure.database.entities.TransactionEntity;
+import com.banco.bank_system.infrastructure.database.mapper.AccountMapper;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
+import com.banco.bank_system.infrastructure.database.mapper.TransactionMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaTransactionRepository;
@@ -65,7 +65,7 @@ class TransactionIntegrationTest {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -97,7 +97,7 @@ class TransactionIntegrationTest {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -131,7 +131,7 @@ class TransactionIntegrationTest {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount source =
                 AccountFactory.checking(client.getId(), clock);
@@ -171,7 +171,7 @@ class TransactionIntegrationTest {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         CheckingAccount account =
                 AccountFactory.checking(client.getId(), clock);
@@ -179,7 +179,7 @@ class TransactionIntegrationTest {
         accountRepository.save(AccountMapper.fromDomain(account));
 
         transactionRepository.save(
-                TransactionEntity.fromDomain(
+                TransactionMapper.fromDomain(
                         Transaction.deposit(
                                 account.getId(),
                                 account.getAccountIdentity(),
@@ -268,7 +268,7 @@ class TransactionIntegrationTest {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
 
         SavingsAccount account =
                 AccountFactory.savings(client.getId(), clock);

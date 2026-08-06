@@ -9,6 +9,7 @@ import com.banco.bank_system.entities.helper.AccountFactory;
 import com.banco.bank_system.infrastructure.database.adapters.AccountRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
+import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.useCase.client.helper.ClientFactory;
@@ -208,7 +209,7 @@ class AccountRepositoryAdapterTest {
 
     private Client persistClient() {
         Client client = ClientFactory.create();
-        clientRepository.save(ClientEntity.fromDomain(client));
+        clientRepository.save(ClientMapper.fromDomain(client));
         return client;
     }
 }
