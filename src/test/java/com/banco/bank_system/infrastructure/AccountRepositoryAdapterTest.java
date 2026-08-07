@@ -8,7 +8,6 @@ import com.banco.bank_system.domain.valueobject.AccountIdentity;
 import com.banco.bank_system.entities.helper.AccountFactory;
 import com.banco.bank_system.infrastructure.database.adapters.AccountRepositoryAdapter;
 import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
-import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;

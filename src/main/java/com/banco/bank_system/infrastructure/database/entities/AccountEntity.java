@@ -2,6 +2,7 @@ package com.banco.bank_system.infrastructure.database.entities;
 
 import com.banco.bank_system.domain.enums.AccountType;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,7 +24,7 @@ import java.util.UUID;
 )
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountEntity {
 
     @Id

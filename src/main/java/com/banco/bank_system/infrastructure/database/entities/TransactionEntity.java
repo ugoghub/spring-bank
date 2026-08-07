@@ -2,6 +2,7 @@ package com.banco.bank_system.infrastructure.database.entities;
 
 import com.banco.bank_system.domain.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Table(name = "tb_transactions")
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TransactionEntity {
 
     @Id

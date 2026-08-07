@@ -31,7 +31,7 @@ public class AccountController {
     private final CreateAccountUseCase createAccountUseCase;
     private final GetAccountBalanceUseCase getAccountBalanceUseCase;
     private final GetClientAccountsUseCase getClientAccountsUseCase;
-    private final GetAccountUseCase getClientAccountUseCase;
+    private final GetAccountUseCase getAccountUseCase;
     private final RemoveAccountUseCase removeAccountUseCase;
 
     public AccountController(CreateAccountUseCase createAccountUseCase,
@@ -41,7 +41,7 @@ public class AccountController {
                              RemoveAccountUseCase removeAccountUseCase) {
         this.createAccountUseCase = createAccountUseCase;
         this.getAccountBalanceUseCase = getAccountBalanceUseCase;
-        this.getClientAccountUseCase = getClientAccountUseCase;
+        this.getAccountUseCase = getClientAccountUseCase;
         this.getClientAccountsUseCase = getClientAccountsUseCase;
         this.removeAccountUseCase = removeAccountUseCase;
     }
@@ -71,7 +71,31 @@ public class AccountController {
                 .body(response);
     }
 
+    @Operation(
+            summary = "Consultar contas do cliente",
+            description = "Retorna todas as contas pertencentes a um cliente."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contas retornadas com sucesso"),
+            @ApiResponse(responseCode = "400", description = "CPF inválido"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
+    @GetMapping("/{cpf}")
+    public ResponseEntity<GetClientAccountsResponse> getAccounts(
 
+            @Parameter(
+                    description = "CPF do cliente",
+                    example = "52998224725"
+            )
+            @PathVariable String cpf
+    ){
+
+        GetClientAccountsOutput output = getClientAccountsUseCase.execute(new CPF(cpf));
+
+        return ResponseEntity.ok(
+                GetClientAccountsResponse.from(output)
+        );
+    }
 
     @Operation(
             summary = "Buscar saldo",
@@ -106,33 +130,6 @@ public class AccountController {
         );
     }
 
-
-    @Operation(
-            summary = "Consultar contas do cliente",
-            description = "Retorna todas as contas pertencentes a um cliente."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Contas retornadas com sucesso"),
-            @ApiResponse(responseCode = "400", description = "CPF inválido"),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    })
-    @GetMapping("/{cpf}")
-    public ResponseEntity<GetClientAccountsResponse> getAccounts(
-
-            @Parameter(
-                    description = "CPF do cliente",
-                    example = "52998224725"
-            )
-            @PathVariable String cpf
-    ){
-
-        GetClientAccountsOutput output = getClientAccountsUseCase.execute(new CPF(cpf));
-
-        return ResponseEntity.ok(
-                GetClientAccountsResponse.from(output)
-        );
-    }
-
     @Operation(
             summary = "Consultar conta",
             description = "Retorna os dados de uma conta."
@@ -158,7 +155,7 @@ public class AccountController {
     ){
         AccountIdentity accountIdentity = new AccountIdentity(branch, accountNumber);
 
-        GetClientAccountOutput output = getClientAccountUseCase.execute(accountIdentity);
+        GetClientAccountOutput output = getAccountUseCase.execute(accountIdentity);
 
         return ResponseEntity.ok(
                 GetClientAccountResponse.from(output)
@@ -174,8 +171,8 @@ public class AccountController {
             @ApiResponse(responseCode = "400", description = "A conta possui saldo ou os dados são inválidos"),
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
-    @DeleteMapping("/delete/{branch}/{accountNumber}")
-    public ResponseEntity<Void> delete(
+    @DeleteMapping("{branch}/{accountNumber}")
+    public ResponseEntity<Void> deleteAccount(
             @Parameter(
                     description = "Agência da conta",
                     example = "01"
@@ -192,6 +189,6 @@ public class AccountController {
 
         removeAccountUseCase.execute(accountIdentity);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }

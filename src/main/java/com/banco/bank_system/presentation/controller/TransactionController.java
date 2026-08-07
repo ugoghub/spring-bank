@@ -62,7 +62,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
-    @PostMapping("/deposit")
+    @PostMapping("/deposits")
     public ResponseEntity<DepositResponse> deposit(
             @Valid @RequestBody DepositRequest request
     ) {
@@ -89,7 +89,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
-    @PostMapping("/withdraw")
+    @PostMapping("/withdrawals")
     public ResponseEntity<WithdrawResponse> withdraw(
             @Valid @RequestBody WithdrawRequest request
     ) {
@@ -117,7 +117,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Conta de origem ou destino não encontrada")
     })
-    @PostMapping("/transfer")
+    @PostMapping("/transfers")
     public ResponseEntity<TransferResponse> transfer(
             @Valid @RequestBody TransferRequest request
     ) {

@@ -1,6 +1,5 @@
 package com.banco.bank_system.presentation.controller;
 
-
 import com.banco.bank_system.application.client.dto.CreateClientOutput;
 import com.banco.bank_system.application.client.dto.GetClientDataOutput;
 import com.banco.bank_system.application.client.usecases.*;
@@ -25,8 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/clients")
 @Tag(name = "Clientes", description = "Operações relacionadas aos clientes")
-public class
-ClientController {
+public class ClientController {
 
     private final GetClientDataUseCase getClientDataUseCase;
     private final CreateClientUseCase createClientUseCase;
@@ -57,13 +55,13 @@ ClientController {
     })
     @PostMapping
     public ResponseEntity<CreateClientResponse> createClient(
-            @Valid @RequestBody CreateClientRequest client
+            @Valid @RequestBody CreateClientRequest request
     ) {
 
         CreateClientOutput output = createClientUseCase.execute(
-                new PersonName(client.name()),
-                new CPF(client.cpf()),
-                new Email(client.email())
+                new PersonName(request.name()),
+                new CPF(request.cpf()),
+                new Email(request.email())
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -81,7 +79,7 @@ ClientController {
             @ApiResponse(responseCode = "400", description = "CPF inválido")
     })
     @GetMapping(path = "/{cpf}")
-    public ResponseEntity<ClientDataResponse> clientData(
+    public ResponseEntity<ClientDataResponse> getClientData(
             @Parameter(
                     description = "CPF do cliente",
                     example = "52998224725"
@@ -108,7 +106,7 @@ ClientController {
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    @PutMapping("/changeName/{cpf}")
+    @PatchMapping("/{cpf}/name")
     public ResponseEntity<ClientDataResponse> changeClientName(
 
             @Parameter(
@@ -117,12 +115,12 @@ ClientController {
             )
             @PathVariable String cpf,
 
-            @Valid @RequestBody ChangeClientNameRequest client
+            @Valid @RequestBody ChangeClientNameRequest request
     ) {
 
         GetClientDataOutput output = changeClientNameUseCase.execute(
                 new CPF(cpf),
-                new PersonName(client.name())
+                new PersonName(request.name())
         );
 
         return ResponseEntity.ok(
@@ -140,7 +138,7 @@ ClientController {
             @ApiResponse(responseCode = "409", description = "E-mail já cadastrado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    @PutMapping("/changeEmail/{cpf}")
+    @PatchMapping("/{cpf}/email")
     public ResponseEntity<ClientDataResponse> changeClientEmail(
 
             @Parameter(
@@ -149,12 +147,12 @@ ClientController {
             )
             @PathVariable String cpf,
 
-            @Valid @RequestBody ChangeClientEmailRequest client
+            @Valid @RequestBody ChangeClientEmailRequest request
     ) {
 
         GetClientDataOutput output = changeClientEmailUseCase.execute(
                 new CPF(cpf),
-                new Email(client.email())
+                new Email(request.email())
         );
 
         return ResponseEntity.ok(
@@ -181,7 +179,6 @@ ClientController {
     ) {
         removeClientUseCase.execute(new CPF(cpf));
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
-
 }
