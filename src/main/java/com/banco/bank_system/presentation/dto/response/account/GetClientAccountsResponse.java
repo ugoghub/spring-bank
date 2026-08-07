@@ -4,9 +4,7 @@ import com.banco.bank_system.application.account.dto.GetClientAccountsOutput;
 
 import java.util.List;
 
-public record GetClientAccountsResponse(
-        List<AccountResponse> accounts
-) {
+public record GetClientAccountsResponse(List<AccountResponse> accounts) {
 
     public static GetClientAccountsResponse from(GetClientAccountsOutput output) {
 

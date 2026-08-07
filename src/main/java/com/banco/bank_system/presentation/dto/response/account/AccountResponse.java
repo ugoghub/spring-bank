@@ -6,7 +6,6 @@ public record AccountResponse(
         String branch,
         String accountNumber
 ) {
-
     public static AccountResponse from(AccountIdentity accountIdentity) {
         return new AccountResponse(
                 accountIdentity.branch(),

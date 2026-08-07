@@ -2,6 +2,7 @@ package com.banco.bank_system.presentation.dto.response.transactions;
 
 import com.banco.bank_system.application.transaction.dto.TransactionDTO;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
+import com.banco.bank_system.presentation.util.DateFormatter;
 
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -18,20 +19,17 @@ public record TransactionResponse(
         String dateTime
 ) {
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-
-    public static TransactionResponse from(TransactionDTO dto) {
+    public static TransactionResponse from(TransactionDTO output) {
         return new TransactionResponse(
-                dto.id().id(),
-                dto.operationId() == null ? null : dto.operationId().id(),
-                dto.type().toString(),
-                CurrencyFormatter.format(dto.amount()),
-                dto.source_branch(),
-                dto.source_accountNumber(),
-                dto.destination_branch(),
-                dto.destination_accountNumber(),
-                FORMATTER.format(dto.dateTime())
+                output.id().id(),
+                output.operationId() == null ? null : output.operationId().id(),
+                output.type().toString(),
+                CurrencyFormatter.format(output.amount()),
+                output.source_branch(),
+                output.source_accountNumber(),
+                output.destination_branch(),
+                output.destination_accountNumber(),
+                DateFormatter.format(output.dateTime())
         );
     }
 }

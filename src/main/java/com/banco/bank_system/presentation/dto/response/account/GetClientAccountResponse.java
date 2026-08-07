@@ -2,6 +2,7 @@ package com.banco.bank_system.presentation.dto.response.account;
 
 import com.banco.bank_system.application.account.dto.GetClientAccountOutput;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
+import com.banco.bank_system.presentation.util.DateFormatter;
 
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -14,8 +15,6 @@ public record GetClientAccountResponse(
         String createdAt,
         String balance
 ) {
-    private static final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     public static GetClientAccountResponse from(GetClientAccountOutput output) {
         return new GetClientAccountResponse(
@@ -23,7 +22,7 @@ public record GetClientAccountResponse(
                 output.clientId().id(),
                 output.accountIdentity().branch(),
                 output.accountIdentity().accountNumber(),
-                output.creationTime().format(formatter),
+                DateFormatter.format(output.creationTime()),
                 CurrencyFormatter.format(output.balance())
         );
     }

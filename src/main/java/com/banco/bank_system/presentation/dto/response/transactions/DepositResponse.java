@@ -2,6 +2,7 @@ package com.banco.bank_system.presentation.dto.response.transactions;
 
 import com.banco.bank_system.application.transaction.dto.DepositOutput;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
+import com.banco.bank_system.presentation.util.DateFormatter;
 
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public record DepositResponse(
                 CurrencyFormatter.format(output.depositedAmount()),
                 output.newBalance().value().toString(),
                 output.transactionId().id(),
-                output.transactionDate().format(formatter)
+                DateFormatter.format(output.transactionDate())
         );
     }
 }

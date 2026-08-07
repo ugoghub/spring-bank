@@ -11,7 +11,6 @@ public record CreateClientResponse(
         String cpf,
         String email
 ) {
-
     public static CreateClientResponse from(CreateClientOutput output) {
         return new CreateClientResponse(
                 output.id().id(),

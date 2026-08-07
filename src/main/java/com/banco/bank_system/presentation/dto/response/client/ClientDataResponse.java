@@ -7,7 +7,6 @@ public record ClientDataResponse(
         String cpf,
         String email
 ) {
-
     public static ClientDataResponse from(GetClientDataOutput output) {
         return new ClientDataResponse(
                 output.name().value(),
