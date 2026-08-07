@@ -1,7 +1,9 @@
 package com.banco.bank_system.integration;
 
-import com.banco.bank_system.configuration.FixedClockTestConfiguration;
 import com.banco.bank_system.domain.entities.Client;
+import com.banco.bank_system.domain.valueobject.CPF;
+import com.banco.bank_system.domain.valueobject.Email;
+import com.banco.bank_system.domain.valueobject.PersonName;
 import com.banco.bank_system.infrastructure.database.entities.ClientEntity;
 import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
@@ -14,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import(FixedClockTestConfiguration.class)
 class ClientIntegrationTest {
 
     @Autowired
@@ -52,20 +52,23 @@ class ClientIntegrationTest {
         mockMvc.perform(
                         post("/clients")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        objectMapper.writeValueAsString(request)
-                                )
+                                .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Hugo"))
                 .andExpect(jsonPath("$.cpf").value("52998224725"))
                 .andExpect(jsonPath("$.email").value("hugo@gmail.com"));
 
-        assertTrue(
-                clientRepository.existsByCpf("52998224725")
-        );
-    }
+        assertEquals(1, clientRepository.count());
 
+        ClientEntity entity =
+                clientRepository.findByCpf("52998224725")
+                        .orElseThrow();
+
+        assertEquals("Hugo", entity.getName());
+        assertEquals("52998224725", entity.getCpf());
+        assertEquals("hugo@gmail.com", entity.getEmail());
+    }
     @Test
     void shouldReturnClientData() throws Exception {
 
@@ -224,4 +227,157 @@ class ClientIntegrationTest {
                         .value("EMAIL_ALREADY_EXISTS"));
     }
 
+    @Test
+    void shouldReturn400WhenCpfIsInvalid() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "Hugo",
+                        "52998224726",
+                        "hugo@gmail.com"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_CPF"));
+    }
+
+    @Test
+    void shouldReturn400WhenNameIsInvalid() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "",
+                        "52998224725",
+                        "hugo@gmail.com"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_NAME"));
+    }
+
+    @Test
+    void shouldReturn400WhenEmailIsInvalid() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "Hugo",
+                        "52998224725",
+                        "email-invalido"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_EMAIL"));
+    }
+
+    @Test
+    void shouldReturn400WhenChangingToSameName() throws Exception {
+
+        Client client = ClientFactory.create();
+
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
+
+        ChangeClientNameRequest request =
+                new ChangeClientNameRequest(
+                        client.getName().value()
+                );
+
+        mockMvc.perform(
+                        patch("/clients/" + client.getCpf().value() + "/name")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_CLIENT_CHANGE"));
+    }
+
+    @Test
+    void shouldReturn400WhenChangingToSameEmail() throws Exception {
+
+        Client client = ClientFactory.create();
+
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
+
+        ChangeClientEmailRequest request =
+                new ChangeClientEmailRequest(
+                        client.getEmail().value()
+                );
+
+        mockMvc.perform(
+                        patch("/clients/" + client.getCpf().value() + "/email")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_CLIENT_CHANGE"));
+    }
+
+    @Test
+    void shouldReturn409WhenChangingToExistingEmail() throws Exception {
+
+        Client firstClient = ClientFactory.create();
+
+        Client secondClient = Client.create(
+                new PersonName("Outro Cliente"),
+                new CPF("11144477735"),
+                new Email("outro@gmail.com")
+        );
+
+        clientRepository.save(
+                ClientMapper.fromDomain(firstClient)
+        );
+
+        clientRepository.save(
+                ClientMapper.fromDomain(secondClient)
+        );
+
+        ChangeClientEmailRequest request =
+                new ChangeClientEmailRequest(
+                        secondClient.getEmail().value()
+                );
+
+        mockMvc.perform(
+                        patch("/clients/" + firstClient.getCpf().value() + "/email")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code")
+                        .value("EMAIL_ALREADY_EXISTS"));
+    }
 }

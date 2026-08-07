@@ -3,13 +3,16 @@ package com.banco.bank_system.integration;
 import com.banco.bank_system.configuration.FixedClockTestConfiguration;
 import com.banco.bank_system.domain.entities.CheckingAccount;
 import com.banco.bank_system.domain.entities.Client;
+import com.banco.bank_system.domain.enums.AccountType;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
+import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.mapper.AccountMapper;
 import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.sql.JpaAccountRepository;
 import com.banco.bank_system.infrastructure.database.sql.JpaClientRepository;
 import com.banco.bank_system.presentation.dto.request.account.CreateAccountRequest;
+import com.banco.bank_system.presentation.util.CurrencyFormatter;
 import com.banco.bank_system.useCase.client.helper.ClientFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +43,9 @@ class AccountIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private JpaClientRepository clientRepository;
@@ -68,11 +75,67 @@ class AccountIntegrationTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.clientId")
-                        .value(client.getId().id().toString()))
-                .andExpect(jsonPath("$.branch").exists())
-                .andExpect(jsonPath("$.accountNumber").exists());
+                        .value(client.getId().id().toString()));
 
         assertEquals(1, accountRepository.count());
+
+        AccountEntity entity =
+                accountRepository.findAll().getFirst();
+
+        assertEquals(
+                client.getId().id(),
+                entity.getClientId()
+        );
+
+        assertEquals(
+                AccountType.CHECKING,
+                entity.getAccountType()
+        );
+
+        assertEquals(
+                Money.ZERO.value(),
+                entity.getBalance()
+        );
+    }
+
+    @Test
+    void shouldCreateSavingsAccount() throws Exception {
+
+        Client client = ClientFactory.create();
+
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        client.getCpf().value(),
+                        "SAVINGS"
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.clientId")
+                        .value(client.getId().id().toString()));
+
+        assertEquals(1, accountRepository.count());
+
+        AccountEntity entity =
+                accountRepository.findAll().getFirst();
+
+        assertEquals(
+                client.getId().id(),
+                entity.getClientId()
+        );
+
+        assertEquals(
+                AccountType.SAVINGS,
+                entity.getAccountType()
+        );
     }
 
     @Test
@@ -85,7 +148,7 @@ class AccountIntegrationTest {
         );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), Clock.systemUTC());
+                AccountFactory.checking(client.getId(), clock);
 
         accountRepository.save(
                 AccountMapper.fromDomain(account)
@@ -97,7 +160,7 @@ class AccountIntegrationTest {
                                 account.getAccountIdentity().accountNumber())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.balance").exists());
+                .andExpect(jsonPath("$.balance").value(CurrencyFormatter.format(account.getBalance())));
     }
 
     @Test
@@ -111,13 +174,13 @@ class AccountIntegrationTest {
 
         accountRepository.save(
                 AccountMapper.fromDomain(
-                        AccountFactory.checking(client.getId(), Clock.systemUTC())
+                        AccountFactory.checking(client.getId(), clock)
                 )
         );
 
         accountRepository.save(
                 AccountMapper.fromDomain(
-                        AccountFactory.savings(client.getId(), Clock.systemUTC())
+                        AccountFactory.savings(client.getId(), clock)
                 )
         );
 
@@ -138,7 +201,7 @@ class AccountIntegrationTest {
         );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), Clock.systemUTC());
+                AccountFactory.checking(client.getId(), clock);
 
         accountRepository.save(
                 AccountMapper.fromDomain(account)
@@ -166,7 +229,7 @@ class AccountIntegrationTest {
         );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), Clock.systemUTC());
+                AccountFactory.checking(client.getId(), clock);
 
         accountRepository.save(
                 AccountMapper.fromDomain(account)
@@ -179,7 +242,7 @@ class AccountIntegrationTest {
                 )
                 .andExpect(status().isNoContent());
 
-        assertEquals(0, accountRepository.count());
+        assertTrue(accountRepository.findAll().isEmpty());
     }
 
     @Test
@@ -233,7 +296,7 @@ class AccountIntegrationTest {
         );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), Clock.systemUTC());
+                AccountFactory.checking(client.getId(), clock);
 
         account.deposit(Money.of("100"));
 
@@ -250,5 +313,50 @@ class AccountIntegrationTest {
                 .andExpect(jsonPath("$.code")
                         .value("CANNOT_REMOVE_ACCOUNT"));
     }
+
+    @Test
+    void shouldReturn400WhenCpfIsInvalid() throws Exception {
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        "52998224726",
+                        "CHECKING"
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_CPF"));
+    }
+
+    @Test
+    void shouldReturn400WhenAccountTypeIsInvalid() throws Exception {
+
+        Client client = ClientFactory.create();
+
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        client.getCpf().value(),
+                        "INVALID"
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_ACCOUNT_TYPE"));
+    }
+
 
 }

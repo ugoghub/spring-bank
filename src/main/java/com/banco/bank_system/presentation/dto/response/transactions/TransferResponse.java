@@ -4,8 +4,6 @@ import com.banco.bank_system.application.transaction.dto.TransferOutput;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
 import com.banco.bank_system.presentation.util.DateFormatter;
 
-import java.time.format.DateTimeFormatter;
-
 public record TransferResponse(
         String operationId,
         String source_branch,

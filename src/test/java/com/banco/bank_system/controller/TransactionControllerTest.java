@@ -1,5 +1,7 @@
 package com.banco.bank_system.controller;
 
+import com.banco.bank_system.application.exception.AccountNotFoundException;
+import com.banco.bank_system.application.exception.InvalidTransferException;
 import com.banco.bank_system.application.transaction.dto.DepositOutput;
 import com.banco.bank_system.application.transaction.dto.TransactionDTO;
 import com.banco.bank_system.application.transaction.dto.TransferOutput;
@@ -10,6 +12,7 @@ import com.banco.bank_system.application.transaction.usecases.TransferUseCase;
 import com.banco.bank_system.application.transaction.usecases.WithdrawUseCase;
 import com.banco.bank_system.configuration.FixedClockTestConfiguration;
 import com.banco.bank_system.domain.enums.TransactionType;
+import com.banco.bank_system.domain.exception.InsufficientBalanceException;
 import com.banco.bank_system.domain.valueobject.*;
 import com.banco.bank_system.presentation.controller.TransactionController;
 import com.banco.bank_system.presentation.dto.request.transactions.DepositRequest;
@@ -33,8 +36,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -90,8 +92,8 @@ class TransactionControllerTest {
                                 .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.depositedAmount").exists())
-                .andExpect(jsonPath("$.newBalance").exists());
+                .andExpect(jsonPath("$.depositedAmount").value(CurrencyFormatter.format(output.depositedAmount())))
+                .andExpect(jsonPath("$.newBalance").value(CurrencyFormatter.format(output.newBalance())));
 
         verify(depositUseCase)
                 .execute(
@@ -257,5 +259,129 @@ class TransactionControllerTest {
                         eq(0),
                         eq(10)
                 );
+    }
+
+    @Test
+    void shouldReturn404WhenDepositingIntoNonExistingAccount() throws Exception {
+
+        when(depositUseCase.execute(any(), any()))
+                .thenThrow(new AccountNotFoundException());
+
+        DepositRequest request =
+                new DepositRequest(
+                        "01",
+                        "123456-1",
+                        "500"
+                );
+
+        mockMvc.perform(
+                        post("/transactions/deposits")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code")
+                        .value("ACCOUNT_NOT_FOUND"));
+
+        verify(depositUseCase)
+                .execute(any(AccountIdentity.class), any(Money.class));
+    }
+
+    @Test
+    void shouldReturn400WhenBalanceIsInsufficient() throws Exception {
+
+        when(withdrawUseCase.execute(any(), any()))
+                .thenThrow(new InsufficientBalanceException("Saldo insuficiente"));
+
+        WithdrawRequest request =
+                new WithdrawRequest(
+                        "01",
+                        "123456-1",
+                        "500"
+                );
+
+        mockMvc.perform(
+                        post("/transactions/withdrawals")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INSUFFICIENT_BALANCE"));
+
+        verify(withdrawUseCase)
+                .execute(any(AccountIdentity.class), any(Money.class));
+    }
+
+    @Test
+    void shouldReturn400WhenTransferIsInvalid() throws Exception {
+
+        when(transferUseCase.execute(any(), any(), any()))
+                .thenThrow(new InvalidTransferException("Transferência inválida"));
+
+        TransferRequest request =
+                new TransferRequest(
+                        "01",
+                        "123456-1",
+                        "01",
+                        "123456-1",
+                        "100"
+                );
+
+        mockMvc.perform(
+                        post("/transactions/transfers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_TRANSFER"));
+
+        verify(transferUseCase)
+                .execute(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturn400WhenAccountIdentityIsInvalid() throws Exception {
+
+        DepositRequest request =
+                new DepositRequest(
+                        "1",
+                        "123456-1",
+                        "500"
+                );
+
+        mockMvc.perform(
+                        post("/transactions/deposits")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_ACCOUNT_IDENTITY"));
+
+        verifyNoInteractions(depositUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenBranchIsBlank() throws Exception {
+
+        DepositRequest request =
+                new DepositRequest(
+                        "",
+                        "123456-1",
+                        "500"
+                );
+
+        mockMvc.perform(
+                        post("/transactions/deposits")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(depositUseCase);
     }
 }

@@ -2,6 +2,7 @@ package com.banco.bank_system.presentation.dto.request.account;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public record CreateAccountRequest(
 

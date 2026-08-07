@@ -1,5 +1,7 @@
 package com.banco.bank_system.domain.enums;
 
+import com.banco.bank_system.domain.exception.InvalidAccountType;
+
 public enum AccountType {
     CHECKING("Conta Corrente"),
     SAVINGS("Conta Poupança");
@@ -14,7 +16,7 @@ public enum AccountType {
         try {
             return AccountType.valueOf(value.trim().toUpperCase());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Tipo de conta inválido");
+            throw new InvalidAccountType();
         }
     }
 

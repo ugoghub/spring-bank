@@ -7,6 +7,7 @@ import com.banco.bank_system.domain.entities.SavingsAccount;
 import com.banco.bank_system.domain.entities.Transaction;
 import com.banco.bank_system.domain.valueobject.Money;
 import com.banco.bank_system.entities.helper.AccountFactory;
+import com.banco.bank_system.infrastructure.database.entities.AccountEntity;
 import com.banco.bank_system.infrastructure.database.mapper.AccountMapper;
 import com.banco.bank_system.infrastructure.database.mapper.ClientMapper;
 import com.banco.bank_system.infrastructure.database.mapper.TransactionMapper;
@@ -35,7 +36,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -60,17 +60,25 @@ class TransactionIntegrationTest {
     @Autowired
     private Clock clock;
 
+
     @Test
     void shouldDeposit() throws Exception {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientMapper.fromDomain(client));
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), clock);
+                AccountFactory.checking(
+                        client.getId(),
+                        clock
+                );
 
-        accountRepository.save(AccountMapper.fromDomain(account));
+        accountRepository.save(
+                AccountMapper.fromDomain(account)
+        );
 
         DepositRequest request =
                 new DepositRequest(
@@ -79,32 +87,66 @@ class TransactionIntegrationTest {
                         "500"
                 );
 
-        String expectedAmount = CurrencyFormatter.format(Money.of("500"));
+        String expectedAmount =
+                CurrencyFormatter.format(Money.of("500"));
+
+        String expectedBalance =
+                CurrencyFormatter.format(Money.of("500"));
 
         mockMvc.perform(
                         post("/transactions/deposits")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.depositedAmount").value(expectedAmount));
+                .andExpect(jsonPath("$.depositedAmount")
+                        .value(expectedAmount))
+                .andExpect(jsonPath("$.newBalance")
+                        .value(expectedBalance))
+                .andExpect(jsonPath("$.transactionId")
+                        .exists())
+                .andExpect(jsonPath("$.transactionDate")
+                        .value("10/01/2026 10:00:00"));
 
         assertEquals(1, transactionRepository.count());
+
+        AccountEntity persistedAccount =
+                accountRepository
+                        .findByAccountNumberAndBranch(
+                                account.getAccountIdentity().accountNumber(),
+                                account.getAccountIdentity().branch()
+                        )
+                        .orElseThrow();
+
+        assertEquals(
+                Money.of("500").value(),
+                persistedAccount.getBalance()
+        );
     }
+
 
     @Test
     void shouldWithdraw() throws Exception {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientMapper.fromDomain(client));
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), clock);
+                AccountFactory.checking(
+                        client.getId(),
+                        clock
+                );
 
         account.deposit(Money.of("1000"));
 
-        accountRepository.save(AccountMapper.fromDomain(account));
+        accountRepository.save(
+                AccountMapper.fromDomain(account)
+        );
 
         WithdrawRequest request =
                 new WithdrawRequest(
@@ -113,36 +155,76 @@ class TransactionIntegrationTest {
                         "300"
                 );
 
-        String expectedAmount = CurrencyFormatter.format(Money.of("300"));
+        String expectedAmount =
+                CurrencyFormatter.format(Money.of("300"));
+
+        String expectedBalance =
+                CurrencyFormatter.format(Money.of("700"));
 
         mockMvc.perform(
                         post("/transactions/withdrawals")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.withdrawnAmount").value(expectedAmount));
+                .andExpect(jsonPath("$.withdrawnAmount")
+                        .value(expectedAmount))
+                .andExpect(jsonPath("$.newBalance")
+                        .value(expectedBalance))
+                .andExpect(jsonPath("$.transactionId")
+                        .exists())
+                .andExpect(jsonPath("$.transactionDate")
+                        .value("10/01/2026 10:00:00"));
 
         assertEquals(1, transactionRepository.count());
+
+        AccountEntity persistedAccount =
+                accountRepository
+                        .findByAccountNumberAndBranch(
+                                account.getAccountIdentity().accountNumber(),
+                                account.getAccountIdentity().branch()
+                        )
+                        .orElseThrow();
+
+        assertEquals(
+                Money.of("700").value(),
+                persistedAccount.getBalance()
+        );
     }
+
 
     @Test
     void shouldTransfer() throws Exception {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientMapper.fromDomain(client));
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
 
         CheckingAccount source =
-                AccountFactory.checking(client.getId(), clock);
+                AccountFactory.checking(
+                        client.getId(),
+                        clock
+                );
 
         source.deposit(Money.of("1000"));
 
         CheckingAccount destination =
-                AccountFactory.checking(client.getId(), clock);
+                AccountFactory.checking(
+                        client.getId(),
+                        clock
+                );
 
-        accountRepository.save(AccountMapper.fromDomain(source));
-        accountRepository.save(AccountMapper.fromDomain(destination));
+        accountRepository.save(
+                AccountMapper.fromDomain(source)
+        );
+
+        accountRepository.save(
+                AccountMapper.fromDomain(destination)
+        );
 
         TransferRequest request =
                 new TransferRequest(
@@ -153,56 +235,109 @@ class TransactionIntegrationTest {
                         "500"
                 );
 
-        String expectedAmount = CurrencyFormatter.format(Money.of("500"));
+        String expectedAmount =
+                CurrencyFormatter.format(Money.of("500"));
 
         mockMvc.perform(
                         post("/transactions/transfers")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.amount").value(expectedAmount));
+                .andExpect(jsonPath("$.amount")
+                        .value(expectedAmount))
+                .andExpect(jsonPath("$.operationId")
+                        .exists())
+                .andExpect(jsonPath("$.transactionDate")
+                        .value("10/01/2026 10:00:00"));
 
         assertEquals(2, transactionRepository.count());
+
+        AccountEntity persistedSource =
+                accountRepository
+                        .findByAccountNumberAndBranch(
+                                source.getAccountIdentity().accountNumber(),
+                                source.getAccountIdentity().branch()
+                        )
+                        .orElseThrow();
+
+        AccountEntity persistedDestination =
+                accountRepository
+                        .findByAccountNumberAndBranch(
+                                destination.getAccountIdentity().accountNumber(),
+                                destination.getAccountIdentity().branch()
+                        )
+                        .orElseThrow();
+
+        assertEquals(
+                Money.of("500").value(),
+                persistedSource.getBalance()
+        );
+
+        assertEquals(
+                Money.of("500").value(),
+                persistedDestination.getBalance()
+        );
     }
+
 
     @Test
     void shouldReturnTransactions() throws Exception {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientMapper.fromDomain(client));
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
 
         CheckingAccount account =
-                AccountFactory.checking(client.getId(), clock);
+                AccountFactory.checking(
+                        client.getId(),
+                        clock
+                );
 
-        accountRepository.save(AccountMapper.fromDomain(account));
+        accountRepository.save(
+                AccountMapper.fromDomain(account)
+        );
+
+        Transaction transaction =
+                Transaction.deposit(
+                        account.getId(),
+                        account.getAccountIdentity(),
+                        Money.of("200"),
+                        clock
+                );
 
         transactionRepository.save(
-                TransactionMapper.fromDomain(
-                        Transaction.deposit(
-                                account.getId(),
-                                account.getAccountIdentity(),
-                                Money.of("200"),
-                                clock
-                        )
-                )
+                TransactionMapper.fromDomain(transaction)
         );
 
         mockMvc.perform(
-                        get("/transactions/{branch}/{number}",
+                        get(
+                                "/transactions/{branch}/{number}",
                                 account.getAccountIdentity().branch(),
-                                account.getAccountIdentity().accountNumber())
+                                account.getAccountIdentity().accountNumber()
+                        )
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].type").value("DEPOSIT"))
-                .andExpect(jsonPath("$.content[0].amount").exists())
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.totalPages").value(1));
+                .andExpect(jsonPath("$.content[0].type")
+                        .value("DEPOSIT"))
+                .andExpect(jsonPath("$.content[0].amount")
+                        .exists())
+                .andExpect(jsonPath("$.content[0].dateTime")
+                        .value("10/01/2026 10:00:00"))
+                .andExpect(jsonPath("$.totalElements")
+                        .value(1))
+                .andExpect(jsonPath("$.totalPages")
+                        .value(1));
     }
 
+
     @Test
-    void shouldReturn404WhenDepositAccountDoesNotExist() throws Exception {
+    void shouldReturn404WhenDepositAccountDoesNotExist()
+            throws Exception {
 
         DepositRequest request =
                 new DepositRequest(
@@ -214,15 +349,21 @@ class TransactionIntegrationTest {
         mockMvc.perform(
                         post("/transactions/deposits")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code")
                         .value("ACCOUNT_NOT_FOUND"));
+
+        assertEquals(0, transactionRepository.count());
     }
 
+
     @Test
-    void shouldReturn404WhenWithdrawAccountDoesNotExist() throws Exception {
+    void shouldReturn404WhenWithdrawAccountDoesNotExist()
+            throws Exception {
 
         WithdrawRequest request =
                 new WithdrawRequest(
@@ -234,15 +375,21 @@ class TransactionIntegrationTest {
         mockMvc.perform(
                         post("/transactions/withdrawals")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code")
                         .value("ACCOUNT_NOT_FOUND"));
+
+        assertEquals(0, transactionRepository.count());
     }
 
+
     @Test
-    void shouldReturn404WhenTransferSourceAccountDoesNotExist() throws Exception {
+    void shouldReturn404WhenTransferSourceAccountDoesNotExist()
+            throws Exception {
 
         TransferRequest request =
                 new TransferRequest(
@@ -256,24 +403,37 @@ class TransactionIntegrationTest {
         mockMvc.perform(
                         post("/transactions/transfers")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code")
                         .value("ACCOUNT_NOT_FOUND"));
+
+        assertEquals(0, transactionRepository.count());
     }
 
+
     @Test
-    void shouldReturn400WhenInsufficientBalance() throws Exception {
+    void shouldReturn400WhenInsufficientBalance()
+            throws Exception {
 
         Client client = ClientFactory.create();
 
-        clientRepository.save(ClientMapper.fromDomain(client));
+        clientRepository.save(
+                ClientMapper.fromDomain(client)
+        );
 
         SavingsAccount account =
-                AccountFactory.savings(client.getId(), clock);
+                AccountFactory.savings(
+                        client.getId(),
+                        clock
+                );
 
-        accountRepository.save(AccountMapper.fromDomain(account));
+        accountRepository.save(
+                AccountMapper.fromDomain(account)
+        );
 
         WithdrawRequest request =
                 new WithdrawRequest(
@@ -285,10 +445,14 @@ class TransactionIntegrationTest {
         mockMvc.perform(
                         post("/transactions/withdrawals")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(
+                                        objectMapper.writeValueAsString(request)
+                                )
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code")
                         .value("INSUFFICIENT_BALANCE"));
+
+        assertEquals(0, transactionRepository.count());
     }
 }

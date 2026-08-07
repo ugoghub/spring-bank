@@ -56,6 +56,14 @@ class AccountControllerTest {
     @MockitoBean
     private RemoveAccountUseCase removeAccountUseCase;
 
+    private final LocalDateTime localDateTime = LocalDateTime.of(
+            2026,
+            1,
+            10,
+            10,
+            0
+    );
+
     @Test
     void shouldCreateAccount() throws Exception {
 
@@ -64,7 +72,7 @@ class AccountControllerTest {
                         AccountId.generate(),
                         ClientId.generate(),
                         new AccountIdentity("01", "123456-1"),
-                        LocalDateTime.now(),
+                        localDateTime,
                         Money.ZERO
                 );
 
@@ -106,7 +114,7 @@ class AccountControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.balance")
-                .value(CurrencyFormatter.format(Money.of("1500"))));
+                        .value(CurrencyFormatter.format(Money.of("1500"))));
 
         verify(getAccountBalanceUseCase)
                 .execute(any(AccountIdentity.class));
@@ -147,7 +155,7 @@ class AccountControllerTest {
                         AccountId.generate(),
                         ClientId.generate(),
                         new AccountIdentity("01", "123456-1"),
-                        LocalDateTime.now(),
+                        localDateTime,
                         Money.ZERO
                 );
 
@@ -237,5 +245,89 @@ class AccountControllerTest {
                         .value("INTERNAL_ERROR"))
                 .andExpect(jsonPath("$.message")
                         .value("Erro interno do servidor"));
+    }
+
+    @Test
+    void shouldReturn400WhenCpfIsBlank() throws Exception {
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        "",
+                        "CHECKING"
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(createAccountUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenCpfIsInvalid() throws Exception {
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        "52998224726",
+                        "CHECKING"
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_CPF"));
+
+        verifyNoInteractions(createAccountUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenAccountTypeIsInvalid() throws Exception {
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        "52998224725",
+                        "InvalidAccountType"
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_ACCOUNT_TYPE"));
+
+        verifyNoInteractions(createAccountUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenAccountTypeIsBlank() throws Exception {
+
+        CreateAccountRequest request =
+                new CreateAccountRequest(
+                        "52998224725",
+                        ""
+                );
+
+        mockMvc.perform(
+                        post("/accounts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(createAccountUseCase);
     }
 }

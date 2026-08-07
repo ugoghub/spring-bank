@@ -4,7 +4,6 @@ import com.banco.bank_system.application.transaction.dto.TransactionDTO;
 import com.banco.bank_system.presentation.util.CurrencyFormatter;
 import com.banco.bank_system.presentation.util.DateFormatter;
 
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public record TransactionResponse(

@@ -2,7 +2,7 @@ package com.banco.bank_system.presentation.dto.request.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.processing.Pattern;
+import jakarta.validation.constraints.Pattern;
 
 
 public record CreateClientRequest(
@@ -18,12 +18,13 @@ public record CreateClientRequest(
                 description = "CPF do cliente",
                 example = "52998224725"
         )
-        @Pattern()
+        @NotBlank
         String cpf,
 
         @Schema(
                 description = "E-mail do cliente",
                 example = "brunofernandes@email.com"
         )
+        @NotBlank
         String email
 ) {}

@@ -280,7 +280,7 @@ class ClientControllerTest {
     }
 
     @Test
-    void shouldReturn404WhenRemovingUnknownClient() throws Exception {
+    void shouldReturn404WhenRemovingNonExistingClient() throws Exception {
 
         doThrow(new ClientNotFoundException())
                 .when(removeClientUseCase)
@@ -289,6 +289,209 @@ class ClientControllerTest {
         mockMvc.perform(delete("/clients/52998224725"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("CLIENT_NOT_FOUND"));
+    }
+
+    @Test
+    void shouldReturn400WhenNameIsBlank() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "",
+                        "52998224725",
+                        "hugo@gmail.com"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(createClientUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenCpfIsBlank() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "Hugo",
+                        "",
+                        "hugo@gmail.com"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(createClientUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenEmailIsBlank() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "Hugo",
+                        "52998224725",
+                        ""
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(createClientUseCase);
+    }
+    @Test
+    void shouldReturn400WhenCpfIsInvalid() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "Hugo",
+                        "52998224726",
+                        "hugo@gmail.com"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_CPF"));
+
+        verifyNoInteractions(createClientUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenEmailIsInvalid() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "Hugo",
+                        "52998224725",
+                        "email-invalido"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_EMAIL"));
+
+        verifyNoInteractions(createClientUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenPersonNameObjectIsInvalid() throws Exception {
+
+        CreateClientRequest request =
+                new CreateClientRequest(
+                        "A",
+                        "52998224725",
+                        "hugo@gmail.com"
+                );
+
+        mockMvc.perform(
+                        post("/clients")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_NAME"));
+
+        verifyNoInteractions(createClientUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenChangingNameToBlank() throws Exception {
+
+        ChangeClientNameRequest request =
+                new ChangeClientNameRequest("");
+
+        mockMvc.perform(
+                        patch("/clients/52998224725/name")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(changeClientNameUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenChangingToInvalidName() throws Exception {
+
+        ChangeClientNameRequest request =
+                new ChangeClientNameRequest("A");
+
+        mockMvc.perform(
+                        patch("/clients/52998224725/name")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_NAME"));
+
+        verifyNoInteractions(changeClientNameUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenChangingEmailToBlank() throws Exception {
+
+        ChangeClientEmailRequest request =
+                new ChangeClientEmailRequest("");
+
+        mockMvc.perform(
+                        patch("/clients/52998224725/email")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("VALIDATION_ERROR"));
+
+        verifyNoInteractions(changeClientEmailUseCase);
+    }
+
+    @Test
+    void shouldReturn400WhenChangingToInvalidEmail() throws Exception {
+
+        ChangeClientEmailRequest request =
+                new ChangeClientEmailRequest("email-invalido");
+
+        mockMvc.perform(
+                        patch("/clients/52998224725/email")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code")
+                        .value("INVALID_EMAIL"));
+
+        verifyNoInteractions(changeClientEmailUseCase);
     }
 }
 
