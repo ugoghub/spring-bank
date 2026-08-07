@@ -139,7 +139,7 @@ class ClientControllerTest {
                 new ChangeClientNameRequest("Novo Nome");
 
         mockMvc.perform(
-                        put("/clients/changeName/52998224725")
+                        patch("/clients/52998224725/name")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -167,7 +167,7 @@ class ClientControllerTest {
                 new ChangeClientEmailRequest("novo@gmail.com");
 
         mockMvc.perform(
-                        put("/clients/changeEmail/52998224725")
+                        patch("/clients/52998224725/email")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -253,7 +253,7 @@ class ClientControllerTest {
                 new ChangeClientNameRequest("Hugo");
 
         mockMvc.perform(
-                        put("/clients/changeName/52998224725")
+                        patch("/clients/52998224725/name")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -271,7 +271,7 @@ class ClientControllerTest {
                 new ChangeClientEmailRequest("hugo@gmail.com");
 
         mockMvc.perform(
-                        put("/clients/changeEmail/52998224725")
+                        patch("/clients/52998224725/email")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )

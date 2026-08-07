@@ -173,7 +173,7 @@ class AccountIntegrationTest {
         );
 
         mockMvc.perform(
-                        delete("/accounts/delete/{branch}/{number}",
+                        delete("/accounts/{branch}/{number}",
                                 account.getAccountIdentity().branch(),
                                 account.getAccountIdentity().accountNumber())
                 )
@@ -242,7 +242,7 @@ class AccountIntegrationTest {
         );
 
         mockMvc.perform(
-                        delete("/accounts/delete/{branch}/{number}",
+                        delete("/accounts/{branch}/{number}",
                                 account.getAccountIdentity().branch(),
                                 account.getAccountIdentity().accountNumber())
                 )

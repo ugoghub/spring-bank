@@ -100,7 +100,7 @@ class ClientIntegrationTest {
                 new ChangeClientNameRequest("Novo Nome");
 
         mockMvc.perform(
-                        put("/clients/changeName/" + client.getCpf().value())
+                        patch("/clients/" + client.getCpf().value() + "/name")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -126,7 +126,7 @@ class ClientIntegrationTest {
                 new ChangeClientEmailRequest("novo@gmail.com");
 
         mockMvc.perform(
-                        put("/clients/changeEmail/" + client.getCpf().value())
+                        patch("/clients/" + client.getCpf().value() + "/email")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )

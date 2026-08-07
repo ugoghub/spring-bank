@@ -82,7 +82,7 @@ class TransactionIntegrationTest {
         String expectedAmount = CurrencyFormatter.format(Money.of("500"));
 
         mockMvc.perform(
-                        post("/transactions/deposit")
+                        post("/transactions/deposits")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -116,7 +116,7 @@ class TransactionIntegrationTest {
         String expectedAmount = CurrencyFormatter.format(Money.of("300"));
 
         mockMvc.perform(
-                        post("/transactions/withdraw")
+                        post("/transactions/withdrawals")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -156,7 +156,7 @@ class TransactionIntegrationTest {
         String expectedAmount = CurrencyFormatter.format(Money.of("500"));
 
         mockMvc.perform(
-                        post("/transactions/transfer")
+                        post("/transactions/transfers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -212,7 +212,7 @@ class TransactionIntegrationTest {
                 );
 
         mockMvc.perform(
-                        post("/transactions/deposit")
+                        post("/transactions/deposits")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -232,7 +232,7 @@ class TransactionIntegrationTest {
                 );
 
         mockMvc.perform(
-                        post("/transactions/withdraw")
+                        post("/transactions/withdrawals")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -254,7 +254,7 @@ class TransactionIntegrationTest {
                 );
 
         mockMvc.perform(
-                        post("/transactions/transfer")
+                        post("/transactions/transfers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -283,7 +283,7 @@ class TransactionIntegrationTest {
                 );
 
         mockMvc.perform(
-                        post("/transactions/withdraw")
+                        post("/transactions/withdrawals")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )

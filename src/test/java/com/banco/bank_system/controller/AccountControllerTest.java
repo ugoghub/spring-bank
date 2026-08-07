@@ -169,7 +169,7 @@ class AccountControllerTest {
     void shouldDeleteAccount() throws Exception {
 
         mockMvc.perform(
-                        delete("/accounts/delete/01/123456-1")
+                        delete("/accounts/01/123456-1")
                 )
                 .andExpect(status().isNoContent());
 
@@ -216,7 +216,7 @@ class AccountControllerTest {
                 .when(removeAccountUseCase)
                 .execute(any(AccountIdentity.class));
 
-        mockMvc.perform(delete("/accounts/delete/01/123456-1"))
+        mockMvc.perform(delete("/accounts/01/123456-1"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code")
                         .value("CANNOT_REMOVE_ACCOUNT"));
